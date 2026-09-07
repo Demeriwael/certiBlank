@@ -34,8 +34,10 @@ model Question {
   options         String[]      // Array of strings for the 4 multiple choice options
   correctAnswer   String        // Must exactly match one of the options
   hint            String?       // Optional hint for the user
+  explanation     String?       // Explanation shown after answering
   certificationId String
   certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }
+
