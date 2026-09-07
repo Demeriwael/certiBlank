@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Platform {
+  id             String          @id @default(cuid())
+  name           String          @unique // e.g., "AWS", "Azure", "OpenAI"
+  slug           String          @unique // e.g., "aws", "azure"
+  certifications Certification[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Certification {
+  id         String     @id @default(cuid())
+  title      String     // e.g., "Cloud Practitioner", "Solutions Architect"
+  slug       String     @unique // e.g., "cloud-practitioner"
+  platformId String
+  platform   Platform   @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  questions  Question[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Question {
+  id              String        @id @default(cuid())
+  questionText    String
+  options         String[]      // Array of strings for the 4 multiple choice options
+  correctAnswer   String        // Must exactly match one of the options
+  hint            String?       // Optional hint for the user
+  certificationId String
+  certification   Certification @relation(fields: [certificationId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
