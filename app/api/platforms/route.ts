@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const platforms = await prisma.platform.findMany({
       include: {
-        certifications: { orderBy: { title: "asc" } },
+        certifications: { orderBy: { title: "asc" }, include: { _count: { select: { questions: true } } } },
       },
       orderBy: { name: "asc" },
     });
@@ -21,3 +21,4 @@ export async function GET() {
     );
   }
 }
+
