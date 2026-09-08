@@ -10,6 +10,7 @@ import PracticeQuiz, { type Question } from "@/components/practice-quiz";
 export default function ExamSetup({ certSlug }: { certSlug: string }) {
   const [title, setTitle] = useState<string | null>(null);
   const [platformName, setPlatformName] = useState("");
+  const [platformSlug, setPlatformSlug] = useState("");
   const [status, setStatus] = useState("loading");
   const [limit, setLimit] = useState(10);
   const [questions, setQuestions] = useState<Question[] | null>(null);
@@ -22,7 +23,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
       .then((platforms: Platform[]) => {
         for (const platform of platforms) {
           const cert = platform.certifications.find((item) => item.slug === certSlug);
-          if (cert) { setTitle(cert.title); setPlatformName(platform.name); setStatus("ready"); return; }
+          if (cert) { setTitle(cert.title); setPlatformName(platform.name); setPlatformSlug(platform.slug); setStatus("ready"); return; }
         }
         setStatus("missing");
       }).catch(() => { if (!controller.signal.aborted) setStatus("error"); });
@@ -41,9 +42,9 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   }
 
   return <div className="site-shell">
-    <header className="site-header"><Brand /><Link className="nav-link" href="/#certifications">All certifications ↗</Link></header>
+    <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications ↗</Link></header>
     <main className="setup-main">
-      <Link href="/#certifications" className="back-link">← Back to certifications</Link>
+      <Link href={platformSlug ? `/platforms/${platformSlug}` : "/certifications"} className="back-link">← Back to {platformName || "all"} certifications</Link>
       <section className="setup-panel">
         {status === "loading" ? <p role="status">Loading your certification…</p> : status === "missing" ? <><h1>Certification not found.</h1><p>Choose an available certification to get started.</p></> : status === "error" ? <><h1>Let’s try that again.</h1><p role="alert">We couldn’t load this certification.</p><button className="secondary-button" onClick={() => window.location.reload()}>Retry</button></> : <>
           <div className="eyebrow section-kicker">{platformName.toUpperCase()} / YOUR PRACTICE SESSION</div>
@@ -65,3 +66,4 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
     </main>
   </div>;
 }
+
