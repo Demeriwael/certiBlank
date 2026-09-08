@@ -23,6 +23,10 @@ model Certification {
   slug       String     @unique // e.g., "cloud-practitioner"
   platformId String
   platform   Platform   @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  examCode   String?
+  blueprintUrl String?
+  examConfig Json?
+  domains    Json?
   questions  Question[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -30,6 +34,15 @@ model Certification {
 
 model Question {
   id              String        @id @default(cuid())
+  schemaVersion   Int           @default(1)
+  type            String        @default("single")
+  selectionCount  Int           @default(1)
+  optionItems     Json?
+  correctOptionIds String[]      @default([])
+  correctExplanation String?
+  distractorExplanations Json?
+  domain          String?
+  referenceUrl    String?
   questionText    String
   options         String[]      // Array of strings for the 4 multiple choice options
   correctAnswer   String        // Must exactly match one of the options
@@ -41,3 +54,22 @@ model Question {
   updatedAt       DateTime      @updatedAt
 }
 
+
+// Snapshots keep an in-progress attempt stable when the question bank changes.
+model ExamAttempt {
+  id           String   @id @default(uuid())
+  owner        String
+  certSlug     String
+  mode         String
+  snapshot     Json
+  answers      Json
+  checked      String[] @default([])
+  flagged      String[] @default([])
+  currentIndex Int      @default(0)
+  expiresAt    DateTime?
+  submittedAt  DateTime?
+  version      Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([owner, certSlug])
+}
