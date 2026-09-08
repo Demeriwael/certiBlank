@@ -30,7 +30,12 @@ async function main() {
     assert.equal(mock.questions.length,65);assert.ok(!JSON.stringify(mock).includes("correctOptionIds"));
     assert.equal((await call(`exams/${mock.id}`,state(mock,"check"))).status,400);
     const first=mock.questions[0];mock.answers[first.id]=first.options.slice(0,first.selectionCount).map((o:{id:string})=>o.id);
-    mock=(await call(`exams/${mock.id}`,state(mock,"save"))).data;
+    const compact=(await call(`exams/${mock.id}`,{...state(mock,"save"),compact:true})).data;
+    assert.equal(compact.questions,undefined);
+    assert.equal(compact.domains,undefined);
+    assert.ok(!JSON.stringify(compact).includes("correctOptionIds"));
+    console.log(`Mock save response: ${Buffer.byteLength(JSON.stringify(compact))} bytes (full view: ${Buffer.byteLength(JSON.stringify(mock))} bytes).`);
+    mock={...mock,...compact};
     assert.equal((await call(`exams/${mock.id}`,{...state(mock,"save"),version:mock.version-1})).status,409);
     await prisma.examAttempt.update({where:{id:mock.id},data:{expiresAt:new Date(Date.now()-1000)}});
     const second=mock.questions[1];mock.answers[second.id]=second.options.slice(0,second.selectionCount).map((o:{id:string})=>o.id);

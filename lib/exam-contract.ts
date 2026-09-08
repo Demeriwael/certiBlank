@@ -9,6 +9,7 @@ export type AnswerMap = Record<string, string[]>;
 export type Review = BankQuestion & { userAnswer: string[]; correct: boolean };
 export type Results = { correct: number; total: number; percentage: number; scaledScore: number; passingScore: number; passed: boolean; domains: { id: string; name: string; total: number; correct: number; accuracy: number | null }[]; review: Review[] };
 export type AttemptView = { id: string; mode: "mock" | "domain"; title: string; questions: PublicQuestion[]; domains: Domain[]; answers: AnswerMap; checked: string[]; flagged: string[]; currentIndex: number; expiresAt: string | null; serverNow: string; isSubmitted: boolean; feedback: Record<string, Review>; results: Results | null; version: number };
+export type AttemptProgress = Omit<AttemptView, "questions" | "domains" | "title" | "mode">;
 
 function ensure(condition: unknown, message: string): asserts condition { if (!condition) throw new Error(message); }
 function record(value: unknown): asserts value is Record<string, unknown> { ensure(value && typeof value === "object" && !Array.isArray(value), "Expected an object"); }
