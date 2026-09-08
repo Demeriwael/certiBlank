@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const platforms = await prisma.platform.findMany({
       include: {
-        certifications: { orderBy: { title: "asc" }, include: { _count: { select: { questions: true } } } },
+        certifications: { orderBy: { title: "asc" }, include: { _count: { select: { questions: { where: { schemaVersion: 2 } } } } } },
       },
       orderBy: { name: "asc" },
     });

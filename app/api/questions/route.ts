@@ -22,10 +22,10 @@ export async function GET(request: Request) {
     params.getAll("limit").length > 1 ||
     (rawLimit !== null && !/^\d+$/.test(rawLimit)) ||
     !Number.isSafeInteger(limit) ||
-    limit < 1
+    limit < 1 || limit > 200
   ) {
     return Response.json(
-      { error: "limit must be a positive safe integer." },
+      { error: "limit must be an integer between 1 and 200." },
       { status: 400 },
     );
   }
@@ -33,15 +33,15 @@ export async function GET(request: Request) {
   try {
     // Tagged-template values are bound parameters, never interpolated SQL.
     const questions = await prisma.$queryRaw<Question[]>`
-      SELECT q.*
+      SELECT q."id", q."questionText", q."optionItems", q."type", q."selectionCount", q."domain"
       FROM "Question" AS q
       INNER JOIN "Certification" AS c ON c."id" = q."certificationId"
-      WHERE c."slug" = ${certSlug}
+      WHERE c."slug" = ${certSlug} AND q."schemaVersion" = 2
       ORDER BY RANDOM()
       LIMIT ${limit}
     `;
 
-    return Response.json(questions, {
+    return Response.json(questions.map(q => ({ id: q.id, questionText: q.questionText, options: q.optionItems, type: q.type, selectionCount: q.selectionCount, domain: q.domain })), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch {

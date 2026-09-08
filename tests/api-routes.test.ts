@@ -68,13 +68,13 @@ test("questions defaults to ten and binds even SQL-like slugs as values", async 
   assert.ok(!sql.join("").includes(slug));
 });
 
-test("questions honors an explicit limit and serializes records", async () => {
+test("questions honors an explicit limit without exposing answers", async () => {
   const data = [{ id: "sample", options: ["A", "B", "C", "D"], correctAnswer: "A", createdAt: new Date("2026-01-01") }];
   const query = mock.method(prisma, "$queryRaw", async () => data);
   const response = await getQuestions(request("?certSlug=cloud-practitioner&limit=2"));
   assert.equal(response.status, 200);
   assert.equal(query.mock.calls[0].arguments[2], 2);
-  assert.deepEqual(await response.json(), JSON.parse(JSON.stringify(data)));
+  assert.deepEqual(await response.json(), [{ id: "sample" }]);
 });
 
 test("database failures return generic JSON errors without leaking details", async () => {
