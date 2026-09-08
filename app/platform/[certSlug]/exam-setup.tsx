@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Brand } from "@/components/brand";
+import { ExamSync, restoreDraft, type Draft } from "@/lib/exam-sync";
 import type { AttemptView, Domain, MockConfig, Review } from "@/lib/exam-contract";
 type Setup = { title: string; config: MockConfig | null; domains: (Domain & { available: number; required: number })[]; available: number; mockReady: boolean };
 async function api(url: string, body?: unknown) {
-  const response = await fetch(url, { cache: "no-store", ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}) });
-  const data = await response.json(); if (!response.ok) throw new Error(data.error ?? "Something went wrong. Please retry."); return data;
+  const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(15000), keepalive: Boolean(body), ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}) });
+  const data = await response.json(); if (!response.ok) throw Object.assign(new Error(data.error ?? "Something went wrong. Please retry."), { status: response.status }); return data;
 }
 function Explanation({ question }: { question: Review }) {
   return <div className={`exam-feedback ${question.correct ? "is-correct" : "is-wrong"}`}>
@@ -31,12 +32,34 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   const deadline = useRef<number | null>(null);
   const active = useRef<AttemptView | null>(null);
   const saving = useRef(false);
+  const sync = useRef<ExamSync | null>(null);
+  const [checking, setChecking] = useState<string | null>(null);
+  const serverTime = useRef("");
   const storageKey = `certi-attempt:${certSlug}`;
-  function accept(value: AttemptView) {
+  const draftKey = `${storageKey}:draft`;
+  const accept = useCallback((value: AttemptView) => {
     active.current = value; setAttempt(value);
-    deadline.current = value.expiresAt ? Date.now() + Math.max(0, Date.parse(value.expiresAt) - Date.parse(value.serverNow)) : null;
-    setTimeRemaining(deadline.current === null ? null : Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000)));
-  }
+    if (serverTime.current !== value.serverNow) {
+      serverTime.current = value.serverNow;
+      deadline.current = value.expiresAt ? Date.now() + Math.max(0, Date.parse(value.expiresAt) - Date.parse(value.serverNow)) : null;
+      setTimeRemaining(deadline.current === null ? null : Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000)));
+    }
+  }, []);
+  const install = useCallback((value: AttemptView) => {
+    sync.current?.dispose();
+    accept(value);
+    sync.current = new ExamSync(value, {
+      send: (id, body) => api(`/api/exams/${id}`, body),
+      publish: accept,
+      onError: setError,
+      persist: draft => {
+        try {
+          if (draft) sessionStorage.setItem(draftKey, JSON.stringify(draft));
+          else sessionStorage.removeItem(draftKey);
+        } catch { setError("Browser storage is unavailable. Keep this tab open until your connection is restored."); }
+      },
+    });
+  }, [accept, draftKey]);
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -45,19 +68,19 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
         if (cancelled) return;
         setSetup(data); setDomains(data.domains.filter(d => d.available).map(d => d.id));
         const saved = sessionStorage.getItem(storageKey);
-        if (saved) { const value = await api(`/api/exams/${saved}`); if (!cancelled) accept(value); }
+        if (saved) { const value = await api(`/api/exams/${saved}`); if (!cancelled) { install(value); const draft = restoreDraft(value, sessionStorage.getItem(draftKey)); if (draft) sync.current?.edit(draft); } }
       } catch (e) { if (!cancelled) setError((e as Error).message); }
       finally { if (!cancelled) setLoading(false); }
     })();
-    return () => { cancelled = true; };
-  }, [certSlug, storageKey]);
+    return () => { cancelled = true; sync.current?.dispose(); };
+  }, [certSlug, storageKey, draftKey, install]);
   useEffect(() => {
     const interval = setInterval(async () => {
       if (deadline.current === null || !active.current || active.current.isSubmitted) return;
       const remaining = Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000)); setTimeRemaining(remaining);
       if (remaining === 0 && !saving.current) {
         saving.current = true; setBusy(true);
-        try { accept(await api(`/api/exams/${active.current.id}`)); }
+        try { await sync.current?.action("submit"); }
         catch { setError("Time is up. Reconnecting to finalize your saved answers…"); }
         finally { saving.current = false; setBusy(false); }
       }
@@ -72,19 +95,32 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   }, [attempt?.id, attempt?.currentIndex, attempt?.isSubmitted, reviewing]);
   async function start() {
     setBusy(true); setError("");
-    try { const value = await api("/api/exams", { certSlug, mode: examMode, domains, limit }); accept(value); sessionStorage.setItem(storageKey, value.id); setReviewing(false); }
+    try { const value = await api("/api/exams", { certSlug, mode: examMode, domains, limit }); sessionStorage.removeItem(draftKey); install(value); sessionStorage.setItem(storageKey, value.id); setReviewing(false); }
     catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
-  async function change(patch: Partial<AttemptView>, action = "save") {
-    if (!active.current || saving.current) return;
-    saving.current = true; setBusy(true); setError("");
-    const next = { ...active.current, ...patch };
-    setAttempt(next);
-    try { accept(await api(`/api/exams/${next.id}`, { action, version: next.version, answers: next.answers, flagged: next.flagged, currentIndex: next.currentIndex })); }
-    catch (e) { setAttempt(active.current); setError((e as Error).message); }
-    finally { saving.current = false; setBusy(false); }
+  useEffect(() => {
+    const flush = () => { void sync.current?.flush().catch(() => {}); };
+    const hidden = () => { if (document.visibilityState === "hidden") flush(); };
+    window.addEventListener("online", flush);
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", hidden);
+    return () => {
+      window.removeEventListener("online", flush);
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", hidden);
+    };
+  }, []);
+  async function change(patch: Partial<Draft>, action: "save" | "check" | "submit" = "save") {
+    if (!sync.current || !active.current) return;
+    if (action === "save") { sync.current.edit(patch); return; }
+    const index = active.current.currentIndex;
+    if (action === "check") setChecking(active.current.questions[index].id);
+    else { saving.current = true; setBusy(true); }
+    try { await sync.current.action(action, action === "check" ? index : undefined); }
+    catch { /* The queue retains the draft and surfaces the connection error. */ }
+    finally { setChecking(null); if (action === "submit") { saving.current = false; setBusy(false); } }
   }
-  function restart() { sessionStorage.removeItem(storageKey); active.current = null; deadline.current = null; setAttempt(null); setReviewing(false); setError(""); }
+  function restart() { sync.current?.dispose(); sync.current = null; sessionStorage.removeItem(storageKey); sessionStorage.removeItem(draftKey); active.current = null; deadline.current = null; setAttempt(null); setReviewing(false); setError(""); }
   const currentQuestionIndex = attempt?.currentIndex ?? 0;
   const userAnswers = attempt?.answers ?? {};
   const flaggedQuestions = new Set(attempt?.flagged ?? []);
@@ -112,10 +148,10 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
         <div className="exam-toolbar"><span>Question <b>{currentQuestionIndex+1}</b> / {attempt.questions.length}</span><span>{answered} answered · {flaggedQuestions.size} flagged</span><button disabled={disabled} onClick={() => setDrawer(!drawer)} aria-expanded={drawer}>Question navigator ▦</button></div>
         <div className="exam-progress"><span style={{width:`${answered/attempt.questions.length*100}%`}}/></div>
         {drawer && <section className="exam-card navigator"><div className="results-heading"><h3>Jump to a question</h3><button onClick={() => setDrawer(false)}>Close ×</button></div><p>Filled = answered · ⚑ = flagged · outlined = current</p>{grid()}</section>}
-        {reviewing ? <section className="exam-card"><div className="eyebrow section-kicker">ONE LAST LOOK</div><h2 id="review-title" tabIndex={-1}>Review before submitting</h2><p>{answered} answered · {attempt.questions.length-answered} unanswered or incomplete · {flaggedQuestions.size} flagged</p><p>Select a question to revisit it. Submission locks your answers and reveals your results.</p>{grid()}<div className="exam-actions"><button className="secondary-button" disabled={disabled} onClick={() => setReviewing(false)}>Back to questions</button><button className="primary-button" disabled={disabled} onClick={() => change({},"submit")}>Submit final answers →</button></div></section> : <section className="exam-card question-card"><div className="question-meta"><span>{attempt.domains.find(d => d.id === question.domain)?.name}</span><button disabled={disabled} aria-pressed={flaggedQuestions.has(question.id)} onClick={() => change({flagged: flaggedQuestions.has(question.id) ? attempt.flagged.filter(id => id !== question.id) : [...attempt.flagged,question.id]})}>{flaggedQuestions.has(question.id) ? "⚑ Flagged" : "⚐ Flag for review"}</button></div><h2 id="question-title" tabIndex={-1}>{question.questionText}</h2><p className="selection-help">{question.type === "multiple" ? `Select ${question.selectionCount} options` : "Select one answer"} · {selected.length}/{question.selectionCount} selected</p><fieldset className="exam-options" aria-labelledby="question-title" disabled={disabled || !!feedback}><legend className="sr-only">Answer options</legend>{question.options.map((option,i) => <label key={option.id} className={`${selected.includes(option.id) ? "chosen" : ""} ${feedback?.correctOptionIds.includes(option.id) ? "correct-option" : ""}`}><input type={question.type === "single" ? "radio" : "checkbox"} name={question.id} checked={selected.includes(option.id)} disabled={!selected.includes(option.id) && question.type === "multiple" && selected.length >= question.selectionCount} onChange={() => change({answers:{...userAnswers,[question.id]: question.type === "single" ? [option.id] : selected.includes(option.id) ? selected.filter(id => id !== option.id) : [...selected,option.id]}})}/><span className="option-letter">{String.fromCharCode(65+i)}</span><span>{option.text}</span></label>)}</fieldset>
-          {attempt.mode === "domain" && !feedback && <div className="check-row">{question.hint && <details><summary>Need a hint?</summary><p>{question.hint}</p></details>}<button className="primary-button" disabled={disabled || selected.length !== question.selectionCount} onClick={() => change({},"check")}>Check answer →</button></div>}
+        {reviewing ? <section className="exam-card"><div className="eyebrow section-kicker">ONE LAST LOOK</div><h2 id="review-title" tabIndex={-1}>Review before submitting</h2><p>{answered} answered · {attempt.questions.length-answered} unanswered or incomplete · {flaggedQuestions.size} flagged</p><p>Select a question to revisit it. Submission locks your answers and reveals your results.</p>{grid()}<div className="exam-actions"><button className="secondary-button" disabled={disabled} onClick={() => setReviewing(false)}>Back to questions</button><button className="primary-button" disabled={disabled} onClick={() => change({},"submit")}>{busy ? "Calculating results…" : "Submit final answers →"}</button></div></section> : <section className="exam-card question-card"><div className="question-meta"><span>{attempt.domains.find(d => d.id === question.domain)?.name}</span><button disabled={disabled} aria-pressed={flaggedQuestions.has(question.id)} onClick={() => change({flagged: flaggedQuestions.has(question.id) ? attempt.flagged.filter(id => id !== question.id) : [...attempt.flagged,question.id]})}>{flaggedQuestions.has(question.id) ? "⚑ Flagged" : "⚐ Flag for review"}</button></div><h2 id="question-title" tabIndex={-1}>{question.questionText}</h2><p className="selection-help">{question.type === "multiple" ? `Select ${question.selectionCount} options` : "Select one answer"} · {selected.length}/{question.selectionCount} selected</p><fieldset className="exam-options" aria-labelledby="question-title" disabled={disabled || !!feedback || checking === question.id}><legend className="sr-only">Answer options</legend>{question.options.map((option,i) => <label key={option.id} className={`${selected.includes(option.id) ? "chosen" : ""} ${feedback?.correctOptionIds.includes(option.id) ? "correct-option" : ""}`}><input type={question.type === "single" ? "radio" : "checkbox"} name={question.id} checked={selected.includes(option.id)} disabled={!selected.includes(option.id) && question.type === "multiple" && selected.length >= question.selectionCount} onChange={() => change({answers:{...userAnswers,[question.id]: question.type === "single" ? [option.id] : selected.includes(option.id) ? selected.filter(id => id !== option.id) : [...selected,option.id]}})}/><span className="option-letter">{String.fromCharCode(65+i)}</span><span>{option.text}</span></label>)}</fieldset>
+          {attempt.mode === "domain" && !feedback && <div className="check-row">{question.hint && <details><summary>Need a hint?</summary><p>{question.hint}</p></details>}<button className="primary-button" disabled={disabled || !!checking || selected.length !== question.selectionCount} onClick={() => change({},"check")}>{checking === question.id ? "Checking answer…" : "Check answer →"}</button></div>}
           {feedback && <div aria-live="polite"><Explanation question={feedback}/></div>}
-          <div className="exam-actions"><button className="secondary-button" disabled={disabled || currentQuestionIndex === 0} onClick={() => jump(currentQuestionIndex-1)}>← Previous</button><span role="status">{busy ? "Saving…" : "Progress saved"}</span>{currentQuestionIndex < attempt.questions.length-1 ? <button className="primary-button" disabled={disabled} onClick={() => jump(currentQuestionIndex+1)}>Next question →</button> : <button className="primary-button" disabled={disabled} onClick={() => setReviewing(true)}>Review session →</button>}</div>
+          <div className="exam-actions"><button className="secondary-button" disabled={disabled || currentQuestionIndex === 0} onClick={() => jump(currentQuestionIndex-1)}>← Previous</button>{currentQuestionIndex < attempt.questions.length-1 ? <button className="primary-button" disabled={disabled} onClick={() => jump(currentQuestionIndex+1)}>Next question →</button> : <button className="primary-button" disabled={disabled} onClick={() => setReviewing(true)}>Review session →</button>}</div>
         </section>}
         {!reviewing && <button className="exam-review-link" disabled={disabled} onClick={() => setReviewing(true)}>Review & finish session ↗</button>}
       </>}

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { attemptView, json } from "@/lib/exam-server";
+import { attemptProgress, attemptView, json } from "@/lib/exam-server";
 import { validateAnswers } from "@/lib/exam-logic";
 import type { AnswerMap, Snapshot } from "@/lib/exam-contract";
 export const runtime = "nodejs";
@@ -13,6 +13,7 @@ async function find(context: Context) {
 }
 async function handle(request: Request, context: Context, mutate: boolean) {
   try {
+    let compact = false;
     let attempt = await find(context);
     if (!attempt) return Response.json({ error: "Attempt not found" }, { status: 404 });
     if (!attempt.submittedAt && attempt.expiresAt && attempt.expiresAt.getTime() <= Date.now()) {
@@ -22,6 +23,7 @@ async function handle(request: Request, context: Context, mutate: boolean) {
     if (mutate && !attempt.submittedAt) {
       const body = await request.json();
       if (!body || typeof body !== "object" || Array.isArray(body)) throw new TypeError("Expected a JSON object");
+      compact = body.compact === true;
       const snapshot = attempt.snapshot as unknown as Snapshot;
       if (!["save", "check", "submit"].includes(body.action)) throw new TypeError("Invalid action");
       if (body.version !== attempt.version) return Response.json({ error: "Progress changed in another tab. Reload to continue." }, { status: 409 });
@@ -35,11 +37,11 @@ async function handle(request: Request, context: Context, mutate: boolean) {
         if (attempt.mode !== "domain" || answers[q.id]?.length !== q.selectionCount) throw new TypeError("Select the required number of answers first");
         checked.add(q.id);
       }
-      const updated = await prisma.examAttempt.updateMany({ where: { id: attempt.id, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
-      if (!updated.count) return Response.json({ error: "Progress changed. Reload to continue." }, { status: 409 });
-      attempt = (await find(context))!;
+      const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
+      if (!updated.length) return Response.json({ error: "Progress changed. Reload to continue." }, { status: 409 });
+      attempt = updated[0];
     }
-    return Response.json(attemptView(attempt), { headers: { "Cache-Control": "no-store" } });
+    return Response.json(compact ? attemptProgress(attempt) : attemptView(attempt), { headers: { "Cache-Control": "no-store" } });
   } catch (error) { const bad = error instanceof TypeError || error instanceof SyntaxError; return Response.json({ error: bad ? error.message : "Unable to save exam. Please retry." }, { status: bad ? 400 : 500 }); }
 }
 export const GET = (request: Request, context: Context) => handle(request, context, false);
