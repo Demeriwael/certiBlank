@@ -1,17 +1,87 @@
-# CertiBlank
+<div align="center">
 
-CertiBlank is an IT certification practice application with timed mock exams,
-domain practice, multiple-response questions, explanations, and domain analytics.
-It uses Next.js App Router, TypeScript, Tailwind CSS, Prisma 6, and PostgreSQL.
+# CertiBlank ✦
 
-## Local installation
+### Your next certification starts with a blank.
+**Fill it with practice. Back it with understanding.**
 
-Install Node.js **24** (the version used by CI), npm, and Git. You also need your
-own PostgreSQL development database: local PostgreSQL or a separate Supabase
-project. You do not need to install Supabase to use its hosted database.
+[![CI](https://github.com/Demeriwael/certiBlank/actions/workflows/ci.yml/badge.svg)](https://github.com/Demeriwael/certiBlank/actions/workflows/ci.yml)
 
-1. Clone the repository. Contributors without write access should fork it first
-   and use their fork's clone URL instead.
+[Get started](#local-installation) · [Contribute](CONTRIBUTING.md) · [Report a bug](https://github.com/Demeriwael/certiBlank/issues) · [Security](SECURITY.md)
+
+</div>
+
+---
+
+CertiBlank is an IT certification practice platform built around one idea: **understand why an answer is right, not just which answer to pick.** Practice by domain, take a timed mock exam, and use your results to decide what to study next.
+
+A focused dark interface, touch-friendly controls, and explanations keep the attention where it belongs: on learning.
+
+## ✨ What you can do
+
+| Feature | What it brings to your study session |
+| --- | --- |
+| ⏱️ Timed mock exams | A countdown, domain-weighted question selection, flags, and a review step before submission. |
+| 🎯 Domain practice | Focus on selected topics and reveal feedback after checking each answer. |
+| 🧩 Single and multiple response | Radio and checkbox questions with explicit selection requirements. |
+| 💡 Detailed explanations | Reasoning for correct answers, individual distractor breakdowns, and documentation references. |
+| 📊 Results that guide revision | A practice score, question-by-question review, and accuracy by domain. |
+| 📱 A responsive exam workspace | Large answer cards, persistent navigation, and a question jump drawer. |
+| ⚡ Immediate interactions | Answer selection and navigation update locally while progress saves in the background. |
+| ♿ Keyboard-friendly controls | Visible focus, drawer focus management, status announcements, and reduced-motion support. |
+
+## 🧭 Choose your practice mode
+
+| | Domain practice | Timed mock exam |
+| --- | --- | --- |
+| Best for | Learning and targeting weak areas | Rehearsing a complete exam session |
+| Questions | Selected domains and session length | Certification configuration and domain quotas |
+| Feedback | After explicitly checking an answer | After final submission |
+| Timing | Practice at your own pace | Server-enforced countdown |
+| Review | Explanations as you go | Flag, navigate, and review before submitting |
+
+Multiple-response questions use exact matching, with no partial credit. Unanswered or incomplete answers count as incorrect. Mock exams require enough questions in each domain to satisfy the configured blueprint.
+
+> **A study aid, not an official exam.** Scores are practice estimates, not vendor-equivalent psychometric scores. Question banks are AI-generated and may contain errors; verify technical claims against official documentation and report corrections.
+
+<details>
+<summary><strong>How scoring and saved progress work</strong></summary>
+
+The practice score uses each certification's configured scale:
+
+```text
+round(minimumScore + (correct / total) × (maximumScore - minimumScore))
+```
+
+Domain accuracy is a raw percentage. Domains not sampled do not receive an accuracy value.
+
+Attempts are stored in PostgreSQL with a fixed question snapshot. An HttpOnly owner cookie scopes access, and session storage remembers the current attempt in that browser tab. This supports refresh recovery; it does not provide account-based or cross-device history.
+
+Selections, flags, and navigation update immediately. A serialized save queue batches progress updates and retries connection failures. Pending drafts remain in session storage. Answer checking and final submission still require a server response. Correct answers are returned only for checked domain questions or submitted attempts.
+
+Closing the browser does not pause a mock exam. The server enforces its deadline and finalizes an expired attempt on the next request. Only answers saved before the deadline count.
+
+</details>
+
+## 🛠️ Built with
+
+| Layer | Technology |
+| --- | --- |
+| Application | Next.js 16 · App Router · React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Data | PostgreSQL · Prisma 6 |
+| Validation | ESLint · TypeScript · Node.js test runner |
+| CI | GitHub Actions · Node.js 24 · Ubuntu |
+
+<a id="local-installation"></a>
+## 🚀 Local installation
+
+### 1. Get the prerequisites
+
+Install **Node.js 24**, npm, and Git. Provision your own **development PostgreSQL database**, either locally or in a separate Supabase project. Hosted Supabase does not require installing Supabase on your computer.
+
+### 2. Clone and install
 
 ```bash
 git clone https://github.com/Demeriwael/certiBlank.git
@@ -19,10 +89,11 @@ cd certiBlank
 npm ci
 ```
 
-The repository root contains `package.json`; there is no additional `certi`
-subdirectory after cloning. Run the remaining commands from this root.
+Contributing from outside the project? Fork the repository first and clone your fork instead. The cloned repository root contains `package.json`; there is no extra `certi` directory to enter.
 
-2. Copy `.env.example` to `.env`:
+### 3. Configure your environment
+
+Copy the example file using the command for your shell:
 
 ```powershell
 # Windows PowerShell
@@ -34,25 +105,32 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-3. Edit `.env` with credentials for your development database. `DATABASE_URL` is
-   used by the app; `DIRECT_URL` is used for schema management. For local
-   PostgreSQL, both can point to the same database. Create that database and user
-   first; the template does not provision PostgreSQL.
+Edit `.env` with your own development credentials:
 
-For Supabase, copy PostgreSQL connection strings from the project's **Connect**
-dialog and replace the password placeholder with your URL-encoded database
-password. Use a transaction pooler URL with `pgbouncer=true` for `DATABASE_URL`
-when pooling; use a direct URL or session pooler for `DIRECT_URL`. A session
-pooler is an option when your network cannot reach the direct IPv6 endpoint.
-These are database URLs, not Supabase API keys. Prisma connects to PostgreSQL and
-does not require the Supabase Data API. See the
-[Supabase Prisma guide](https://supabase.com/docs/guides/database/prisma).
+```dotenv
+DATABASE_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/certi_dev?schema=public"
+DIRECT_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/certi_dev?schema=public"
+```
 
-Keep `.env` private. Never use the hosted application's production database for
-local setup or tests.
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Application queries; may use a connection pooler. |
+| `DIRECT_URL` | Prisma schema operations; use a direct connection or session pooler. |
 
-4. Generate the client and validate the question banks, then initialize and seed
-   your development database:
+For local PostgreSQL, both URLs can match. Create the database and user first; the template does not provision them. Keep `.env` untracked and use a development database, never the hosted application's production database.
+
+<details>
+<summary><strong>Using Supabase?</strong></summary>
+
+Copy PostgreSQL connection strings from your project's **Connect** dialog. Replace the password placeholder with your database password, URL-encoding special characters.
+
+For Prisma 6, a transaction pooler URL can be used for `DATABASE_URL` with `pgbouncer=true`. Use a direct connection or session pooler for `DIRECT_URL`, not the transaction pooler. A session pooler can help when your network cannot reach the direct IPv6 endpoint. Preserve required SSL parameters.
+
+Prisma uses PostgreSQL connections, not Supabase API keys, and does not require the Supabase Data API. See the [Supabase Prisma guide](https://supabase.com/docs/guides/database/prisma).
+
+</details>
+
+### 4. Prepare the database
 
 ```bash
 npx prisma generate
@@ -61,101 +139,128 @@ npx prisma db push
 npx prisma db seed
 ```
 
-`--validate-only` reads files without database writes. `db push` changes the schema,
-and seeding imports question data. Review any schema-change warning before
-proceeding; do not add `--accept-data-loss` to bypass it.
+Validation reads question files without database writes. `db push` changes the schema, and seeding imports questions into your configured database. Review any schema-change warning rather than bypassing it with `--accept-data-loss`.
 
-5. Start the app:
+### 5. Start practicing
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). To check a production build
-locally, stop the development server, run `npm run build`, then `npm start`.
+Open **[localhost:3000](http://localhost:3000)** in your browser.
 
-If question availability fails, check that your development database is reachable,
-both URLs are correct, and schema setup and seeding completed. On Windows, stop
-the dev server before regenerating Prisma if its DLL is locked.
-
-## Contributing and security
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, branches, and pull requests.
-Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
-
-## License
-
-The original application source code, scripts, configuration, and project
-documentation are licensed under the [MIT License](LICENSE).
-
-Question-bank JSON files under `prisma/Data` (also referred to as `prisma/data`)
-and vendor logos/certification artwork are **excluded** from this MIT grant.
-Their redistribution terms have not yet been established here; their presence
-does not grant permission to redistribute them. Third-party dependencies retain
-their own licenses. Vendor names and trademarks remain the property of their
-respective owners; this project does not claim vendor endorsement.
-
-## Exam modes and question imports
-
-Question banks live under `prisma/Data/<Platform>/<Certification>/*.json`. The importer recursively validates all version 2 files before writing. Each certification uses one envelope containing `schemaVersion: 2`, `platform`, `certification` (including `mockExam` and `domains`), and `questions`. Use the supplied AWS file as the complete example.
-
-Keep certification slugs and question IDs stable between imports. Options have stable IDs; `correctOptionIds` must match `selectionCount`. Every incorrect option requires a `distractorExplanations` entry. Domain weights total 100. References use HTTPS. Legacy array files are skipped with a progress message until upgraded; their database records remain intact.
+For a local production run, stop the development server, then run:
 
 ```bash
+npm run build
+npm start
+```
+
+## 🧪 Checks and CI
+
+Run these from the repository root before submitting a change:
+
+```bash
+npx prisma generate
 npx prisma db seed -- --validate-only
-npx prisma db push
-npx prisma db seed
-npm run dev
-```
-
-The importer upserts questions and marks removed version 2 questions as legacy rather than deleting them. Only version 2 records count toward availability or appear in new attempts. Existing attempt snapshots stay unchanged when a bank is reimported.
-
-- Domain practice: selected domains, configurable session length, explicit answer checking, locked checked answers, immediate structured explanations.
-- Mock exam: largest-remainder domain quotas, configured question count and duration, server-enforced deadline, final review before submission. Insufficient domain coverage prevents starting a shortened mock.
-- Multiple response: exact set matching without partial credit. Unanswered and incomplete answers count as incorrect.
-- Score: `round(minimumScore + correct / total * (maximumScore - minimumScore))`. This is a practice estimate, not a vendor-equivalent psychometric score. Domain accuracy is raw accuracy; domains not sampled have no accuracy value.
-
-Attempts are stored in PostgreSQL with an immutable question snapshot. An HttpOnly owner cookie scopes access, and session storage keeps the current attempt ID for refresh recovery in that browser tab. This is anonymous session continuity, not an account or cross-device history. Correct answers are returned only for checked domain questions or submitted attempts. Expired mocks finalize saved answers on the next server request, including the timer's automatic request; closing the browser does not pause the deadline.
-
-Validation:
-
-```bash
 npm run lint
+npx next typegen
+npx tsc --noEmit
 node --import tsx --test tests/*.test.ts
 npm run build
-# Requires the local server and configured test database; cleans up its own attempts:
+```
+
+The **CI checks** job runs on pull requests, pushes to `main`, and manual dispatch. It installs locked dependencies, generates Prisma Client, validates banks, checks lint and types, runs unit/mocked API tests, and builds the application.
+
+**CI only:** the workflow uses placeholder database URLs and read-only repository permissions. It does not deploy, seed a database, or apply schema changes. Hosting-provider deployments are configured separately. Passing CI does not verify production database connectivity or browser behavior.
+
+<details>
+<summary><strong>Optional live exam test</strong></summary>
+
+With the development server running at `127.0.0.1:3000` and both processes pointing at the same dedicated development database:
+
+```bash
 node --import tsx tests/exam-live.ts
 ```
 
-Before committing: review `git status` and `git diff`, keep `.env` untracked, stage only intended files, and make a focused commit on the feature branch. Database changes are independent of Git commits.
+This test creates and removes its own attempts and expects the current seeded AWS bank, including 274 available questions. It is excluded from CI and must not run against production. See [CONTRIBUTING.md](CONTRIBUTING.md) for additional manual checks.
 
-### Responsive exam progress
+</details>
 
-Answer selection, flags, and navigation update immediately in the browser. A serialized queue batches changes within 250 ms and persists them without disabling controls or showing a routine save indicator. Server responses cannot rewind newer edits. Pending drafts are kept in session storage for recovery after refreshing the same tab; no answer keys are stored in those drafts. Connection failures retain the draft and retry with backoff. Invalid or conflicting state pauses syncing and asks for a reload to reconcile with the server.
+## 📚 Working with question banks
 
-Check answer and final submission remain server-graded. They use the latest draft and wait for any in-flight save; navigation remains available while a domain answer is checked. Mock expiry remains server-authoritative: only changes received before the deadline are accepted, including when the connection is interrupted. Compact save responses omit the unchanged question bank, and conditional writes return the updated row without an extra database read.
+Banks live under `prisma/Data/<Platform>/<Certification>/*.json`. The importer discovers the data directory case-insensitively; preserve the tracked path casing when contributing.
 
-### Exam interface and accessibility
+Each version 2 bank contains:
 
-The exam workspace includes a sticky progress header, fixed touch-friendly navigation, radio/checkbox answer cards, and a modal question navigator. Explanations reference the displayed option letters, including after answer shuffling. Results include domain accuracy and a question-by-question review. Icons are inline SVGs.
+- `schemaVersion: 2` and platform metadata.
+- Certification metadata, including `mockExam` settings and `domains`.
+- Questions with stable IDs, option IDs, correct answers, explanations, and documentation references.
 
-Keyboard shortcuts: 1–4 or A–D choose an option, F toggles a flag, Left/Right move between questions, and Enter advances. Native controls retain their normal keyboard actions. Turn shortcuts off in the navigator or desktop sidebar; the preference persists on this device. Escape closes the navigator and returns focus to its trigger. Tab stays inside the open dialog.
+Use the included AWS bank as a complete format example. Keep certification slugs and question IDs stable. `correctOptionIds` must match `selectionCount`, every distractor requires an explanation, domain weights must total 100, and references must use HTTPS.
 
-The timer turns amber at ten minutes and red at two minutes. Screen readers receive threshold announcements rather than every tick. Reduced-motion preferences disable the warning pulse and drawer animation. Correctness is communicated through text and icons as well as color.
+```bash
+# Check all banks without changing the database
+npx prisma db seed -- --validate-only
 
-Manual checks before release: test both practice modes, multiple-response selection limits, keyboard-only use, drawer focus restoration, 320px mobile reflow, final submission, and screen-reader announcements. These provisions are not a substitute for a full WCAG audit with assistive technologies.
+# Import validated banks into your development database
+npx prisma db seed
+```
 
-### GitHub Actions: CI only
+The importer validates all version 2 files before writing and upserts records. Removed version 2 questions are marked as legacy rather than deleted. Only version 2 questions count toward availability; existing attempt snapshots remain unchanged. Legacy array files are skipped with a progress message.
 
-`.github/workflows/ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Its single required-check candidate is **CI checks**. On Ubuntu with Node.js 24 it installs locked dependencies, generates Prisma Client, validates question banks with `--validate-only`, runs ESLint and TypeScript checks, executes unit/mocked API tests, and builds Next.js for production.
+## ⌨️ Keyboard and accessibility
 
-The job uses localhost placeholder database URLs, read-only repository permissions, and no Supabase or hosting secrets. It never deploys, applies migrations, pushes schemas, or imports data. `tests/exam-live.ts` is excluded because it writes test attempts to a real database. A green result does not verify production database connectivity or browser behavior. Existing Netlify deployments are managed independently of this workflow.
+| Shortcut | Action |
+| --- | --- |
+| `1–4` or `A–D` | Select an answer option |
+| `F` | Toggle the current question's flag |
+| `←` / `→` | Previous / next question |
+| `Enter` | Advance, unless a focused control has its own action |
+| `Escape` | Close the question navigator and restore focus |
 
-To enable CI:
+Shortcuts can be disabled in the navigator or desktop sidebar. Native controls retain their normal behavior, and Tab remains inside an open navigator dialog.
 
-1. Push the CI feature branch and open a pull request into `main`.
-2. Open the pull request's Checks tab and wait for **CI checks** to pass. Failed steps link to their logs.
-3. After the first run, open repository Settings > Rules > Rulesets and create an active branch ruleset targeting `main`. Require a pull request and require the **CI checks** status check before merging. Select the check emitted by GitHub Actions. Availability of rulesets depends on repository visibility and your GitHub plan; branch protection rules can provide equivalent checks where available.
-4. Merge the pull request after it passes. The same workflow also checks the resulting `main` commit.
+The timer turns amber at ten minutes and red at two minutes. Threshold announcements avoid reading every tick aloud, and reduced-motion preferences disable warning pulses and drawer animation. Correctness uses text and icons as well as color. These provisions do not replace a full accessibility audit with assistive technologies.
 
-No deployment workflow or database secrets need to be configured for CI.
+## 🔧 Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| Question availability cannot load | Database reachability, both environment URLs, and successful schema setup and seeding. |
+| Prisma reports a locked DLL on Windows | Stop the development server and other processes using this project's Prisma Client, then regenerate. |
+| Mock exam cannot start | The bank must contain enough questions in every configured domain. |
+| TypeScript cannot find a Prisma model | Run `npx prisma generate` after pulling schema changes. |
+
+## 🤝 Make CertiBlank better
+
+Question corrections, accessible UI improvements, focused bug fixes, and clearer documentation are welcome.
+
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md) and create a focused branch from an up-to-date `main`.
+2. Make your change and run the relevant checks.
+3. Open a pull request explaining the behavior change and how you verified it.
+4. Wait for **CI checks** and resolve review feedback before merging.
+
+Only contribute question data or artwork you have permission to share, and include its source and redistribution terms.
+
+**Found a vulnerability?** Follow [SECURITY.md](SECURITY.md) to report it privately. Do not include credentials or exploit details in public issues.
+
+<a id="license"></a>
+## 📄 License and attribution
+
+The original application code, scripts, configuration, and project documentation are licensed under the **[MIT License](LICENSE)**.
+
+Question-bank JSON files under `prisma/Data` (also referred to as `prisma/data`) and vendor logos/certification artwork are **excluded from the MIT grant**. Their redistribution terms have not yet been established here; inclusion in this repository does not grant permission to redistribute them. Third-party dependencies retain their own licenses.
+
+Vendor names and trademarks belong to their respective owners. CertiBlank does not claim vendor endorsement.
+
+---
+
+<div align="center">
+
+**Practice with purpose. Understand the answer. Fill the blank.**
+
+If CertiBlank helps you study, consider giving the project a ⭐ or contributing an improvement.
+
+</div>
+
