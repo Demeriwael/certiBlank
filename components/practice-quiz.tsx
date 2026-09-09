@@ -1,5 +1,6 @@
 "use client";
 
+import { CatalogIcon } from "@/components/catalog-icon";
 import { useEffect, useRef, useState } from "react";
 
 export type Question = {
@@ -42,7 +43,7 @@ export default function PracticeQuiz({ questions, onRestart }: {
         <div><strong>{questions.length - score}</strong><span>To review</span></div>
       </div>
       <p>{score === questions.length ? "Perfect session. You answered every question correctly." : "Take a moment to review your answers. The next session starts with what you learned here."}</p>
-      <button className="primary-button" onClick={onRestart}>Start a new session <span aria-hidden="true">↗</span></button>
+      <button className="primary-button" onClick={onRestart}>Start a new session <CatalogIcon /></button>
       <div className="review-heading"><h3>Your answer breakdown</h3><span>{questions.length} QUESTIONS</span></div>
       <div className="answer-review">{questions.map((item, i) => {
         const correct = answers[i] === item.correctAnswer;
@@ -87,6 +88,7 @@ export default function PracticeQuiz({ questions, onRestart }: {
       {answers[index] !== question.correctAnswer && <p>The correct answer is <b>{question.correctAnswer}</b>.</p>}
       {question.hint && <p>{question.hint}</p>}
     </div>}
-    <div className="quiz-actions"><span>{answered ? "Ready when you are." : "Select an answer to continue."}</span><button className="primary-button" disabled={!answered} onClick={() => setIndex((current) => current + 1)}>{index === questions.length - 1 ? "View results" : "Next question"}<span aria-hidden="true">→</span></button></div>
+    <div className="quiz-actions"><span>{answered ? "Ready when you are." : "Select an answer to continue."}</span><button className="primary-button" disabled={!answered} onClick={() => setIndex((current) => current + 1)}>{index === questions.length - 1 ? "View results" : "Next question"}<CatalogIcon /></button></div>
   </section>;
 }
+

@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const platforms = await prisma.platform.findMany({
+      where: { slug: { in: ["aws", "azure", "cisco"] } },
       include: {
         certifications: { orderBy: { title: "asc" }, include: { _count: { select: { questions: { where: { schemaVersion: 2 } } } } } },
       },
