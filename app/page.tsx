@@ -5,6 +5,7 @@ import CertificationCatalog from "@/components/certification-catalog";
 import { useEffect, useState } from "react";
 
 import { Brand } from "@/components/brand";
+import { GitHubButton } from "@/components/github-button";
 
 const words = ["AWS", "Azure", "Cisco"];
 
@@ -36,7 +37,7 @@ function TypedBrand() {
 
 export default function Home() {
   return <div className="site-shell">
-    <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><a className="nav-cta" href="#certifications">Find your next cert <CatalogIcon /></a></header>
+    <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><GitHubButton /></header>
     <main>
       <section className="hero">
         <div className="hero-grid" aria-hidden="true" />
