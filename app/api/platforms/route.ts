@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { databaseDiagnostics } from "@/lib/database-diagnostics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,8 +14,8 @@ export async function GET() {
     });
 
     return Response.json(platforms);
-  } catch {
-    console.error("GET /api/platforms: database query failed.");
+  } catch (error) {
+    console.error("GET /api/platforms: database query failed.", databaseDiagnostics(error, process.env));
     return Response.json(
       { error: "Unable to fetch platforms." },
       { status: 500 },
