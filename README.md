@@ -84,3 +84,18 @@ Keyboard shortcuts: 1–4 or A–D choose an option, F toggles a flag, Left/Righ
 The timer turns amber at ten minutes and red at two minutes. Screen readers receive threshold announcements rather than every tick. Reduced-motion preferences disable the warning pulse and drawer animation. Correctness is communicated through text and icons as well as color.
 
 Manual checks before release: test both practice modes, multiple-response selection limits, keyboard-only use, drawer focus restoration, 320px mobile reflow, final submission, and screen-reader announcements. These provisions are not a substitute for a full WCAG audit with assistive technologies.
+
+### GitHub Actions: CI only
+
+`.github/workflows/ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Its single required-check candidate is **CI checks**. On Ubuntu with Node.js 24 it installs locked dependencies, generates Prisma Client, validates question banks with `--validate-only`, runs ESLint and TypeScript checks, executes unit/mocked API tests, and builds Next.js for production.
+
+The job uses localhost placeholder database URLs, read-only repository permissions, and no Supabase or hosting secrets. It never deploys, applies migrations, pushes schemas, or imports data. `tests/exam-live.ts` is excluded because it writes test attempts to a real database. A green result does not verify production database connectivity or browser behavior. Existing Netlify deployments are managed independently of this workflow.
+
+To enable CI:
+
+1. Push the CI feature branch and open a pull request into `main`.
+2. Open the pull request's Checks tab and wait for **CI checks** to pass. Failed steps link to their logs.
+3. After the first run, open repository Settings > Rules > Rulesets and create an active branch ruleset targeting `main`. Require a pull request and require the **CI checks** status check before merging. Select the check emitted by GitHub Actions. Availability of rulesets depends on repository visibility and your GitHub plan; branch protection rules can provide equivalent checks where available.
+4. Merge the pull request after it passes. The same workflow also checks the resulting `main` commit.
+
+No deployment workflow or database secrets need to be configured for CI.

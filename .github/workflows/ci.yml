@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: CI checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Syntax-only placeholders. CI has no real database credentials or service.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/certi_ci
+      DIRECT_URL: postgresql://ci:ci@127.0.0.1:5432/certi_ci
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Validate question banks without database writes
+        run: npx prisma db seed -- --validate-only
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Generate route types and check TypeScript
+        run: |
+          npx next typegen
+          npx tsc --noEmit
+
+      - name: Run unit and mocked API tests
+        # exam-live.ts is intentionally excluded: it requires a real database.
+        run: node --import tsx --test tests/*.test.ts
+
+      - name: Verify production build
+        run: npm run build
