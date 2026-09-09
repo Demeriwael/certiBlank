@@ -18,7 +18,8 @@ test("availability uses actual question counts, not certification presence", () 
   assert.equal(questionCount(platforms, "aws", "new-cert"), 0);
   assert.equal(questionCount(platforms, "cisco", "cisco-ccna"), 0);
 });
-test("new platforms appear automatically", () => {
-  const added = mergeCatalog([{ id: "new", name: "Example", slug: "example", certifications: [] }]);
-  assert.equal(added.at(-1)?.name, "Example");
+test("only supported platforms appear even when the database contains OpenAI", () => {
+  const added = mergeCatalog([{ id: "old", name: "OpenAI", slug: "openai", certifications: [{ id: "ai", title: "AI Developer", slug: "certified-developer", _count: { questions: 15 } }] }]);
+  assert.deepEqual(added.map(platform => platform.slug), ["aws", "azure", "cisco"]);
+  assert.equal(added.some(platform => platform.tracks.some(track => track.slug === "certified-developer")), false);
 });

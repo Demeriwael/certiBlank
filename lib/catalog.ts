@@ -1,5 +1,5 @@
 import type { Platform } from "./types";
-export type Track = { slug: string; title: string; level: string; topic: string; description: string; officialUrl?: string; sample?: boolean };
+export type Track = { slug: string; title: string; level: string; topic: string; description: string; officialUrl?: string; sample?: boolean; badge?: string; examCode?: string; audience?: string; skills?: string[]; examOverview?: string };
 export type CatalogPlatform = { slug: string; name: string; symbol: string; category: string; description: string; accent: string; tracks: Track[] };
 const aws = "https://aws.amazon.com/certification/";
 const ms = "https://learn.microsoft.com/en-us/credentials/certifications/";
@@ -9,7 +9,7 @@ function track(slug: string, title: string, level: string, topic: string, descri
 // database counts, not this editorial catalog. Official links cover exam details.
 export const catalog: CatalogPlatform[] = [
   { slug: "aws", name: "AWS", symbol: "aws", category: "CLOUD COMPUTING", accent: "#efbd7c", description: "From your first cloud concept to architecture at scale. Find your place in the AWS ecosystem.", tracks: [
-    track("cloud-practitioner", "Cloud Practitioner", "Foundational", "Cloud", "Build a foundation in cloud concepts, core services, security, and billing.", aws),
+    { ...track("cloud-practitioner", "Cloud Practitioner", "Foundational", "Cloud", "Build a practical understanding of the AWS Cloud: how its services fit together, how to secure workloads, and how to make informed cost decisions.", aws + "certified-cloud-practitioner/"), badge: "/certifications/aws-cloud-practitioner.png", examCode: "CLF-C02", audience: "A starting point for cloud newcomers, career changers, and business professionals working with technical teams.", skills: ["Cloud concepts", "Security & compliance", "Cloud technology & services", "Billing, pricing & support"], examOverview: "65 questions · 90 minutes · Single and multiple response" },
     track("aws-ai-practitioner", "AI Practitioner", "Foundational", "AI & data", "Explore AI, machine learning, and responsible generative AI on AWS.", aws),
     track("aws-solutions-architect-associate", "Solutions Architect – Associate", "Associate", "Architecture", "Design resilient, secure, and cost-conscious cloud architectures.", aws),
     track("aws-developer-associate", "Developer – Associate", "Associate", "Development", "Develop, deploy, and troubleshoot applications built on AWS.", aws),
@@ -17,7 +17,7 @@ export const catalog: CatalogPlatform[] = [
     track("aws-security-specialty", "Security – Specialty", "Specialty", "Security", "Deepen your understanding of protecting data and workloads on AWS.", aws),
   ] },
   { slug: "azure", name: "Azure", symbol: "A", category: "MICROSOFT CLOUD", accent: "#85c3ff", description: "Build your Microsoft cloud foundation. Grow into the infrastructure and data skills that come next.", tracks: [
-    track("az-900-fundamentals", "Azure Fundamentals", "Foundational", "Cloud", "Start with cloud concepts, Azure services, management, and governance.", ms + "azure-fundamentals/"),
+    { ...track("az-900-fundamentals", "Azure Fundamentals", "Foundational", "Cloud", "Build your foundation in Microsoft Azure, from core cloud concepts to the services and governance tools used to manage a cloud environment.", ms + "azure-fundamentals/"), badge: "/certifications/azure-fundamentals.svg", examCode: "AZ-900", audience: "For learners beginning their cloud journey and professionals who want to understand Azure's capabilities.", skills: ["Cloud concepts", "Azure architecture & services", "Management & governance"] },
     track("azure-administrator-associate", "Azure Administrator Associate", "Associate", "Infrastructure", "Explore identity, storage, compute, virtual networks, and monitoring.", ms + "azure-administrator/"),
     track("azure-data-fundamentals", "Azure Data Fundamentals", "Foundational", "AI & data", "Understand relational and non-relational data and analytics on Azure.", ms + "azure-data-fundamentals/"),
   ] },
@@ -26,18 +26,12 @@ export const catalog: CatalogPlatform[] = [
     track("cisco-ccnp-enterprise", "CCNP Enterprise", "Professional", "Networking", "Explore enterprise networking, infrastructure, and advanced implementation.", cisco),
     track("cisco-ccnp-security", "CCNP Security", "Professional", "Security", "Explore the technologies and practices that protect enterprise networks.", cisco),
   ] },
-  { slug: "openai", name: "OpenAI", symbol: "✳", category: "AI LEARNING TRACKS", accent: "#d1f879", description: "Learn the foundations of building with AI through independent, hands-on practice.", tracks: [
-    { ...track("certified-developer", "AI Developer Foundations", "Foundational", "Development", "Practice API safety, prompting, embeddings, and evaluating model output."), sample: true },
-  ] },
 ];
 export function mergeCatalog(platforms: Platform[]) {
   const merged = catalog.map((platform) => ({ ...platform, tracks: [...platform.tracks] }));
   for (const platform of platforms) {
-    let entry = merged.find((item) => item.slug === platform.slug);
-    if (!entry) {
-      entry = { slug: platform.slug, name: platform.name, symbol: platform.name.slice(0, 2), category: "TECHNOLOGY", accent: "#d1f879", description: `Explore your next step with ${platform.name}.`, tracks: [] };
-      merged.push(entry);
-    }
+    const entry = merged.find((item) => item.slug === platform.slug);
+    if (!entry) continue;
     for (const cert of platform.certifications) {
       if (!entry.tracks.some((item) => item.slug === cert.slug)) entry.tracks.push(track(cert.slug, cert.title, "General", "General", `Build your knowledge with ${cert.title} practice questions.`));
     }
