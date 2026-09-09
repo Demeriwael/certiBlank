@@ -74,3 +74,13 @@ Before committing: review `git status` and `git diff`, keep `.env` untracked, st
 Answer selection, flags, and navigation update immediately in the browser. A serialized queue batches changes within 250 ms and persists them without disabling controls or showing a routine save indicator. Server responses cannot rewind newer edits. Pending drafts are kept in session storage for recovery after refreshing the same tab; no answer keys are stored in those drafts. Connection failures retain the draft and retry with backoff. Invalid or conflicting state pauses syncing and asks for a reload to reconcile with the server.
 
 Check answer and final submission remain server-graded. They use the latest draft and wait for any in-flight save; navigation remains available while a domain answer is checked. Mock expiry remains server-authoritative: only changes received before the deadline are accepted, including when the connection is interrupted. Compact save responses omit the unchanged question bank, and conditional writes return the updated row without an extra database read.
+
+### Exam interface and accessibility
+
+The exam workspace includes a sticky progress header, fixed touch-friendly navigation, radio/checkbox answer cards, and a modal question navigator. Explanations reference the displayed option letters, including after answer shuffling. Results include domain accuracy and a question-by-question review. Icons are inline SVGs.
+
+Keyboard shortcuts: 1–4 or A–D choose an option, F toggles a flag, Left/Right move between questions, and Enter advances. Native controls retain their normal keyboard actions. Turn shortcuts off in the navigator or desktop sidebar; the preference persists on this device. Escape closes the navigator and returns focus to its trigger. Tab stays inside the open dialog.
+
+The timer turns amber at ten minutes and red at two minutes. Screen readers receive threshold announcements rather than every tick. Reduced-motion preferences disable the warning pulse and drawer animation. Correctness is communicated through text and icons as well as color.
+
+Manual checks before release: test both practice modes, multiple-response selection limits, keyboard-only use, drawer focus restoration, 320px mobile reflow, final submission, and screen-reader announcements. These provisions are not a substitute for a full WCAG audit with assistive technologies.
