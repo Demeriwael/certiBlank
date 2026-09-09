@@ -1,39 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CertiBlank
 
-## Getting Started
+CertiBlank is an IT certification practice application with timed mock exams,
+domain practice, multiple-response questions, explanations, and domain analytics.
+It uses Next.js App Router, TypeScript, Tailwind CSS, Prisma 6, and PostgreSQL.
 
-First, run the development server:
+## Local installation
+
+Install Node.js **24** (the version used by CI), npm, and Git. You also need your
+own PostgreSQL development database: local PostgreSQL or a separate Supabase
+project. You do not need to install Supabase to use its hosted database.
+
+1. Clone the repository. Contributors without write access should fork it first
+   and use their fork's clone URL instead.
+
+```bash
+git clone https://github.com/Demeriwael/certiBlank.git
+cd certiBlank
+npm ci
+```
+
+The repository root contains `package.json`; there is no additional `certi`
+subdirectory after cloning. Run the remaining commands from this root.
+
+2. Copy `.env.example` to `.env`:
+
+```powershell
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+```bash
+# macOS / Linux
+cp .env.example .env
+```
+
+3. Edit `.env` with credentials for your development database. `DATABASE_URL` is
+   used by the app; `DIRECT_URL` is used for schema management. For local
+   PostgreSQL, both can point to the same database. Create that database and user
+   first; the template does not provision PostgreSQL.
+
+For Supabase, copy PostgreSQL connection strings from the project's **Connect**
+dialog and replace the password placeholder with your URL-encoded database
+password. Use a transaction pooler URL with `pgbouncer=true` for `DATABASE_URL`
+when pooling; use a direct URL or session pooler for `DIRECT_URL`. A session
+pooler is an option when your network cannot reach the direct IPv6 endpoint.
+These are database URLs, not Supabase API keys. Prisma connects to PostgreSQL and
+does not require the Supabase Data API. See the
+[Supabase Prisma guide](https://supabase.com/docs/guides/database/prisma).
+
+Keep `.env` private. Never use the hosted application's production database for
+local setup or tests.
+
+4. Generate the client and validate the question banks, then initialize and seed
+   your development database:
+
+```bash
+npx prisma generate
+npx prisma db seed -- --validate-only
+npx prisma db push
+npx prisma db seed
+```
+
+`--validate-only` reads files without database writes. `db push` changes the schema,
+and seeding imports question data. Review any schema-change warning before
+proceeding; do not add `--accept-data-loss` to bypass it.
+
+5. Start the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). To check a production build
+locally, stop the development server, run `npm run build`, then `npm start`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+If question availability fails, check that your development database is reachable,
+both URLs are correct, and schema setup and seeding completed. On Windows, stop
+the dev server before regenerating Prisma if its DLL is locked.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Contributing and security
 
-## Learn More
+See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, branches, and pull requests.
+Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The original application source code, scripts, configuration, and project
+documentation are licensed under the [MIT License](LICENSE).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Question-bank JSON files under `prisma/Data` (also referred to as `prisma/data`)
+and vendor logos/certification artwork are **excluded** from this MIT grant.
+Their redistribution terms have not yet been established here; their presence
+does not grant permission to redistribute them. Third-party dependencies retain
+their own licenses. Vendor names and trademarks remain the property of their
+respective owners; this project does not claim vendor endorsement.
 
 ## Exam modes and question imports
 
