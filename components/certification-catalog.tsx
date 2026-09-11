@@ -7,6 +7,7 @@ import { mergeCatalog, questionCount, type Track } from "@/lib/catalog";
 import type { Platform } from "@/lib/types";
 import { CatalogIcon } from "./catalog-icon";
 import { PlatformLogo } from "./platform-logo";
+import { StartPracticeLink } from "./start-practice-link";
 
 function ReadyTrack({ track, amount }: { track: Track; amount: number }) {
   return <article className="ready-track">
@@ -18,7 +19,7 @@ function ReadyTrack({ track, amount }: { track: Track; amount: number }) {
       <div className="track-skills" aria-label="Topics covered">{(track.skills ?? [track.topic]).map(skill => <span key={skill}>{skill}</span>)}</div>
       {track.examOverview && <p className="track-exam-overview"><CatalogIcon name="clock" /><span>Official exam: {track.examOverview}</span></p>}
       <div className="track-practice-features"><span><CatalogIcon name="check" />Domain practice</span><span><CatalogIcon name="check" />Detailed explanations</span><span><CatalogIcon name="check" />Answer review & analytics</span></div>
-      <div className="ready-track-actions"><div><strong>{amount}</strong><span>practice questions</span></div><Link href={`/platform/${track.slug}`} className="track-start">Start practicing<CatalogIcon /></Link></div>
+      <div className="ready-track-actions"><div><strong>{amount}</strong><span>practice questions</span></div><StartPracticeLink slug={track.slug} /></div>
       {track.officialUrl && <a className="track-docs" href={track.officialUrl} target="_blank" rel="noopener noreferrer">Official certification details<CatalogIcon name="external" /><span className="sr-only"> (opens in a new tab)</span></a>}
     </div>
   </article>;

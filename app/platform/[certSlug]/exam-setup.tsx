@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Brand } from "@/components/brand";
+import { SetupSkeleton } from "@/components/exam/SetupSkeleton";
 import { ExamWorkspace } from "@/components/exam/ExamWorkspace";
 import { ExamIcon } from "@/components/exam/ExamIcon";
 import { ExamSync, restoreDraft, type Draft } from "@/lib/exam-sync";
@@ -115,7 +116,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
       <Link href="/certifications" className="back-link"><ExamIcon name="previous" />Certification catalog</Link>
       <div className="exam-heading"><div><div className="eyebrow section-kicker">CERTI / YOUR NEXT MILESTONE</div><h1>{setup?.title ?? "Prepare with purpose."}</h1></div></div>
       {error && <div className="exam-error" role="alert">{error} <button onClick={() => window.location.reload()}>Reload</button><button onClick={restart}>Clear saved session</button></div>}
-      {loading ? <div className="exam-card" role="status">Loading your question bank…</div> : <>
+      {loading ? <SetupSkeleton /> : <>
         <p className="exam-intro">Build understanding. Then put it to the test. Choose how you want to prepare today.</p>
         {!setup?.config || !setup.available ? <div className="exam-card"><h2>Fresh questions are on the way.</h2><p>This certification needs an updated question bank before these practice modes become available.</p></div> : <>
           <div className="mode-grid">{(["domain", "mock"] as const).map(mode => <button key={mode} className={`mode-card ${examMode === mode ? "selected" : ""}`} aria-pressed={examMode === mode} onClick={() => setExamMode(mode)}><span className="mode-icon"><ExamIcon name={mode === "domain" ? "book" : "clock"} /></span><small>{mode === "domain" ? "LEARN & REFINE" : "SIMULATE & ASSESS"}</small><h2>{mode === "domain" ? "Domain practice" : "Timed mock exam"}</h2><p>{mode === "domain" ? "Focus on specific domains. Get instant feedback and understand every option after submitting your answer." : "A focused exam session. Save your answers, flag uncertainties, and review before you submit."}</p><span className="mode-meta">{mode === "domain" ? "Your pace · Immediate explanations" : `${setup.config!.questionCount} questions · ${setup.config!.durationSeconds/60} minutes`}</span></button>)}</div>
