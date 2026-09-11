@@ -55,7 +55,7 @@ export default function CertificationCatalog({ compact = false, platformSlug }: 
       return <Link href={`/platforms/${platform.slug}`} className={`hub-card platform-${platform.slug}`} key={platform.slug} style={{ "--platform-accent": platform.accent } as CSSProperties}>
         <div className="hub-card-top"><PlatformLogo slug={platform.slug} /><span className="hub-number">0{index + 1} /</span></div>
         <div className="card-category">{platform.category}</div><h3>{platform.name}<CatalogIcon /></h3><p>{platform.description}</p>
-        <div className="hub-preview">{status === "ready" ? available.length ? available.map(track => <span className="hub-ready-track" key={track.slug}>{track.title}</span>) : <span>Question banks coming soon</span> : <span>{status === "loading" ? "Checking question banks…" : "Availability temporarily unavailable"}</span>}</div>
+        <div className="hub-preview">{status === "ready" ? available.length ? available.map(track => <span className="hub-ready-track" key={track.slug}>{track.title}</span>) : <span>Question banks coming soon</span> : <span className={`hub-status ${status === "loading" ? "is-loading" : "is-error"}`}><i aria-hidden="true" />{status === "loading" ? "Checking question banks…" : "Availability temporarily unavailable"}</span>}</div>
         <div className="hub-card-footer"><span>{status === "ready" ? available.length ? `${available.length} ready to practice` : "Coming soon" : "Explore platform"}</span><CatalogIcon name="external" /></div>
       </Link>;
     })}</div><p className="catalog-disclaimer">Independent preparation for AWS, Microsoft Azure, and Cisco certifications.</p>

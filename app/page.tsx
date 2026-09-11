@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 import { Brand } from "@/components/brand";
 import { GitHubButton } from "@/components/github-button";
+import { LandingQuiz } from "@/components/landing-quiz";
+import "./landing.css";
 
 const words = ["AWS", "Azure", "Cisco"];
 
@@ -36,16 +38,19 @@ function TypedBrand() {
 
 
 export default function Home() {
-  return <div className="site-shell">
+  return <div className="site-shell landing-page">
     <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><GitHubButton /></header>
     <main>
       <section className="hero">
         <div className="hero-grid" aria-hidden="true" />
-        <div className="eyebrow"><span className="status-dot" /> YOUR NEXT CHAPTER STARTS HERE</div>
+        <div className="landing-hero-layout"><div className="landing-hero-copy">
+        <div className="eyebrow landing-pill"><span className="status-dot" /> BUILT FOR YOUR NEXT CHAPTER</div>
         <TypedBrand />
-        <p className="hero-tagline">Customized exam prep questions, flashcards, and practice tests for top IT certifications.</p>
+        <p className="landing-promise">Less memorizing.<br />More <span>understanding.</span></p>
+        <p className="hero-tagline">Turn what you know into what you can do. Focused questions, detailed explanations, and timed practice for your next IT certification.</p>
         <a className="primary-button" href="#certifications">Find your certification <CatalogIcon /></a>
-        <div className="hero-note"><CatalogIcon name="check" /> Less guessing. More understanding.</div>
+        <div className="hero-note"><CatalogIcon name="check" /> Your pace. Real explanations. No guesswork.</div>
+        </div><LandingQuiz /></div>
         <div className="hero-bottom"><span>BUILT FOR THE WAY DEVELOPERS LEARN</span><span className="scroll-note">SCROLL TO EXPLORE <CatalogIcon name="down" /></span></div>
       </section>
       <section className="catalog section-wrap" id="certifications" aria-labelledby="catalog-title">
