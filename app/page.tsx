@@ -33,7 +33,7 @@ function TypedBrand() {
     preference.addEventListener("change", restart);
     return () => { clearTimeout(timer); preference.removeEventListener("change", restart); };
   }, []);
-  return <h1 className="hero-title" aria-label="Certi AWS, Azure, and Cisco"><span>Certi</span>{" "}<span className="typed-word" aria-hidden="true">{text}<span className="typing-caret" /></span></h1>;
+  return <h1 className="hero-title" aria-label="Certi AWS, Azure, and Cisco"><span>Certi</span>{" "}<span className="typed-word" aria-hidden="true"><span className="typed-text">{text || "\u00a0"}</span><span className="typing-caret" /></span></h1>;
 }
 
 
