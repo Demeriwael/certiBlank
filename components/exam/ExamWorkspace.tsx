@@ -5,6 +5,8 @@ import type { AttemptView } from "@/lib/exam-contract";
 import type { Draft } from "@/lib/exam-sync";
 import { shortcut, timerLevel } from "@/lib/exam-ui";
 import { Brand } from "@/components/brand";
+import { authClient } from "@/lib/auth-client";
+import { AccountIcon } from "@/components/account-icon";
 import { ExamIcon } from "./ExamIcon";
 import { QuestionCard } from "./QuestionCard";
 import { QuestionGridDrawer, QuestionPalette } from "./QuestionGridDrawer";
@@ -19,6 +21,7 @@ type Props = {
 };
 export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, onChange, onRestart, onAccount }: Props) {
   const [openingAccount, setOpeningAccount] = useState(false);
+  const { data: accountSession, isPending: accountPending } = authClient.useSession();
   const [drawer, setDrawer] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [reviewIndex, setReviewIndex] = useState<number | null>(null);
@@ -107,7 +110,7 @@ export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, o
     </header>
     <span className="sr-only" role="status">{attempt.isSubmitted || timeRemaining === null ? "" : level === "critical" ? "Two minutes or less remaining. Your saved answers will be submitted when time expires." : level === "warning" ? "Ten minutes or less remaining." : ""}</span>
     <main id="qx-main" tabIndex={-1} className={`qx-main ${summary ? "qx-summary-layout" : ""}`}>
-      {onAccount && <div className="qx-account-action"><button className="qx-button" disabled={busy || Boolean(checking) || openingAccount} onClick={async () => { setOpeningAccount(true); try { await onAccount(); } catch { /* ExamSync exposes the save error; keep the exam open. */ } finally { setOpeningAccount(false); } }}>{openingAccount ? "Opening account…" : "Account / save your history"}</button></div>}
+      {onAccount && <div className="qx-account-action"><span>{accountSession ? "Your practice, all in one place." : "Keep your progress across devices."}</span><button className="qx-button" disabled={busy || Boolean(checking) || openingAccount || accountPending} onClick={async () => { setOpeningAccount(true); try { await onAccount(); } catch { /* ExamSync exposes the save error; keep the exam open. */ } finally { setOpeningAccount(false); } }}><AccountIcon name={accountSession ? "user" : "shield"} />{openingAccount ? "Opening…" : accountPending ? "Account" : accountSession ? "My account" : "Save my progress"}</button></div>}
       {error && <div className="qx-error" role="alert">{error}<button className="qx-button" onClick={() => window.location.reload()}>Reload session</button></div>}
       {summary && results ? <section className="qx-results"><div className="qx-results-actions"><Link className="qx-catalog-link" href="/certifications"><ExamIcon name="previous" />Certification catalog</Link><button className="qx-button qx-primary" onClick={onRestart}>New session<ExamIcon name="next" /></button></div>
         <div className="qx-results-hero"><div><div className="qx-section-label">SESSION COMPLETE</div><h1 id="results-title" tabIndex={-1}>{results.passed ? "A strong step forward." : "Turn insight into progress."}</h1><p>{results.correct} of {results.total} correct. Your next study session starts with what you learned here.</p></div><div className="qx-score"><strong>{results.scaledScore}</strong><span>{results.passed ? "Practice pass" : "Below practice threshold"}</span><small>Target {results.passingScore}</small></div></div>
