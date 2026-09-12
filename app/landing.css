@@ -1,0 +1,63 @@
+/* Landing experiment: all selectors are scoped so catalog and exam routes keep their theme. */
+.landing-page{--accent:#67e8f9;--border:#ffffff1a;--foreground:#f4f4f5;background:#090c10;color:var(--foreground);max-width:none;min-height:100vh;overflow:clip}
+.landing-page .site-header,.landing-page .section-wrap{max-width:1280px;margin-left:auto;margin-right:auto;width:88%}
+.landing-page .site-header{height:90px;border-color:#ffffff12}
+.landing-page .site-header nav{margin-left:0}
+.landing-page .nav-link{min-height:44px;color:#a1a1aa;transition:color .2s,background .2s;border-radius:6px;padding:0 6px}
+.landing-page .nav-link:hover{color:#a5f3fc;background:#ffffff05}
+.landing-page .github-button{border-color:#ffffff25;background:#ffffff05;color:#e4e4e7;transition:background .2s,border-color .2s,transform .2s}
+.landing-page .github-button:hover{background:#ffffff0d;border-color:#22d3ee80;transform:translateY(-2px)}
+.landing-page :is(a,button,input,select):focus-visible{outline:2px solid #67e8f9;outline-offset:5px;box-shadow:0 0 0 5px #06b6d422}
+.landing-page :is(button,.primary-button,.github-button):active:not(:disabled){transform:translateY(1px)}
+.landing-page .hero{padding:75px 6% 0;text-align:left;overflow:visible}
+.landing-page .hero:before{background:#0891b220;top:45px;left:65%;width:650px;height:420px;max-width:85vw}
+.landing-page .hero-grid{opacity:.2;background-image:linear-gradient(#67e8f920 1px,transparent 1px),linear-gradient(90deg,#67e8f920 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse at 65% 45%,black,transparent 72%)}
+.landing-hero-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px;align-items:center;max-width:1280px;margin:auto}
+.landing-hero-copy{min-width:0;animation:landing-enter .7s both}
+.landing-page .landing-pill{display:inline-flex;font-size:10px;letter-spacing:1.5px;color:#67e8f9;padding:10px 14px;border:1px solid #ffffff1a;background:#ffffff0d;border-radius:40px;backdrop-filter:blur(12px);box-shadow:0 0 24px #06b6d40a}
+.landing-page .status-dot{background:#67e8f9;box-shadow:0 0 12px #22d3ee66}
+.landing-page .hero-title{justify-content:flex-start;gap:.16em;font-size:clamp(48px,5.5vw,82px);letter-spacing:-.065em;margin:30px 0 26px}
+.landing-page .typed-word{background:linear-gradient(105deg,#67e8f9,#a5b4fc);background-clip:text;-webkit-background-clip:text;color:transparent;border-color:#67e8f9;min-width:4.1em}
+.landing-page .typing-caret{background:#67e8f9}
+.landing-promise{font-size:clamp(28px,3.3vw,47px);line-height:1.14;letter-spacing:-.045em;font-weight:500;margin:0 0 24px}
+.landing-promise span{color:#a1a1aa}
+.landing-page .hero-tagline{color:#a1a1aa;font-size:15px;line-height:1.9;max-width:430px;margin:0}
+.landing-page .primary-button{margin-top:30px;background:#a5f3fc;color:#083344;border-color:#a5f3fc;border-radius:8px;min-height:50px;box-shadow:0 0 26px #22d3ee18;transition:transform .2s,box-shadow .2s,background .2s}
+.landing-page .primary-button:hover{background:#cffafe;box-shadow:0 0 32px #22d3ee30}
+.landing-page .hero-note{justify-content:flex-start;color:#a1a1aa;font-size:11px;margin-top:18px}
+.landing-page .hero-note svg{width:16px;color:#67e8f9}
+.landing-page .hero-bottom{max-width:1280px;margin:65px auto 0;color:#8c929e;border-color:#ffffff15;padding-bottom:22px}
+.landing-demo{position:relative;min-width:0;border:1px solid #ffffff26;border-radius:16px;background:linear-gradient(145deg,#161d28,#0f131b 65%);box-shadow:0 30px 80px #0006,0 0 65px #06b6d40c;animation:landing-enter .8s .12s both}
+.demo-chrome{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid #ffffff12;font:9px var(--font-geist-mono),monospace;color:#a1a1aa}
+.demo-dots{display:flex;gap:5px}.demo-dots i{width:6px;height:6px;border-radius:50%;background:#566070}.demo-dots i:first-child{background:#76939e}
+.demo-live{margin-left:auto;color:#67e8f9}
+.demo-body{padding:26px}.demo-meta{display:flex;justify-content:space-between;gap:12px;color:#8ddde7;font:9px var(--font-geist-mono),monospace;letter-spacing:.08em}
+.landing-demo h2{font-size:22px;line-height:1.5;letter-spacing:-.025em;margin:22px 0 10px;font-weight:500}
+.demo-instruction{font-size:12px;color:#a1a1aa;margin:0 0 22px}.demo-options{border:0;padding:0;margin:0;display:grid;gap:9px;min-width:0}
+.demo-option{display:flex;align-items:center;gap:10px;min-height:52px;padding:12px;border:1px solid #586272;border-radius:8px;background:#ffffff02;color:#d4d4d8;font-size:13px;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}
+.demo-option input{width:17px;height:17px;accent-color:#67e8f9;flex-shrink:0;margin:0}.demo-letter{font:10px var(--font-geist-mono),monospace;color:#a1a1aa}
+.demo-option:hover:not(:has(input:disabled)){border-color:#67e8f9;background:#22d3ee08;transform:translateX(2px)}
+.demo-option:focus-within{outline:2px solid #67e8f9;outline-offset:3px}.demo-option.chosen{background:#08334466;border-color:#67e8f9}.demo-option.correct{background:#12372b;border-color:#6ee7b7}.demo-option.incorrect{background:#3c1d2b;border-color:#fda4af}.demo-options:disabled .demo-option{cursor:default}
+.demo-result-label{margin-left:auto;font-size:10px;color:#a7f3d0}.demo-option.incorrect .demo-result-label{color:#fecdd3}
+.demo-feedback{min-height:91px;margin:18px 0 0;font-size:12px;line-height:1.8;color:#b1b8c5}.demo-feedback strong{color:#a5f3fc}
+.demo-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid #ffffff12;padding-top:17px}.demo-actions>span{display:flex;gap:5px;align-items:center;font-size:10px;color:#a1a1aa}.demo-actions>span svg{width:14px;height:14px}
+.demo-actions button{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;padding:12px 16px;border:1px solid #67e8f9;border-radius:7px;background:#a5f3fc;color:#083344;font-size:12px;font-weight:600;box-shadow:0 0 22px #22d3ee25;transition:box-shadow .2s,transform .2s,background .2s}
+.demo-actions button:hover:not(:disabled){background:#cffafe;box-shadow:0 0 30px #22d3ee45}.demo-actions button:disabled{background:#253340;color:#a0b0bc;border-color:#566476;box-shadow:none;cursor:not-allowed}
+.demo-caption{display:flex;gap:8px;align-items:center;padding:13px 24px;border-top:1px solid #ffffff12;color:#a1a1aa;font-size:10px;background:#0002;border-radius:0 0 16px 16px}
+.landing-page .catalog{padding-top:64px}.landing-page .section-kicker{color:#67e8f9}.landing-page .section-heading h2{color:#f4f4f5;letter-spacing:-.045em}.landing-page .section-heading h2 span{color:#a1a1aa}.landing-page .catalog-intro{color:#a1a1aa}.landing-page .text-action{color:#a5f3fc}
+.landing-page .hub-card{position:relative;isolation:isolate;overflow:hidden;border:1px solid #ffffff1a;background:linear-gradient(145deg,#131921,#0d1118);border-radius:14px;transition:border-color .3s,box-shadow .3s,transform .3s;animation:landing-enter .7s .15s both}
+.landing-page .hub-card:nth-child(2){animation-delay:.25s}.landing-page .hub-card:nth-child(3){animation-delay:.35s}
+.landing-page .hub-card:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 0%,#38bdf826,transparent 70%);opacity:0;transition:opacity .3s}
+.landing-page .hub-card:hover{border-color:#06b6d480;box-shadow:0 0 30px #38bdf826;transform:translateY(-4px)}.landing-page .hub-card:hover:before{opacity:1}
+.landing-page .hub-card h3{color:#f4f4f5}.landing-page .hub-card h3 svg{color:#67e8f9}.landing-page .hub-card p,.landing-page .card-category,.landing-page .hub-number{color:#a1a1aa}
+.landing-page .hub-preview{min-height:55px}.landing-page .hub-preview>span{border-color:#ffffff20;color:#b7c7d4;background:#ffffff05}.landing-page .hub-preview .hub-ready-track{color:#a5f3fc;border-color:#22d3ee30;background:#06b6d40a}
+.landing-page .hub-preview .hub-status{display:inline-flex;gap:8px;align-items:center;font-size:10px;padding:8px 10px;border-radius:30px}.landing-page .hub-status i{width:6px;height:6px;flex-shrink:0;border-radius:50%;background:#67e8f9}.landing-page .hub-status.is-loading i{animation:landing-status 1.8s ease-in-out infinite}.landing-page .hub-status.is-error i{background:#fcd34d}
+.landing-page .hub-card-footer{border-color:#ffffff15}.landing-page .hub-card-footer>span{color:#cbd5e1}.landing-page .hub-card-footer svg{color:#67e8f9}.landing-page .catalog-disclaimer{color:#a1a1aa}
+.landing-page .how-section,.landing-page .site-footer{border-color:#ffffff15}.landing-page .outline-pill{color:#a5f3fc;border-color:#ffffff20}.landing-page .step{border-color:#22d3ee40}.landing-page .step-number{color:#67e8f9}.landing-page .step p,.landing-page .site-footer>span{color:#a1a1aa}.landing-page .site-footer>a:last-child{color:#a5f3fc}
+@keyframes landing-enter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes landing-status{50%{opacity:.4;box-shadow:0 0 10px #22d3ee66}}
+@media(max-width:1050px){.landing-hero-layout{gap:28px}.landing-page .hero-title{font-size:clamp(42px,5.3vw,65px)}.demo-body{padding:22px}.demo-actions{flex-wrap:wrap}.demo-chrome{padding:14px}.demo-chrome>span:nth-child(2){font-size:8px}}
+@media(max-width:800px){.landing-hero-layout{grid-template-columns:1fr;gap:40px;max-width:620px}.landing-page .hero{padding-top:45px}.landing-page .hero-title{font-size:clamp(44px,9vw,76px)}.landing-page .hero-tagline{max-width:510px}.landing-page .hero-bottom{margin-top:40px}.landing-page .section-heading{gap:25px}.landing-page .catalog{padding-top:42px}}
+@media(max-width:600px){.landing-page .site-header:has(>.github-button){height:auto;padding:14px 0}.landing-page .hero-title{font-size:clamp(40px,10.5vw,60px)}.landing-page .landing-pill{font-size:8px;letter-spacing:.8px}.landing-promise{font-size:35px}.landing-page .hero-tagline{font-size:14px}.demo-body{padding:20px 16px}.landing-demo h2{font-size:20px}.demo-chrome>span:nth-child(2){display:none}.demo-actions>span{font-size:9px}.demo-actions button{padding:10px 12px;gap:7px}.demo-option{font-size:12px;gap:8px}.demo-result-label{font-size:9px}.demo-caption{padding:12px 16px;line-height:1.7}.landing-page .hero-bottom{justify-content:flex-start}.landing-page .site-footer{flex-wrap:wrap}.landing-page .hub-card{padding:24px}}
+@media(prefers-reduced-motion:reduce){.landing-page *,.landing-page *:before{animation:none!important;transition:none!important;scroll-behavior:auto!important}.landing-page .hub-card:hover,.landing-page .github-button:hover,.landing-page .primary-button:hover,.demo-option:hover{transform:none}}
+@media(forced-colors:active){.landing-page .typed-word{background:none;color:CanvasText}.demo-option.chosen{outline:2px solid Highlight}.demo-option input{forced-color-adjust:auto}}
