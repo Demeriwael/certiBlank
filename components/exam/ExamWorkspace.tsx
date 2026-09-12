@@ -15,8 +15,10 @@ type Props = {
   attempt: AttemptView; timeRemaining: number | null; busy: boolean; checking: string | null; error: string;
   onChange: (patch: Partial<Draft>, action?: "save" | "check" | "submit") => Promise<void>;
   onRestart: () => void;
+  onAccount?: () => Promise<void>;
 };
-export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, onChange, onRestart }: Props) {
+export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, onChange, onRestart, onAccount }: Props) {
+  const [openingAccount, setOpeningAccount] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [reviewIndex, setReviewIndex] = useState<number | null>(null);
@@ -105,6 +107,7 @@ export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, o
     </header>
     <span className="sr-only" role="status">{attempt.isSubmitted || timeRemaining === null ? "" : level === "critical" ? "Two minutes or less remaining. Your saved answers will be submitted when time expires." : level === "warning" ? "Ten minutes or less remaining." : ""}</span>
     <main id="qx-main" tabIndex={-1} className={`qx-main ${summary ? "qx-summary-layout" : ""}`}>
+      {onAccount && <div className="qx-account-action"><button className="qx-button" disabled={busy || Boolean(checking) || openingAccount} onClick={async () => { setOpeningAccount(true); try { await onAccount(); } catch { /* ExamSync exposes the save error; keep the exam open. */ } finally { setOpeningAccount(false); } }}>{openingAccount ? "Opening account…" : "Account / save your history"}</button></div>}
       {error && <div className="qx-error" role="alert">{error}<button className="qx-button" onClick={() => window.location.reload()}>Reload session</button></div>}
       {summary && results ? <section className="qx-results"><div className="qx-results-actions"><Link className="qx-catalog-link" href="/certifications"><ExamIcon name="previous" />Certification catalog</Link><button className="qx-button qx-primary" onClick={onRestart}>New session<ExamIcon name="next" /></button></div>
         <div className="qx-results-hero"><div><div className="qx-section-label">SESSION COMPLETE</div><h1 id="results-title" tabIndex={-1}>{results.passed ? "A strong step forward." : "Turn insight into progress."}</h1><p>{results.correct} of {results.total} correct. Your next study session starts with what you learned here.</p></div><div className="qx-score"><strong>{results.scaledScore}</strong><span>{results.passed ? "Practice pass" : "Below practice threshold"}</span><small>Target {results.passingScore}</small></div></div>

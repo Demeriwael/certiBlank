@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
+import { currentUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { attemptView, json, loadExam } from "@/lib/exam-server";
 import { domainQuotas, selectMock, shuffled } from "@/lib/exam-logic";
@@ -35,7 +36,8 @@ export async function POST(request: Request) {
     }
     if (bank.config.shuffleOptions) questions = questions.map(q => ({ ...q, options: shuffled(q.options) }));
     const jar = await cookies(); const owner = jar.get("certi-owner")?.value ?? randomUUID();
-    const attempt = await prisma.examAttempt.create({ data: { owner, certSlug: body.certSlug, mode: body.mode, snapshot: json({ title: bank.title, config: bank.config, domains: bank.domains, questions }), answers: {}, expiresAt: body.mode === "mock" ? new Date(Date.now() + bank.config.durationSeconds * 1000) : null } });
+    const user = await currentUser();
+    const attempt = await prisma.examAttempt.create({ data: { owner, userId: user?.id, certSlug: body.certSlug, mode: body.mode, snapshot: json({ title: bank.title, config: bank.config, domains: bank.domains, questions }), answers: {}, expiresAt: body.mode === "mock" ? new Date(Date.now() + bank.config.durationSeconds * 1000) : null } });
     jar.set("certi-owner", owner, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/", maxAge: 60 * 60 * 24 * 30 });
     return Response.json(attemptView(attempt), { status: 201, headers: { "Cache-Control": "no-store" } });
   } catch (error) { return Response.json({ error: error instanceof SyntaxError ? "Invalid JSON" : "Unable to start exam" }, { status: error instanceof SyntaxError ? 400 : 500 }); }

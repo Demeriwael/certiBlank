@@ -6,6 +6,9 @@
   --text-secondary:#b5bfcb;--accent-hover:#cffafe;--accent-ink:#083344;
 }
 html{scroll-padding-top:24px}body{background:var(--background)}
+.account-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border:1px solid var(--control-border);border-radius:8px;color:var(--accent);white-space:nowrap}
+.qx-account-action{grid-column:1/-1;display:flex;justify-content:flex-end}.qx-account-action+.qx-error{grid-column:1/-1}
+@media(max-width:600px){.site-header{gap:8px!important}.site-header>.nav-link{font-size:11px}.site-header>.account-link{font-size:12px;padding:8px}.landing-page .site-header>.github-button{min-width:44px}}
 .site-shell{max-width:1440px}
 .site-header{height:76px;border-color:var(--border);gap:18px}
 .site-header .nav-link,.back-link{min-height:44px;color:var(--text-secondary)}

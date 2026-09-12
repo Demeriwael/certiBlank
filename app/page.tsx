@@ -1,6 +1,7 @@
 "use client";
 
 import { CatalogIcon } from "@/components/catalog-icon";
+import { AccountLink } from "@/components/account-link";
 import CertificationCatalog from "@/components/certification-catalog";
 import { useEffect, useState } from "react";
 
@@ -39,7 +40,7 @@ function TypedBrand() {
 
 export default function Home() {
   return <div className="site-shell landing-page">
-    <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><GitHubButton /></header>
+    <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><AccountLink /><GitHubButton /></header>
     <main>
       <section className="hero">
         <div className="hero-grid" aria-hidden="true" />

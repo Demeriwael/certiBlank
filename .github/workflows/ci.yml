@@ -23,6 +23,8 @@ jobs:
       DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/certi_ci
       DIRECT_URL: postgresql://ci:ci@127.0.0.1:5432/certi_ci
       NEXT_TELEMETRY_DISABLED: "1"
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: ci-only-placeholder-never-use-in-production-123456789
     steps:
       - name: Check out source
         uses: actions/checkout@v6

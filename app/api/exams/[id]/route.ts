@@ -1,4 +1,6 @@
 import { cookies } from "next/headers";
+import { currentUser } from "@/lib/auth-session";
+import { attemptAccess } from "@/lib/auth-logic";
 import { prisma } from "@/lib/prisma";
 import { attemptProgress, attemptView, json } from "@/lib/exam-server";
 import { validateAnswers } from "@/lib/exam-logic";
@@ -8,8 +10,9 @@ export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };
 async function find(context: Context) {
   const owner = (await cookies()).get("certi-owner")?.value;
-  if (!owner) return null;
-  return prisma.examAttempt.findFirst({ where: { id: (await context.params).id, owner } });
+  const access = attemptAccess((await currentUser())?.id, owner);
+  if (!access) return null;
+  return prisma.examAttempt.findFirst({ where: { id: (await context.params).id, ...access } });
 }
 async function handle(request: Request, context: Context, mutate: boolean) {
   try {
@@ -17,7 +20,7 @@ async function handle(request: Request, context: Context, mutate: boolean) {
     let attempt = await find(context);
     if (!attempt) return Response.json({ error: "Attempt not found" }, { status: 404 });
     if (!attempt.submittedAt && attempt.expiresAt && attempt.expiresAt.getTime() <= Date.now()) {
-      await prisma.examAttempt.updateMany({ where: { id: attempt.id, submittedAt: null }, data: { submittedAt: new Date(), version: { increment: 1 } } });
+      await prisma.examAttempt.updateMany({ where: { id: attempt.id, userId: attempt.userId, submittedAt: null }, data: { submittedAt: new Date(), version: { increment: 1 } } });
       attempt = (await find(context))!;
     }
     if (mutate && !attempt.submittedAt) {
@@ -37,7 +40,7 @@ async function handle(request: Request, context: Context, mutate: boolean) {
         if (attempt.mode !== "domain" || answers[q.id]?.length !== q.selectionCount) throw new TypeError("Select the required number of answers first");
         checked.add(q.id);
       }
-      const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
+      const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, userId: attempt.userId, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
       if (!updated.length) return Response.json({ error: "Progress changed. Reload to continue." }, { status: 409 });
       attempt = updated[0];
     }
