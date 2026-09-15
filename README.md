@@ -55,7 +55,7 @@ round(minimumScore + (correct / total) × (maximumScore - minimumScore))
 
 Domain accuracy is a raw percentage. Domains not sampled do not receive an accuracy value.
 
-Attempts are stored in PostgreSQL with a fixed question snapshot. An HttpOnly owner cookie scopes access, and session storage remembers the current attempt in that browser tab. This supports refresh recovery; it does not provide account-based or cross-device history.
+Attempts are stored in PostgreSQL with a fixed question snapshot. Anonymous practice uses an HttpOnly owner cookie, and session storage remembers the current attempt in that browser tab. Optional accounts provide cross-device history: signing up or logging in links that browser's anonymous attempts without changing answers or timers.
 
 Selections, flags, and navigation update immediately. A serialized save queue batches progress updates and retries connection failures. Pending drafts remain in session storage. Answer checking and final submission still require a server response. Correct answers are returned only for checked domain questions or submitted attempts.
 
@@ -71,6 +71,7 @@ Closing the browser does not pause a mock exam. The server enforces its deadline
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 |
 | Data | PostgreSQL · Prisma 6 |
+| Authentication | Better Auth · email/password · optional Google OAuth |
 | Validation | ESLint · TypeScript · Node.js test runner |
 | CI | GitHub Actions · Node.js 24 · Ubuntu |
 
@@ -110,12 +111,19 @@ Edit `.env` with your own development credentials:
 ```dotenv
 DATABASE_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/certi_dev?schema=public"
 DIRECT_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/certi_dev?schema=public"
+BETTER_AUTH_URL="http://localhost:3000"
+BETTER_AUTH_SECRET="YOUR_RANDOM_SECRET_AT_LEAST_32_CHARACTERS"
 ```
 
 | Variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | Application queries; may use a connection pooler. |
 | `DIRECT_URL` | Prisma schema operations; use a direct connection or session pooler. |
+| `BETTER_AUTH_URL` | Exact application origin, including protocol and development port. |
+| `BETTER_AUTH_SECRET` | A private random secret, at least 32 characters. |
+
+Generate the secret with `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`.
+See [authentication setup](docs/authentication.md) for optional Google credentials, cookie/session behavior, and current limitations (email verification and password recovery are not configured).
 
 For local PostgreSQL, both URLs can match. Create the database and user first; the template does not provision them. Keep `.env` untracked and use a development database, never the hosted application's production database.
 
@@ -132,14 +140,16 @@ Prisma uses PostgreSQL connections, not Supabase API keys, and does not require 
 
 ### 4. Prepare the database
 
+These commands are for a **new empty development database**. For an existing database created with `db push`, follow the [baseline migration instructions](docs/authentication.md#database-migrations--read-before-running) first.
+
 ```bash
 npx prisma generate
 npx prisma db seed -- --validate-only
-npx prisma db push
+npx prisma migrate deploy
 npx prisma db seed
 ```
 
-Validation reads question files without database writes. `db push` changes the schema, and seeding imports questions into your configured database. Review any schema-change warning rather than bypassing it with `--accept-data-loss`.
+Validation reads question files without database writes. Migrations change the schema, and seeding imports questions into your configured database. Never reset a database or bypass data-loss warnings to make a migration pass.
 
 ### 5. Start practicing
 

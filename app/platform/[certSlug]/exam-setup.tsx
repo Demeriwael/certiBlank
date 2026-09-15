@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Brand } from "@/components/brand";
+import { AccountLink } from "@/components/account-link";
 import { SetupSkeleton } from "@/components/exam/SetupSkeleton";
 import { ExamWorkspace } from "@/components/exam/ExamWorkspace";
 import { ExamIcon } from "@/components/exam/ExamIcon";
@@ -13,6 +15,7 @@ async function api(url: string, body?: unknown) {
   const data = await response.json(); if (!response.ok) throw Object.assign(new Error(data.error ?? "Something went wrong. Please retry."), { status: response.status }); return data;
 }
 export default function ExamSetup({ certSlug }: { certSlug: string }) {
+  const router = useRouter();
   const [setup, setSetup] = useState<Setup | null>(null);
   const [attempt, setAttempt] = useState<AttemptView | null>(null);
   const [examMode, setExamMode] = useState<"mock" | "domain">("domain");
@@ -60,7 +63,12 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
         const data: Setup = await api(`/api/exams?certSlug=${encodeURIComponent(certSlug)}`);
         if (cancelled) return;
         setSetup(data); setDomains(data.domains.filter(d => d.available).map(d => d.id));
-        const saved = sessionStorage.getItem(storageKey);
+        const requested = new URLSearchParams(window.location.search).get("attempt");
+        const saved = requested || sessionStorage.getItem(storageKey);
+        if (requested) {
+          if (sessionStorage.getItem(storageKey) !== requested) sessionStorage.removeItem(draftKey);
+          sessionStorage.setItem(storageKey, requested);
+        }
         if (saved) { const value = await api(`/api/exams/${saved}`); if (!cancelled) { install(value); const draft = restoreDraft(value, sessionStorage.getItem(draftKey)); if (draft) sync.current?.edit(draft); } }
       } catch (e) { if (!cancelled) setError((e as Error).message); }
       finally { if (!cancelled) setLoading(false); }
@@ -82,7 +90,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   }, []);
   async function start() {
     setBusy(true); setError("");
-    try { const value = await api("/api/exams", { certSlug, mode: examMode, domains, limit }); sessionStorage.removeItem(draftKey); install(value); sessionStorage.setItem(storageKey, value.id); }
+    try { const value = await api("/api/exams", { certSlug, mode: examMode, domains, limit }); sessionStorage.removeItem(draftKey); install(value); sessionStorage.setItem(storageKey, value.id); window.history.replaceState(null, "", `${window.location.pathname}?attempt=${encodeURIComponent(value.id)}`); }
     catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   useEffect(() => {
@@ -107,11 +115,11 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
     catch { /* The queue retains the draft and surfaces the connection error. */ }
     finally { setChecking(null); if (action === "submit") { saving.current = false; setBusy(false); } }
   }
-  function restart() { sync.current?.dispose(); sync.current = null; sessionStorage.removeItem(storageKey); sessionStorage.removeItem(draftKey); active.current = null; deadline.current = null; setAttempt(null); setError(""); }
+  function restart() { sync.current?.dispose(); sync.current = null; sessionStorage.removeItem(storageKey); sessionStorage.removeItem(draftKey); window.history.replaceState(null, "", window.location.pathname); active.current = null; deadline.current = null; setAttempt(null); setError(""); }
   const available = setup?.domains.filter(d => domains.includes(d.id)).reduce((sum, d) => sum + d.available, 0) ?? 0;
-  if (attempt) return <ExamWorkspace key={attempt.id} attempt={attempt} timeRemaining={timeRemaining} busy={busy} checking={checking} error={error} onChange={change} onRestart={restart} />;
+  if (attempt) return <ExamWorkspace key={attempt.id} attempt={attempt} timeRemaining={timeRemaining} busy={busy} checking={checking} error={error} onChange={change} onRestart={restart} onAccount={async () => { await sync.current?.flush(); router.push(`/account?returnTo=${encodeURIComponent(`/platform/${certSlug}?attempt=${attempt.id}`)}`); }} />;
   return <div className="site-shell exam-setup-shell">
-    <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications <ExamIcon name="external" /></Link></header>
+    <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications <ExamIcon name="external" /></Link><AccountLink /></header>
     <main className="exam-main">
       <Link href="/certifications" className="back-link"><ExamIcon name="previous" />Certification catalog</Link>
       <div className="exam-heading"><div><div className="eyebrow section-kicker">CERTI / YOUR NEXT MILESTONE</div><h1>{setup?.title ?? "Prepare with purpose."}</h1></div></div>

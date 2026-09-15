@@ -6,6 +6,25 @@
   --text-secondary:#b5bfcb;--accent-hover:#cffafe;--accent-ink:#083344;
 }
 html{scroll-padding-top:24px}body{background:var(--background)}
+.account-nav{display:flex;align-items:center;justify-content:flex-end;gap:14px;min-width:162px}
+.account-nav .account-link{gap:8px;font-size:12px;background:#122c39;border-color:#467081;color:#a4f0fa;transition:background .2s,border-color .2s}
+.account-nav .account-link:hover{background:#1d4354;border-color:var(--accent)}
+.account-nav svg{width:16px;height:16px}
+.account-login{display:inline-flex;align-items:center;min-height:44px;font-size:12px;color:var(--text-secondary)}
+.account-login:hover{color:var(--accent)}
+.account-nav-placeholder{height:36px;width:104px;border-radius:8px;background:var(--surface-raised)}
+.qx-workspace .qx-account-action{align-items:center;justify-content:space-between;gap:12px}
+.qx-account-action>span{color:var(--muted);font-size:11px}
+.auth-notice{position:fixed;right:24px;bottom:24px;z-index:70;display:flex;align-items:center;gap:12px;max-width:420px;padding:12px 12px 12px 18px;background:#14333f;border:1px solid #6594a4;border-radius:12px;color:#d0faff;box-shadow:0 8px 40px #0005}
+.auth-notice p{font-size:12px;line-height:1.6;margin:0}.auth-notice>svg{flex-shrink:0}
+.auth-notice button{display:grid;place-items:center;min-width:44px;min-height:44px;border-radius:8px;cursor:pointer}
+.auth-notice button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+body:has(.qx-workspace) .auth-notice,body:has(.setup-actionbar) .auth-notice{bottom:150px}
+@media(max-width:600px){.account-nav{min-width:0;gap:10px}.account-nav .account-link{padding:8px;font-size:11px}.account-nav .account-login{font-size:11px}.account-nav .account-link svg{display:none}.auth-notice{left:12px;right:12px;bottom:16px;max-width:none}.qx-account-action>span{max-width:140px;font-size:10px}}
+@media(prefers-reduced-motion:reduce){.account-nav .account-link{transition:none}}
+.account-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 12px;border:1px solid var(--control-border);border-radius:8px;color:var(--accent);white-space:nowrap}
+.qx-account-action{grid-column:1/-1;display:flex;justify-content:flex-end}.qx-account-action+.qx-error{grid-column:1/-1}
+@media(max-width:600px){.site-header{gap:8px!important}.site-header>.nav-link{font-size:11px}.site-header>.account-link{font-size:12px;padding:8px}.landing-page .site-header>.github-button{min-width:44px}}
 .site-shell{max-width:1440px}
 .site-header{height:76px;border-color:var(--border);gap:18px}
 .site-header .nav-link,.back-link{min-height:44px;color:var(--text-secondary)}
