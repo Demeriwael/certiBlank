@@ -119,6 +119,18 @@ provider was supplied. Password accounts can register without verification; the
 email is not treated as proof of identity. This is why automatic OAuth linking is
 disabled. Configure transactional email before advertising password recovery.
 
-Rate limits use the database so they persist across serverless instances. Confirm
-your hosting proxy supplies a trustworthy client IP header and strips spoofed
-values before public rollout; do not weaken origin/CSRF checks to fix proxy issues.
+Rate limits use the database so they persist across serverless instances. The
+current deployment targets Netlify: `advanced.ipAddress.ipAddressHeaders` reads
+only `x-nf-client-connection-ip`, which Netlify supplies for the connecting client.
+It deliberately ignores `x-forwarded-for` and `x-real-ip`. Keep the application
+behind Netlify's ingress; another host or a direct origin needs its own verified
+proxy configuration before deployment. Never trust a header that visitors can
+set unchanged, and do not disable rate limiting or origin/CSRF checks.
+
+Better Auth retains IPv6 subnet grouping. In development/test, a missing valid
+IP uses its localhost fallback; in production, it retains the restrictive shared
+bucket and warning rather than bypassing limits. After deploying, exercise login
+and confirm the missing-client-IP warning is gone from the Netlify function logs.
+No database migration or additional environment variable is required for this
+header configuration. See [Netlify's client-IP header guidance](https://answers.netlify.com/t/upcoming-change-stripping-exposed-netlify-headers-from-function-and-proxy-requests/52665)
+and [Better Auth rate limiting](https://better-auth.com/docs/concepts/rate-limit).
