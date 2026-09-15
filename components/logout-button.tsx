@@ -11,6 +11,8 @@ export function LogoutButton() {
     try {
       const result = await authClient.signOut();
       if (result.error) throw new Error();
+      document.documentElement.dataset.account = "guest";
+      try { localStorage.setItem("certi-account-hint", "guest"); } catch { /* Cosmetic persistence is optional. */ }
       // Remove this tab's account-specific drafts on shared devices.
       try { Object.keys(sessionStorage).filter(key => key.startsWith("certi-attempt:")).forEach(key => sessionStorage.removeItem(key)); } catch { /* Storage may be disabled. Server access is still revoked. */ }
       router.replace("/login"); router.refresh();

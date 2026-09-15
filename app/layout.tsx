@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { AuthNotice } from "@/components/auth-notice";
+import { AccountNavigationState } from "@/components/account-navigation-state";
+import { displayBootstrap } from "@/lib/display-preferences";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./theme.css";
+import "./light-theme.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,9 +26,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-theme="light"
+      data-account="guest"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}<AuthNotice /></body>
+      <head><script dangerouslySetInnerHTML={{ __html: displayBootstrap }} /></head>
+      <body className="min-h-full flex flex-col"><AccountNavigationState />{children}<AuthNotice /></body>
     </html>
   );
 }

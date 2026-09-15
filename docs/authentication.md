@@ -79,6 +79,14 @@ authenticated linking flow can add another method safely.
 
 ## Anonymous progress and accounts
 
+The header uses a cosmetic `certi-account-hint` localStorage value to keep its
+buttons stable across full reloads and background session checks. It contains
+only `member` or `guest`, never tokens or personal data. Server-side session
+checks remain authoritative. A confirmed logout/401 clears the hint; temporary
+network errors retain the last label. The root layout owns one session subscriber.
+Theme preference is stored separately in `certi-theme`, defaults to light, and
+is applied before paint. Both preferences are optional when storage is blocked.
+
 - Anonymous practice still uses the existing random, HttpOnly `certi-owner` cookie.
 - Logged-in attempts have a `userId`. A guest cookie cannot access a claimed attempt,
   even after logout or from a different account. Account deletion cascades attempts
