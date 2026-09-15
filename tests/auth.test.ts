@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { betterAuth } from "better-auth";
+import { getIP } from "better-auth/api";
 import { memoryAdapter } from "better-auth/adapters/memory";
 import { authOptions } from "../lib/auth-options";
 import { attemptAccess, authReturnPath, claimAttempts, sameOrigin } from "../lib/auth-logic";
@@ -84,6 +85,41 @@ test("production auth policy uses persistent rate limits and disables implicit a
   assert.equal(authOptions.rateLimit.customRules["/sign-in/email"].max, 5);
   assert.equal(authOptions.account.accountLinking.enabled, false);
   assert.equal(authOptions.session.expiresIn, 604800);
+});
+
+test("auth resolves Netlify IPv4 and IPv6 without trusting alternate forwarding headers", () => {
+  const headers = new Headers({ "x-nf-client-connection-ip": "203.0.113.10", "x-forwarded-for": "198.51.100.99", "x-real-ip": "198.51.100.98" });
+  assert.equal(getIP(headers, authOptions), "203.0.113.10");
+  headers.set("x-nf-client-connection-ip", "2001:db8:1234:5600::1");
+  const ipv6 = getIP(headers, authOptions);
+  assert.ok(ipv6?.includes(":"));
+  // Better Auth groups IPv6 clients by subnet to prevent address-rotation bypasses.
+  headers.set("x-nf-client-connection-ip", "2001:db8:1234:5600::2");
+  assert.equal(getIP(headers, authOptions), ipv6);
+  const fallback = getIP(new Headers(), authOptions);
+  for (const value of ["invalid", "203.0.113.10, 198.51.100.99", ""]) {
+    headers.set("x-nf-client-connection-ip", value);
+    assert.equal(getIP(headers, authOptions), fallback);
+  }
+  headers.delete("x-nf-client-connection-ip");
+  assert.equal(getIP(headers, authOptions), fallback);
+});
+
+test("database auth rate limits isolate Netlify clients and cannot be bypassed with X-Forwarded-For", async () => {
+  const db: Record<string, Record<string, unknown>[]> = { user: [], session: [], account: [], verification: [], rateLimit: [] };
+  const auth = betterAuth({ ...authOptions, baseURL: "http://localhost:3000", secret: "test-only-secret-not-for-deployment-123456789", database: memoryAdapter(db),
+    rateLimit: { ...authOptions.rateLimit, customRules: { "/get-session": { window: 60, max: 2 } } },
+  });
+  const request = (ip: string, forwarded: string) => auth.handler(new Request("http://localhost:3000/api/auth/get-session", {
+    headers: { "x-nf-client-connection-ip": ip, "x-forwarded-for": forwarded },
+  }));
+  assert.equal((await request("203.0.113.10", "198.51.100.1")).status, 200);
+  assert.equal((await request("203.0.113.10", "198.51.100.2")).status, 200);
+  const blocked = await request("203.0.113.10", "198.51.100.3");
+  assert.equal(blocked.status, 429);
+  assert.ok(Number(blocked.headers.get("x-retry-after")) > 0);
+  assert.equal((await request("203.0.113.11", "198.51.100.3")).status, 200);
+  assert.equal(db.rateLimit.length, 2);
 });
 
 test("Google initiation uses state and rejects an external completion URL", async () => {
