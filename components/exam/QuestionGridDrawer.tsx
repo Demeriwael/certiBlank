@@ -26,6 +26,7 @@ export function QuestionGridDrawer({ open, attempt, currentIndex, disabled, onCl
     element.showModal(); document.body.style.overflow = "hidden";
     return () => { element.close(); document.body.style.overflow = overflow; if (trigger?.isConnected) trigger.focus({ preventScroll: true }); };
   }, [open]);
+  if (!open) return null;
   return <dialog ref={dialog} className="qx-drawer" aria-labelledby="question-drawer-title" aria-describedby="question-drawer-help" onCancel={event => { event.preventDefault(); onClose(); }} onClick={event => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose(); } }} onKeyDown={event => {
     if (event.key !== "Tab") return;
     const focusable = [...event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),a[href],[tabindex="0"]')];

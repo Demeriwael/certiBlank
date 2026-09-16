@@ -43,11 +43,11 @@ async function handle(request: Request, context: Context, mutate: boolean) {
         if (attempt.mode !== "domain" || answers[q.id]?.length !== q.selectionCount) throw new RequestValidationError("Select the required number of answers first");
         checked.add(q.id);
       }
-      const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, userId: attempt.userId, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
+      const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, userId: attempt.userId, version: attempt.version, submittedAt: null }, omit: { snapshot: true }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
       if (!updated.length) return Response.json({ error: "Progress changed. Reload to continue." }, { status: 409 });
-      attempt = updated[0];
+      attempt = { ...attempt, ...updated[0] };
     }
-    return Response.json(compact ? attemptProgress(attempt) : attemptView(attempt), { headers: { "Cache-Control": "no-store" } });
+    return Response.json(compact ? attemptProgress(attempt, body?.incrementalFeedback === true ? body.action === "check" ? (attempt.snapshot as unknown as Snapshot).questions[attempt.currentIndex].id : null : undefined) : attemptView(attempt), { headers: { "Cache-Control": "no-store" } });
   } catch (error) { return requestError(error, "Unable to save exam. Please retry."); }
 }
 export const GET = (request: Request, context: Context) => handle(request, context, false);

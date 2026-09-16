@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { currentUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { attemptView, json, loadExam } from "@/lib/exam-server";
+import { attemptView, json, loadExam, loadExamSetup } from "@/lib/exam-server";
 import { domainQuotas, selectMock, shuffled } from "@/lib/exam-logic";
 import { readJson, requireOrigin, requestError, validSlug } from "@/lib/request-security";
 import { limitExam } from "@/lib/exam-rate-limit";
@@ -14,11 +14,11 @@ export async function GET(request: Request) {
   if (!validSlug(slug)) return Response.json({ error: "Provide a valid certSlug" }, { status: 400 });
   try {
     const limited = await limitExam(request, "read"); if (limited) return limited;
-    const bank = await loadExam(slug);
+    const bank = await loadExamSetup(slug);
     if (!bank) return Response.json({ error: "Certification not found" }, { status: 404 });
     const quotas = bank.config ? domainQuotas(bank.domains, bank.config.questionCount) : {};
-    const domains = bank.domains.map(d => ({ ...d, available: bank.questions.filter(q => q.domain === d.id).length, required: quotas[d.id] ?? 0 }));
-    return Response.json({ title: bank.title, config: bank.config, domains, available: bank.questions.length, mockReady: Boolean(bank.config && domains.length && domains.every(d => d.available >= d.required)) }, { headers: { "Cache-Control": "no-store" } });
+    const domains = bank.domains.map(d => ({ ...d, available: bank.counts[d.id] ?? 0, required: quotas[d.id] ?? 0 }));
+    return Response.json({ title: bank.title, config: bank.config, domains, available: bank.available, mockReady: Boolean(bank.config && domains.length && domains.every(d => d.available >= d.required)) }, { headers: { "Cache-Control": "no-store" } });
   } catch { return Response.json({ error: "Unable to load exam configuration" }, { status: 500 }); }
 }
 export async function POST(request: Request) {
@@ -26,10 +26,9 @@ export async function POST(request: Request) {
     requireOrigin(request);
     const body = await readJson(request, 4096);
     if (!validSlug(body.certSlug) || (body.mode !== "mock" && body.mode !== "domain")) return Response.json({ error: "Provide certSlug and a valid mode" }, { status: 400 });
-    for (const budget of ["create", "createDaily"] as const) {
-      const limited = await limitExam(request, budget); if (limited) return limited;
-    }
-    const bank = await loadExam(body.certSlug);
+    const budgets = await Promise.all([limitExam(request, "create"), limitExam(request, "createDaily")]);
+    const limited = budgets.find(Boolean); if (limited) return limited;
+    const [bank, user] = await Promise.all([loadExam(body.certSlug), currentUser()]);
     if (!bank?.config || !bank.questions.length) return Response.json({ error: "This question bank is awaiting updated data" }, { status: 409 });
     let questions;
     if (body.mode === "mock") {
@@ -44,7 +43,6 @@ export async function POST(request: Request) {
     }
     if (bank.config.shuffleOptions) questions = questions.map(q => ({ ...q, options: shuffled(q.options) }));
     const jar = await cookies(); const owner = jar.get("certi-owner")?.value ?? randomUUID();
-    const user = await currentUser();
     const attempt = await prisma.examAttempt.create({ data: { owner, userId: user?.id, certSlug: body.certSlug, mode: body.mode, snapshot: json({ title: bank.title, config: bank.config, domains: bank.domains, questions }), answers: {}, expiresAt: body.mode === "mock" ? new Date(Date.now() + bank.config.durationSeconds * 1000) : null } });
     jar.set("certi-owner", owner, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/", maxAge: 60 * 60 * 24 * 30 });
     return Response.json(attemptView(attempt), { status: 201, headers: { "Cache-Control": "no-store" } });

@@ -10,9 +10,9 @@ import { ExamIcon } from "@/components/exam/ExamIcon";
 import { ExamSync, restoreDraft, type Draft } from "@/lib/exam-sync";
 import type { AttemptView, Domain, MockConfig } from "@/lib/exam-contract";
 type Setup = { title: string; config: MockConfig | null; domains: (Domain & { available: number; required: number })[]; available: number; mockReady: boolean };
-async function api(url: string, body?: unknown) {
-  const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(15000), keepalive: Boolean(body), ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}) });
-  const data = await response.json(); if (!response.ok) throw Object.assign(new Error(data.error ?? "Something went wrong. Please retry."), { status: response.status }); return data;
+async function api(url: string, body?: unknown, signal?: AbortSignal) {
+  const response = await fetch(url, { cache: "no-store", signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000), keepalive: Boolean(body), ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}) });
+  const data = await response.json(); if (!response.ok) throw Object.assign(new Error(data.error ?? "Something went wrong. Please retry."), { status: response.status, retryAfter: Number(response.headers.get("retry-after")) || undefined }); return data;
 }
 export default function ExamSetup({ certSlug }: { certSlug: string }) {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [expired, setExpired] = useState(false);
   const deadline = useRef<number | null>(null);
   const active = useRef<AttemptView | null>(null);
   const saving = useRef(false);
@@ -38,7 +38,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
     if (serverTime.current !== value.serverNow) {
       serverTime.current = value.serverNow;
       deadline.current = value.expiresAt ? Date.now() + Math.max(0, Date.parse(value.expiresAt) - Date.parse(value.serverNow)) : null;
-      setTimeRemaining(deadline.current === null ? null : Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000)));
+      setExpired(deadline.current !== null && deadline.current <= Date.now());
     }
   }, []);
   const install = useCallback((value: AttemptView) => {
@@ -58,27 +58,39 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   }, [accept, draftKey]);
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const controller = new AbortController();
+    const setupRequest = api(`/api/exams?certSlug=${encodeURIComponent(certSlug)}`, undefined, controller.signal).then((data: Setup) => {
+      if (!cancelled) { setSetup(data); setDomains(data.domains.filter(d => d.available).map(d => d.id)); }
+    });
+    const resumeRequest = (async () => {
+      const requested = new URLSearchParams(window.location.search).get("attempt");
+      let saved = requested;
       try {
-        const data: Setup = await api(`/api/exams?certSlug=${encodeURIComponent(certSlug)}`);
-        if (cancelled) return;
-        setSetup(data); setDomains(data.domains.filter(d => d.available).map(d => d.id));
-        const requested = new URLSearchParams(window.location.search).get("attempt");
-        const saved = requested || sessionStorage.getItem(storageKey);
+        saved ||= sessionStorage.getItem(storageKey);
         if (requested) {
           if (sessionStorage.getItem(storageKey) !== requested) sessionStorage.removeItem(draftKey);
           sessionStorage.setItem(storageKey, requested);
         }
-        if (saved) { const value = await api(`/api/exams/${saved}`); if (!cancelled) { install(value); const draft = restoreDraft(value, sessionStorage.getItem(draftKey)); if (draft) sync.current?.edit(draft); } }
-      } catch (e) { if (!cancelled) setError((e as Error).message); }
-      finally { if (!cancelled) setLoading(false); }
+      } catch { /* Explicit resume URLs still work when storage is blocked. */ }
+      if (!saved) return;
+      const value = await api(`/api/exams/${saved}`, undefined, controller.signal);
+      if (cancelled) return;
+      install(value);
+      try { const draft = restoreDraft(value, sessionStorage.getItem(draftKey)); if (draft) sync.current?.edit(draft); } catch { /* Server progress is still available. */ }
     })();
-    return () => { cancelled = true; sync.current?.dispose(); };
+    void Promise.allSettled([setupRequest, resumeRequest]).then(results => {
+      if (cancelled) return;
+      const failure = results[1].status === "rejected" ? results[1] : !active.current && results[0].status === "rejected" ? results[0] : null;
+      if (failure) setError(failure.reason instanceof Error ? failure.reason.message : "Unable to load this session.");
+      setLoading(false);
+    });
+    return () => { cancelled = true; controller.abort(); sync.current?.dispose(); };
   }, [certSlug, storageKey, draftKey, install]);
   useEffect(() => {
     const interval = setInterval(async () => {
       if (deadline.current === null || !active.current || active.current.isSubmitted) return;
-      const remaining = Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000)); setTimeRemaining(remaining);
+      const remaining = Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000));
+      if (remaining === 0) setExpired(true);
       if (remaining === 0 && !saving.current) {
         saving.current = true; setBusy(true);
         try { await sync.current?.action("submit"); }
@@ -117,7 +129,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   }
   function restart() { sync.current?.dispose(); sync.current = null; sessionStorage.removeItem(storageKey); sessionStorage.removeItem(draftKey); window.history.replaceState(null, "", window.location.pathname); active.current = null; deadline.current = null; setAttempt(null); setError(""); }
   const available = setup?.domains.filter(d => domains.includes(d.id)).reduce((sum, d) => sum + d.available, 0) ?? 0;
-  if (attempt) return <ExamWorkspace key={attempt.id} attempt={attempt} timeRemaining={timeRemaining} busy={busy} checking={checking} error={error} onChange={change} onRestart={restart} onAccount={async () => { await sync.current?.flush(); router.push(`/account?returnTo=${encodeURIComponent(`/platform/${certSlug}?attempt=${attempt.id}`)}`); }} />;
+  if (attempt) return <ExamWorkspace key={attempt.id} attempt={attempt} expired={expired} busy={busy} checking={checking} error={error} onChange={change} onRestart={restart} onAccount={async () => { await sync.current?.flush(); router.push(`/account?returnTo=${encodeURIComponent(`/platform/${certSlug}?attempt=${attempt.id}`)}`); }} />;
   return <div className="site-shell exam-setup-shell">
     <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications <ExamIcon name="external" /></Link><AccountLink /></header>
     <main className="exam-main">
