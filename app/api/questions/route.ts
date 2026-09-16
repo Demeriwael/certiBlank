@@ -1,5 +1,6 @@
 import type { Question } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { limitExam } from "@/lib/exam-rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,7 +9,7 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const certSlug = params.get("certSlug")?.trim();
 
-  if (!certSlug || params.getAll("certSlug").length !== 1) {
+  if (!certSlug || certSlug.length > 100 || params.getAll("certSlug").length !== 1) {
     return Response.json(
       { error: "Provide one non-empty certSlug query parameter." },
       { status: 400 },
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
   }
 
   try {
+    const limited = await limitExam(request, "read"); if (limited) return limited;
     // Tagged-template values are bound parameters, never interpolated SQL.
     const questions = await prisma.$queryRaw<Question[]>`
       SELECT q."id", q."questionText", q."optionItems", q."type", q."selectionCount", q."domain"

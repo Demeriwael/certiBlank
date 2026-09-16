@@ -44,6 +44,9 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
       - name: Validate question banks without database writes
         run: npx prisma db seed -- --validate-only
 

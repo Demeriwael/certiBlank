@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { databaseDiagnostics } from "@/lib/database-diagnostics";
+import { limitExam } from "@/lib/exam-rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const limited = await limitExam(request, "read"); if (limited) return limited;
     const platforms = await prisma.platform.findMany({
       where: { slug: { in: ["aws", "azure", "cisco"] } },
       include: {

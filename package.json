@@ -2,6 +2,11 @@
   "name": "certi",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "@prisma/config": {
+      "deepmerge-ts": "8.0.0"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -17,6 +22,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

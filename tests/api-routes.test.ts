@@ -12,7 +12,7 @@ const prisma = {
   },
   $queryRaw: async (...args: unknown[]) => {
     void args;
-    return [] as unknown[];
+    return [{ count: 1, retryAfter: 60 }] as unknown[];
   },
 };
 let getPlatforms: typeof import("../app/api/platforms/route").GET;
@@ -32,7 +32,7 @@ const request = (query: string) =>
 test("platforms returns JSON with nested certifications", async () => {
   const data = [{ name: "AWS", certifications: [{ title: "Cloud Practitioner" }] }];
   const query = mock.method(prisma.platform, "findMany", async () => data);
-  const response = await getPlatforms();
+  const response = await getPlatforms(new Request("http://localhost/api/platforms"));
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type")!, /application\/json/);
   assert.deepEqual(await response.json(), data);
@@ -54,13 +54,13 @@ test("invalid question parameters return 400 without querying the database", asy
 });
 
 test("questions defaults to ten and binds even SQL-like slugs as values", async () => {
-  const query = mock.method(prisma, "$queryRaw", async () => []);
+  const query = mock.method(prisma, "$queryRaw", async (...args: unknown[]) => String(args[0]).includes('INSERT INTO "RateLimit"') ? [{ count: 1, retryAfter: 60 }] : []);
   const slug = "x' OR 1=1 --";
   const response = await getQuestions(request(`?certSlug=${encodeURIComponent(slug)}`));
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), []);
   assert.equal(response.headers.get("cache-control"), "no-store");
-  const [sql, boundSlug, boundLimit] = query.mock.calls[0].arguments;
+  const [sql, boundSlug, boundLimit] = query.mock.calls[1].arguments;
   assert.ok(Array.isArray(sql));
   assert.equal(boundSlug, slug);
   assert.equal(boundLimit, 10);
@@ -70,10 +70,10 @@ test("questions defaults to ten and binds even SQL-like slugs as values", async 
 
 test("questions honors an explicit limit without exposing answers", async () => {
   const data = [{ id: "sample", options: ["A", "B", "C", "D"], correctAnswer: "A", createdAt: new Date("2026-01-01") }];
-  const query = mock.method(prisma, "$queryRaw", async () => data);
+  const query = mock.method(prisma, "$queryRaw", async (...args: unknown[]) => String(args[0]).includes('INSERT INTO "RateLimit"') ? [{ count: 1, retryAfter: 60 }] : data);
   const response = await getQuestions(request("?certSlug=cloud-practitioner&limit=2"));
   assert.equal(response.status, 200);
-  assert.equal(query.mock.calls[0].arguments[2], 2);
+  assert.equal(query.mock.calls[1].arguments[2], 2);
   assert.deepEqual(await response.json(), [{ id: "sample" }]);
 });
 
@@ -82,7 +82,7 @@ test("database failures return generic JSON errors without leaking details", asy
   mock.method(prisma.platform, "findMany", fail);
   mock.method(prisma, "$queryRaw", fail);
   mock.method(console, "error", () => {});
-  for (const response of [await getPlatforms(), await getQuestions(request("?certSlug=aws"))]) {
+  for (const response of [await getPlatforms(new Request("http://localhost/api/platforms")), await getQuestions(request("?certSlug=aws"))]) {
     assert.equal(response.status, 500);
     const body = await response.json();
     assert.equal(typeof body.error, "string");
