@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { attemptProgress, attemptView, json } from "@/lib/exam-server";
 import { validateAnswers } from "@/lib/exam-logic";
 import type { AnswerMap, Snapshot } from "@/lib/exam-contract";
+import { readJson, requireOrigin, requestError, RequestValidationError } from "@/lib/request-security";
+import { limitExam } from "@/lib/exam-rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };
@@ -16,6 +18,9 @@ async function find(context: Context) {
 }
 async function handle(request: Request, context: Context, mutate: boolean) {
   try {
+    if (mutate) requireOrigin(request);
+    const body = mutate ? await readJson(request) : null;
+    const limited = await limitExam(request, mutate ? "save" : "read"); if (limited) return limited;
     let compact = false;
     let attempt = await find(context);
     if (!attempt) return Response.json({ error: "Attempt not found" }, { status: 404 });
@@ -23,21 +28,19 @@ async function handle(request: Request, context: Context, mutate: boolean) {
       await prisma.examAttempt.updateMany({ where: { id: attempt.id, userId: attempt.userId, submittedAt: null }, data: { submittedAt: new Date(), version: { increment: 1 } } });
       attempt = (await find(context))!;
     }
-    if (mutate && !attempt.submittedAt) {
-      const body = await request.json();
-      if (!body || typeof body !== "object" || Array.isArray(body)) throw new TypeError("Expected a JSON object");
+    if (body && !attempt.submittedAt) {
       compact = body.compact === true;
       const snapshot = attempt.snapshot as unknown as Snapshot;
-      if (!["save", "check", "submit"].includes(body.action)) throw new TypeError("Invalid action");
+      if (body.action !== "save" && body.action !== "check" && body.action !== "submit") throw new RequestValidationError("Invalid action");
       if (body.version !== attempt.version) return Response.json({ error: "Progress changed in another tab. Reload to continue." }, { status: 409 });
       let answers: AnswerMap;
-      try { answers = validateAnswers(body.answers, snapshot.questions); } catch { throw new TypeError("Invalid answers"); }
-      for (const id of attempt.checked) if (JSON.stringify([...(answers[id] ?? [])].sort()) !== JSON.stringify([...((attempt.answers as AnswerMap)[id] ?? [])].sort())) throw new TypeError("Checked answers cannot be changed");
-      if (!Number.isInteger(body.currentIndex) || body.currentIndex < 0 || body.currentIndex >= snapshot.questions.length || !Array.isArray(body.flagged) || body.flagged.some((id: unknown) => !snapshot.questions.some(q => q.id === id))) throw new TypeError("Invalid navigation state");
+      try { answers = validateAnswers(body.answers, snapshot.questions); } catch { throw new RequestValidationError("Invalid answers"); }
+      for (const id of attempt.checked) if (JSON.stringify([...(answers[id] ?? [])].sort()) !== JSON.stringify([...((attempt.answers as AnswerMap)[id] ?? [])].sort())) throw new RequestValidationError("Checked answers cannot be changed");
+      if (typeof body.currentIndex !== "number" || !Number.isInteger(body.currentIndex) || body.currentIndex < 0 || body.currentIndex >= snapshot.questions.length || !Array.isArray(body.flagged) || body.flagged.length > snapshot.questions.length || body.flagged.some((id: unknown) => !snapshot.questions.some(q => q.id === id))) throw new RequestValidationError("Invalid navigation state");
       const checked = new Set(attempt.checked);
       if (body.action === "check") {
         const q = snapshot.questions[body.currentIndex];
-        if (attempt.mode !== "domain" || answers[q.id]?.length !== q.selectionCount) throw new TypeError("Select the required number of answers first");
+        if (attempt.mode !== "domain" || answers[q.id]?.length !== q.selectionCount) throw new RequestValidationError("Select the required number of answers first");
         checked.add(q.id);
       }
       const updated = await prisma.examAttempt.updateManyAndReturn({ where: { id: attempt.id, userId: attempt.userId, version: attempt.version, submittedAt: null }, data: { answers: json(answers), checked: [...checked], flagged: [...new Set<string>(body.flagged)], currentIndex: body.currentIndex, submittedAt: body.action === "submit" ? new Date() : null, version: { increment: 1 } } });
@@ -45,7 +48,7 @@ async function handle(request: Request, context: Context, mutate: boolean) {
       attempt = updated[0];
     }
     return Response.json(compact ? attemptProgress(attempt) : attemptView(attempt), { headers: { "Cache-Control": "no-store" } });
-  } catch (error) { const bad = error instanceof TypeError || error instanceof SyntaxError; return Response.json({ error: bad ? error.message : "Unable to save exam. Please retry." }, { status: bad ? 400 : 500 }); }
+  } catch (error) { return requestError(error, "Unable to save exam. Please retry."); }
 }
 export const GET = (request: Request, context: Context) => handle(request, context, false);
 export const POST = (request: Request, context: Context) => handle(request, context, true);

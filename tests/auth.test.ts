@@ -63,6 +63,9 @@ test("password auth hashes credentials, authenticates, rejects bad credentials a
   const credentials = { email: "test@example.com", password: "a-long-test-password", name: "Tester" };
   const short = await request("sign-up/email", { ...credentials, password: "short" });
   assert.equal(short.status, 400);
+  for (const name of [" ", "x".repeat(101)]) {
+    assert.equal((await request("sign-up/email", { ...credentials, name })).status, 400);
+  }
   const signup = await request("sign-up/email", credentials);
   assert.equal(signup.status, 200, await signup.clone().text());
   assert.notEqual(db.account[0].password, credentials.password);

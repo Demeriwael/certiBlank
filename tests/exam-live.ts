@@ -6,8 +6,10 @@ import type { AttemptView } from "../lib/exam-contract";
 const prisma = new PrismaClient();
 const ids: string[] = [];
 let cookie = "";
+const baseURL = process.env.BETTER_AUTH_URL ?? "http://127.0.0.1:3000";
+if (!["localhost", "127.0.0.1"].includes(new URL(baseURL).hostname)) throw new Error("Live exam tests require a local development server");
 async function call(path: string, body?: unknown, useCookie = true) {
-  const response = await fetch(`http://127.0.0.1:3000/api/${path}`, { headers: { "Content-Type": "application/json", ...(useCookie && cookie ? { Cookie: cookie } : {}) }, ...(body ? { method: "POST", body: JSON.stringify(body) } : {}) });
+  const response = await fetch(`${baseURL}/api/${path}`, { headers: { Origin: new URL(baseURL).origin, "Content-Type": "application/json", ...(useCookie && cookie ? { Cookie: cookie } : {}) }, ...(body ? { method: "POST", body: JSON.stringify(body) } : {}) });
   if (response.headers.get("set-cookie")) cookie = response.headers.get("set-cookie")!.split(";")[0];
   return { status: response.status, data: await response.json() };
 }
