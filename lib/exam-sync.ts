@@ -2,7 +2,7 @@ import type { AttemptProgress, AttemptView } from "./exam-contract";
 
 export type Draft = Pick<AttemptView, "answers" | "flagged" | "currentIndex">;
 type Action = "save" | "check" | "submit";
-export type SaveRequest = Draft & { action: Action; version: number; compact: true };
+export type SaveRequest = Draft & { action: Action; version: number; compact: true; incrementalFeedback: true };
 type Options = {
   send: (id: string, request: SaveRequest) => Promise<AttemptProgress>;
   publish: (view: AttemptView) => void;
@@ -23,6 +23,7 @@ export class ExamSync {
   private blocked = false;
   private critical = 0;
   private automatic: Promise<void> | undefined;
+  private retryAt = 0;
 
   constructor(view: AttemptView, private options: Options) { this.view = view; }
 
@@ -38,7 +39,7 @@ export class ExamSync {
     this.options.persist(this.draft());
     this.options.publish(this.view);
     // Start a short batching window once; continuous clicks cannot postpone it forever.
-    this.schedule(250);
+    this.schedule(750);
   }
 
   private schedule(delay: number) {
@@ -46,7 +47,7 @@ export class ExamSync {
     this.timer = setTimeout(() => {
       this.timer = undefined;
       void this.flush().catch(() => {});
-    }, delay);
+    }, Math.max(delay, this.retryAt - Date.now()));
   }
 
   private enqueue<T>(task: () => Promise<T>): Promise<T> {
@@ -58,17 +59,18 @@ export class ExamSync {
   private async send(action: Action, questionIndex?: number) {
     if (this.disposed || this.view.isSubmitted || (action === "save" && !this.dirty)) return;
     if (this.blocked) throw new Error("This attempt changed elsewhere. Reload to reconcile your progress.");
+    if (Date.now() < this.retryAt) throw new Error("Saving is paused briefly. Your answers are kept on this device.");
     const sentRevision = this.revision;
     const sent = this.draft();
     try {
       const response = await this.options.send(this.view.id, {
         ...sent, currentIndex: questionIndex ?? sent.currentIndex,
-        action, version: this.view.version, compact: true,
+        action, version: this.view.version, compact: true, incrementalFeedback: true,
       });
       if (this.disposed) return;
       const local = this.draft();
       const changed = this.revision !== sentRevision;
-      this.view = { ...this.view, ...response };
+      this.view = { ...this.view, ...response, feedback: { ...this.view.feedback, ...response.feedback } };
       if (!response.isSubmitted) {
         // Check may finish after the user navigated to a different question.
         this.view = { ...this.view, ...local };
@@ -78,19 +80,21 @@ export class ExamSync {
       }
       this.dirty = !response.isSubmitted && (changed || local.currentIndex !== (questionIndex ?? sent.currentIndex));
       this.retryDelay = 250;
+      this.retryAt = 0;
       this.options.persist(this.dirty ? this.draft() : null);
       this.options.onError("");
       this.options.publish(this.view);
     } catch (error) {
       if (this.disposed) return;
-      const status = (error as { status?: number }).status;
-      this.blocked = status === 400 || status === 404 || status === 409;
+      const { status, retryAfter } = error as { status?: number; retryAfter?: number };
+      this.blocked = [400, 401, 403, 404, 409, 413, 415].includes(status ?? 0);
       this.dirty = true;
       this.options.persist(this.draft());
       this.options.onError(this.blocked
         ? "This attempt changed or is unavailable. Reload to reconcile your saved answers."
-        : "Connection interrupted. Your choices are kept on this device; syncing will retry automatically.");
+        : status === 429 ? "Saving is paused briefly. Your choices are kept on this device and will sync automatically." : "Connection interrupted. Your choices are kept on this device; syncing will retry automatically.");
       this.retryDelay = Math.min(Math.max(this.retryDelay * 2, 1000), 10000);
+      if (status === 429) this.retryAt = Date.now() + Math.max(1, Math.min(retryAfter ?? 60, 86400)) * 1000;
       throw error;
     } finally {
       this.schedule(this.retryDelay);

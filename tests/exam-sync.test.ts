@@ -118,3 +118,38 @@ test("expiry overrides unsaved local answers and storage never restores checked 
     assert.deepEqual(restored?.flagged, []);
   } finally { h.sync.dispose(); }
 });
+
+test("incremental responses retain revealed explanations across later saves", async () => {
+  const h = harness();
+  try {
+    const feedback = { ...view().questions[0], correctOptionIds: ["a", "b"], correctExplanation: "Explanation", distractorExplanations: { c: "Incorrect" }, referenceUrl: "https://example.com", userAnswer: ["a", "b"], correct: true };
+    h.sync.edit({ answers: { q1: ["a", "b"] } });
+    const check = h.sync.action("check", 0); await tick();
+    h.reply(0, { checked: ["q1"], feedback: { q1: feedback } }); await check;
+    h.sync.edit({ currentIndex: 1 });
+    const saving = h.sync.flush(); await tick();
+    assert.equal(h.calls[1].request.incrementalFeedback, true);
+    h.reply(1, { checked: ["q1"], feedback: {} }); await saving;
+    assert.deepEqual(h.sync.view.feedback.q1, feedback);
+  } finally { h.sync.dispose(); }
+});
+
+test("rate-limited saves retain local interactions and respect Retry-After", async (t) => {
+  t.mock.timers.enable({ apis: ["Date", "setTimeout"] });
+  const h = harness();
+  try {
+    h.sync.edit({ answers: { q1: ["a"] } });
+    const saving = h.sync.flush(); await tick();
+    const rejected = assert.rejects(saving);
+    h.calls[0].reject(Object.assign(new Error("Limited"), { status: 429, retryAfter: 30 })); await rejected;
+    h.sync.edit({ currentIndex: 1, answers: { q1: ["b"] } });
+    assert.equal(h.sync.view.currentIndex, 1);
+    assert.deepEqual(h.stored()?.answers.q1, ["b"]);
+    t.mock.timers.tick(29000); await tick();
+    assert.equal(h.calls.length, 1);
+    t.mock.timers.tick(1001); await tick();
+    assert.equal(h.calls.length, 2);
+    h.reply(1); await tick();
+    assert.equal(h.error(), "");
+  } finally { h.sync.dispose(); }
+});

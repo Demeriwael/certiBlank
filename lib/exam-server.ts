@@ -9,12 +9,23 @@ export async function loadExam(slug: string) {
   const questions = cert.questions.map(q => ({ id: q.id, type: q.type, questionText: q.questionText, selectionCount: q.selectionCount, options: q.optionItems, domain: q.domain, hint: q.hint, correctOptionIds: q.correctOptionIds, correctExplanation: q.correctExplanation, distractorExplanations: q.distractorExplanations, referenceUrl: q.referenceUrl })) as BankQuestion[];
   return { title: cert.title, config: cert.examConfig as MockConfig | null, domains: (cert.domains ?? []) as Domain[], questions };
 }
-export function attemptProgress(attempt: ExamAttempt): AttemptProgress {
+export async function loadExamSetup(slug: string) {
+  // Availability needs domain identifiers only, never answers or explanations.
+  const cert = await prisma.certification.findUnique({ where: { slug }, select: {
+    title: true, examConfig: true, domains: true,
+    questions: { where: { schemaVersion: 2 }, select: { domain: true } },
+  } });
+  if (!cert) return null;
+  const counts: Record<string, number> = {};
+  for (const question of cert.questions) if (question.domain) counts[question.domain] = (counts[question.domain] ?? 0) + 1;
+  return { title: cert.title, config: cert.examConfig as MockConfig | null, domains: (cert.domains ?? []) as Domain[], counts, available: cert.questions.length };
+}
+export function attemptProgress(attempt: ExamAttempt, feedbackId?: string | null): AttemptProgress {
   const snapshot = attempt.snapshot as unknown as Snapshot;
   const answers = attempt.answers as AnswerMap;
   // Ordinary saves never grade the whole exam or serialize its question bank.
   const results = attempt.submittedAt ? grade(snapshot, answers) : null;
-  const review = results?.review ?? (attempt.mode === "domain" ? snapshot.questions.filter(q => attempt.checked.includes(q.id)).map(q => ({ ...q, userAnswer: answers[q.id] ?? [], correct: isCorrect(q.correctOptionIds, answers[q.id] ?? []) })) : []);
+  const review = results?.review ?? (attempt.mode === "domain" && feedbackId !== null ? snapshot.questions.filter(q => attempt.checked.includes(q.id) && (feedbackId === undefined || feedbackId === q.id)).map(q => ({ ...q, userAnswer: answers[q.id] ?? [], correct: isCorrect(q.correctOptionIds, answers[q.id] ?? []) })) : []);
   return { id: attempt.id, answers, checked: attempt.checked, flagged: attempt.flagged, currentIndex: attempt.currentIndex, expiresAt: attempt.expiresAt?.toISOString() ?? null, serverNow: new Date().toISOString(), isSubmitted: Boolean(attempt.submittedAt), version: attempt.version, feedback: Object.fromEntries(review.map(q => [q.id, q])), results };
 }
 export function attemptView(attempt: ExamAttempt): AttemptView {

@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { validateBank, type Snapshot } from "../lib/exam-contract";
 import { domainQuotas, grade, isCorrect, selectMock, validateAnswers } from "../lib/exam-logic";
-import { attemptView } from "../lib/exam-server";
+import { attemptView, attemptProgress } from "../lib/exam-server";
 import type { ExamAttempt } from "@prisma/client";
 const bank = validateBank(JSON.parse(readFileSync("prisma/Data/AWS/AWS_Cloud_Practitioner_CLF_C02/AWS_Cloud_Practitioner_CLF_C02_updated.json.json", "utf8")));
 const snapshot: Snapshot = { title: bank.certification.title, config: bank.certification.mockExam, domains: bank.certification.domains, questions: bank.questions.slice(0, 5) };
@@ -39,4 +39,15 @@ test("mock responses redact keys, explanations and hints until submission",()=>{
   assert.ok(!JSON.stringify(view).includes("correctOptionIds"));
   const checked=attemptView({...attempt,mode:"domain"});assert.equal(Object.keys(checked.feedback).length,1);
   const submitted=attemptView({...attempt,submittedAt:new Date()});assert.equal(submitted.results?.review.length,5);
+});
+
+test("incremental saves omit old explanations while resume and final review remain complete", () => {
+  const attempt = { id: "test", mode: "domain", snapshot, answers: {}, checked: snapshot.questions.map(q => q.id), flagged: [], currentIndex: 0, expiresAt: null, submittedAt: null, version: 1 } as unknown as ExamAttempt;
+  assert.equal(Object.keys(attemptProgress(attempt).feedback).length, 5);
+  const save = attemptProgress(attempt, null);
+  assert.deepEqual(save.feedback, {});
+  assert.ok(!JSON.stringify(save).includes("correctExplanation"));
+  assert.deepEqual(Object.keys(attemptProgress(attempt, snapshot.questions[1].id).feedback), [snapshot.questions[1].id]);
+  assert.deepEqual(attemptProgress({ ...attempt, mode: "mock" }, snapshot.questions[1].id).feedback, {});
+  assert.equal(attemptProgress({ ...attempt, submittedAt: new Date() }, null).results?.review.length, 5);
 });

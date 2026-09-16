@@ -38,7 +38,7 @@ test("public errors never expose unexpected TypeError or parser details", async 
 });
 test("global headers block framing without breaking inline hydration", async () => {
   const rules = await config.headers!();
-  const headers = new Headers(rules[0].headers.map(h => [h.key, h.value]));
+  const headers = new Headers(rules[0].headers.map((h): [string, string] => [h.key, h.value]));
   assert.equal(headers.get("x-frame-options"), "DENY");
   assert.equal(headers.get("x-content-type-options"), "nosniff");
   assert.match(headers.get("content-security-policy")!, /frame-ancestors 'none'/);

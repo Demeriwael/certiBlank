@@ -3,22 +3,23 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { AttemptView } from "@/lib/exam-contract";
 import type { Draft } from "@/lib/exam-sync";
-import { shortcut, timerLevel } from "@/lib/exam-ui";
+import { shortcut } from "@/lib/exam-ui";
 import { Brand } from "@/components/brand";
 import { AccountIcon } from "@/components/account-icon";
 import { ExamIcon } from "./ExamIcon";
 import { QuestionCard } from "./QuestionCard";
 import { QuestionGridDrawer, QuestionPalette } from "./QuestionGridDrawer";
 import { QuizFooter } from "./QuizFooter";
+import { ExamTimer } from "./ExamTimer";
 import "./exam-workspace.css";
 
 type Props = {
-  attempt: AttemptView; timeRemaining: number | null; busy: boolean; checking: string | null; error: string;
+  attempt: AttemptView; expired: boolean; busy: boolean; checking: string | null; error: string;
   onChange: (patch: Partial<Draft>, action?: "save" | "check" | "submit") => Promise<void>;
   onRestart: () => void;
   onAccount?: () => Promise<void>;
 };
-export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, onChange, onRestart, onAccount }: Props) {
+export function ExamWorkspace({ attempt, expired, busy, checking, error, onChange, onRestart, onAccount }: Props) {
   const [openingAccount, setOpeningAccount] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -33,13 +34,11 @@ export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, o
   const selected = attempt.answers[question.id] ?? [];
   const flagged = attempt.flagged.includes(question.id);
   const answered = attempt.questions.filter(q => attempt.answers[q.id]?.length === q.selectionCount).length;
-  const disabled = busy || (!attempt.isSubmitted && attempt.mode === "mock" && timeRemaining === 0);
+  const disabled = busy || (!attempt.isSubmitted && attempt.mode === "mock" && expired);
   const summary = attempt.isSubmitted && reviewIndex === null;
   const confirmation = confirming && !attempt.isSubmitted;
   const domain = attempt.domains.find(d => d.id === question.domain)?.name ?? question.domain;
-  const level = timerLevel(timeRemaining);
   const modeLabel = attempt.mode === "domain" ? "Domain practice" : "Full timed mock exam";
-  const time = timeRemaining === null ? "Untimed" : `${Math.floor(timeRemaining / 60).toString().padStart(2, "0")}:${(timeRemaining % 60).toString().padStart(2, "0")}`;
 
   function toggleShortcuts(value: boolean) {
     setShortcuts(value);
@@ -101,12 +100,11 @@ export function ExamWorkspace({ attempt, timeRemaining, busy, checking, error, o
     <a className="qx-skip" href="#qx-main">Skip to exam content</a>
     <header className="qx-hud">
       <div className="qx-hud-top"><Brand /><span className="qx-hud-divider" /><div className="qx-hud-title"><h1>{attempt.title}</h1><div className={`qx-mode ${attempt.mode}`}><ExamIcon name={attempt.mode === "domain" ? "book" : "shield"} />{modeLabel}<span>{attempt.mode === "domain" ? "Instant feedback" : "Exam simulation"}</span></div></div>
-        <div className={`qx-timer ${level}`} role="timer" aria-live="off" aria-label={attempt.isSubmitted ? "Session complete" : `Time remaining: ${time}`}><ExamIcon name="clock" /><div><small>{attempt.isSubmitted ? "SESSION" : timeRemaining === null ? "AT YOUR PACE" : "TIME REMAINING"}</small><strong>{attempt.isSubmitted ? "Complete" : time}</strong></div></div>
+        <ExamTimer expiresAt={attempt.expiresAt} serverNow={attempt.serverNow} submitted={attempt.isSubmitted} />
         <button className="qx-button qx-navigator-button" aria-label="Questions" onClick={() => setDrawer(true)} aria-haspopup="dialog" aria-expanded={drawer}><ExamIcon name="grid" /><span>Questions</span></button>
       </div>
       <div className="qx-hud-bottom"><span>Question <b>{index + 1}</b> of {attempt.questions.length}</span><div className="qx-hud-progress" role="progressbar" aria-label="Answered questions" aria-valuemin={0} aria-valuemax={attempt.questions.length} aria-valuenow={answered} aria-valuetext={`${answered} of ${attempt.questions.length} answered`}><span style={{ width: `${answered / attempt.questions.length * 100}%` }} /></div><span className="qx-completed">{answered} answered</span><button onClick={() => setDrawer(true)} className="qx-flag-count" aria-label={`${attempt.flagged.length} flagged questions. Open navigator`}><ExamIcon name="flag" />{attempt.flagged.length}<span>flagged</span></button></div>
     </header>
-    <span className="sr-only" role="status">{attempt.isSubmitted || timeRemaining === null ? "" : level === "critical" ? "Two minutes or less remaining. Your saved answers will be submitted when time expires." : level === "warning" ? "Ten minutes or less remaining." : ""}</span>
     <main id="qx-main" tabIndex={-1} className={`qx-main ${summary ? "qx-summary-layout" : ""}`}>
       {onAccount && <div className="qx-account-action"><span><span className="account-member">Your practice, all in one place.</span><span className="account-guest">Keep your progress across devices.</span></span><button className="qx-button" disabled={busy || Boolean(checking) || openingAccount} onClick={async () => { setOpeningAccount(true); try { await onAccount(); } catch { /* ExamSync exposes the save error; keep the exam open. */ } finally { setOpeningAccount(false); } }}><AccountIcon name="user" />{openingAccount ? "Opening…" : <><span className="account-member">My account</span><span className="account-guest">Save my progress</span></>}</button></div>}
       {error && <div className="qx-error" role="alert">{error}<button className="qx-button" onClick={() => window.location.reload()}>Reload session</button></div>}
