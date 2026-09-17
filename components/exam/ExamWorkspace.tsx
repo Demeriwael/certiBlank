@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { ResultsLoading } from "@/components/loading-skeleton";
 import { useEffect, useState } from "react";
 import type { AttemptView } from "@/lib/exam-contract";
 import type { Draft } from "@/lib/exam-sync";
@@ -36,6 +37,7 @@ export function ExamWorkspace({ attempt, expired, busy, checking, error, onChang
   const answered = attempt.questions.filter(q => attempt.answers[q.id]?.length === q.selectionCount).length;
   const disabled = busy || (!attempt.isSubmitted && attempt.mode === "mock" && expired);
   const summary = attempt.isSubmitted && reviewIndex === null;
+  const calculating = busy && !attempt.isSubmitted && attempt.mode === "mock";
   const confirmation = confirming && !attempt.isSubmitted;
   const domain = attempt.domains.find(d => d.id === question.domain)?.name ?? question.domain;
   const modeLabel = attempt.mode === "domain" ? "Domain practice" : "Full timed mock exam";
@@ -46,12 +48,12 @@ export function ExamWorkspace({ attempt, expired, busy, checking, error, onChang
   }
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
-      const target = document.getElementById(summary ? "results-title" : confirmation ? "review-title" : "question-title");
+      const target = document.getElementById(calculating ? "calculating-title" : summary ? "results-title" : confirmation ? "review-title" : "question-title");
       target?.focus({ preventScroll: true });
       target?.scrollIntoView({ block: "start", behavior: "instant" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [index, summary, confirmation]);
+  }, [index, summary, confirmation, calculating]);
 
   function jump(next: number) {
     if (disabled || next < 0 || next >= attempt.questions.length) return;
@@ -108,7 +110,7 @@ export function ExamWorkspace({ attempt, expired, busy, checking, error, onChang
     <main id="qx-main" tabIndex={-1} className={`qx-main ${summary ? "qx-summary-layout" : ""}`}>
       {onAccount && <div className="qx-account-action"><span><span className="account-member">Your practice, all in one place.</span><span className="account-guest">Keep your progress across devices.</span></span><button className="qx-button" disabled={busy || Boolean(checking) || openingAccount} onClick={async () => { setOpeningAccount(true); try { await onAccount(); } catch { /* ExamSync exposes the save error; keep the exam open. */ } finally { setOpeningAccount(false); } }}><AccountIcon name="user" />{openingAccount ? "Opening…" : <><span className="account-member">My account</span><span className="account-guest">Save my progress</span></>}</button></div>}
       {error && <div className="qx-error" role="alert">{error}<button className="qx-button" onClick={() => window.location.reload()}>Reload session</button></div>}
-      {summary && results ? <section className="qx-results"><div className="qx-results-actions"><Link className="qx-catalog-link" href="/certifications"><ExamIcon name="previous" />Certification catalog</Link><button className="qx-button qx-primary" onClick={onRestart}>New session<ExamIcon name="next" /></button></div>
+      {calculating ? <ResultsLoading /> : summary && results ? <section className="qx-results"><div className="qx-results-actions"><Link className="qx-catalog-link" href="/certifications"><ExamIcon name="previous" />Certification catalog</Link><button className="qx-button qx-primary" onClick={onRestart}>New session<ExamIcon name="next" /></button></div>
         <div className="qx-results-hero"><div><div className="qx-section-label">SESSION COMPLETE</div><h1 id="results-title" tabIndex={-1}>{results.passed ? "A strong step forward." : "Turn insight into progress."}</h1><p>{results.correct} of {results.total} correct. Your next study session starts with what you learned here.</p></div><div className="qx-score"><strong>{results.scaledScore}</strong><span>{results.passed ? "Practice pass" : "Below practice threshold"}</span><small>Target {results.passingScore}</small></div></div>
         <p className="qx-score-note">Linear practice estimate; not an official vendor score.</p>
         <div className="qx-domain-results">{results.domains.filter(d => d.total).sort((a, b) => (a.accuracy ?? 0) - (b.accuracy ?? 0)).map(d => <div key={d.id}><span>{d.name}</span><strong>{d.accuracy}%</strong><div className="qx-mini-track"><span style={{ width: `${d.accuracy}%` }} /></div><small>{d.correct} of {d.total} correct</small></div>)}</div>
@@ -119,7 +121,7 @@ export function ExamWorkspace({ attempt, expired, busy, checking, error, onChang
         <aside className="qx-aside" aria-label="Session information"><section><div className="qx-section-label">YOUR PROGRESS</div><div className="qx-aside-count"><strong>{answered}</strong><span>/ {attempt.questions.length} answered</span></div><div className="qx-mini-track"><span style={{ width: `${answered / attempt.questions.length * 100}%` }} /></div><p>{attempt.isSubmitted ? "Explore the reasoning behind each answer." : attempt.mode === "domain" ? "Take your time. Understanding is the goal." : "Stay focused. You can revisit any question before submitting."}</p><button className="qx-button" onClick={() => setDrawer(true)}><ExamIcon name="grid" />Open question navigator</button></section><section className="qx-shortcuts-inline"><div className="qx-section-label"><ExamIcon name="keyboard" />KEYBOARD CONTROLS</div><dl><div><dt><kbd>1–4</kbd> / <kbd>A–D</kbd></dt><dd>Choose an option</dd></div><div><dt><kbd>F</kbd></dt><dd>Flag question</dd></div><div><dt><kbd><ExamIcon name="previous" /><span className="sr-only">Left arrow</span></kbd> <kbd><ExamIcon name="next" /><span className="sr-only">Right arrow</span></kbd></dt><dd>Move between questions</dd></div><div><dt><kbd>Enter</kbd></dt><dd>Next question</dd></div></dl><label><input type="checkbox" checked={shortcuts} onChange={event => toggleShortcuts(event.target.checked)} />Enable shortcuts</label></section><Link href="/certifications" className="qx-catalog-link"><ExamIcon name="previous" />Certification catalog</Link></aside>
       </>}
     </main>
-    {!summary && !confirmation && <QuizFooter index={index} total={attempt.questions.length} flagged={flagged} disabled={disabled} isSubmitted={attempt.isSubmitted} checking={checking === question.id} primaryLabel={attempt.isSubmitted ? "Results overview" : reveal ? checking === question.id ? "Checking answer…" : "Reveal answer" : "Review & submit"} primaryDisabled={reveal && (Boolean(checking) || selected.length !== question.selectionCount)} onPrevious={() => jump(index - 1)} onNext={next} onFlag={flag} onPrimary={() => { if (attempt.isSubmitted) setReviewIndex(null); else if (reveal) void onChange({}, "check"); else setConfirming(true); }} />}
+    {!calculating && !summary && !confirmation && <QuizFooter index={index} total={attempt.questions.length} flagged={flagged} disabled={disabled} isSubmitted={attempt.isSubmitted} checking={checking === question.id} primaryLabel={attempt.isSubmitted ? "Results overview" : reveal ? checking === question.id ? "Checking answer…" : "Reveal answer" : "Review & submit"} primaryDisabled={reveal && (Boolean(checking) || selected.length !== question.selectionCount)} onPrevious={() => jump(index - 1)} onNext={next} onFlag={flag} onPrimary={() => { if (attempt.isSubmitted) setReviewIndex(null); else if (reveal) void onChange({}, "check"); else setConfirming(true); }} />}
     <QuestionGridDrawer open={drawer} attempt={attempt} currentIndex={index} disabled={disabled} onClose={() => setDrawer(false)} onJump={jump} shortcuts={shortcuts} setShortcuts={toggleShortcuts} />
   </div>;
 }

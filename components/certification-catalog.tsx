@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { CatalogSkeleton, SkeletonLines } from "./loading-skeleton";
 import Link from "next/link";
 import { useEffect, useState, type CSSProperties } from "react";
 import { mergeCatalog, questionCount, type Track } from "@/lib/catalog";
@@ -57,7 +58,7 @@ export default function CertificationCatalog({ compact = false, platformSlug }: 
       return <Link href={`/platforms/${platform.slug}`} className={`hub-card platform-${platform.slug}`} key={platform.slug} style={{ "--platform-accent": platform.accent } as CSSProperties}>
         <div className="hub-card-top"><PlatformLogo slug={platform.slug} /><span className="hub-number">0{index + 1} /</span></div>
         <div className="card-category">{platform.category}</div><h3>{platform.name}<CatalogIcon /></h3><p>{platform.description}</p>
-        <div className="hub-preview">{status === "ready" ? available.length ? available.map(track => <span className="hub-ready-track" key={track.slug}>{track.title}</span>) : <span>Question banks coming soon</span> : <span className={`hub-status ${status === "loading" ? "is-loading" : "is-error"}`}><i aria-hidden="true" />{status === "loading" ? "Checking question banks…" : "Availability temporarily unavailable"}</span>}</div>
+        <div className="hub-preview">{status === "ready" ? available.length ? available.map(track => <span className="hub-ready-track" key={track.slug}>{track.title}</span>) : <span>Question banks coming soon</span> : status === "loading" ? <><span className="sr-only">Loading question availability</span><SkeletonLines /></> : <span className="hub-status is-error"><i aria-hidden="true" />Availability temporarily unavailable</span>}</div>
         <div className="hub-card-footer"><span>{status === "ready" ? available.length ? `${available.length} ready to practice` : "Coming soon" : "Explore platform"}</span><CatalogIcon name="external" /></div>
       </Link>;
     })}</div><p className="catalog-disclaimer">Independent preparation for AWS, Microsoft Azure, and Cisco certifications.</p>
@@ -68,7 +69,7 @@ export default function CertificationCatalog({ compact = false, platformSlug }: 
     <section className={`catalog-hero ${platformSlug ? "catalog-hero-scoped" : ""}`}><div>{platformSlug && <PlatformLogo slug={platformSlug} />}<div className="eyebrow section-kicker">{platformSlug ? scoped[0]?.category : "THE CERTI LEARNING CATALOG"}</div><h1>{platformSlug ? <>{scoped[0]?.name}<span>Build what comes next.</span></> : <>Your ambition.<span>Your next certification.</span></>}</h1><p>{platformSlug ? scoped[0]?.description : "Focused practice for AWS, Azure, and Cisco. Explore available question banks, understand every answer, and make your next study session count."}</p></div><div className="catalog-stat-panel"><span className="eyebrow section-kicker">READY WHEN YOU ARE</span><strong>{status === "ready" ? String(readyCount).padStart(2, "0") : "—"}<span>certifications to practice</span></strong><div><span className="status-dot" />{status === "ready" ? "More question banks coming soon" : status === "error" ? "Availability unavailable" : "Checking availability…"}</div></div></section>
     <nav className="platform-tabs" aria-label="Choose a platform"><Link href="/certifications" aria-current={!platformSlug ? "page" : undefined}>All platforms</Link>{all.map(platform => <Link href={`/platforms/${platform.slug}`} key={platform.slug} aria-current={platform.slug === platformSlug ? "page" : undefined}>{platform.name}</Link>)}</nav>
     <div className="catalog-toolbar"><div className="catalog-search"><CatalogIcon name="search" /><input type="search" aria-label="Search certifications" placeholder="Search certifications, exam codes, or skills…" value={query} onChange={event => setQuery(event.target.value)} /></div><label className="filter-select"><span className="sr-only">Certification level</span><select value={level} onChange={event => setLevel(event.target.value)}><option>All levels</option>{Array.from(new Set(scoped.flatMap(platform => platform.tracks.map(track => track.level)))).map(value => <option key={value}>{value}</option>)}</select></label></div>
-    {status === "loading" && <div className="catalog-notice" role="status">Checking the latest question banks…</div>}
+    {status === "loading" && <CatalogSkeleton />}
     {status === "error" && <div className="catalog-notice" role="alert">We couldn’t check question availability. Please retry to see what’s ready.<button onClick={retry}>Retry connection<CatalogIcon name="refresh" /></button></div>}
     {status === "ready" && <>
       <div className="catalog-results-bar" role="status"><span>{sections.reduce((sum, item) => sum + item.ready.length, 0)} ready to practice{query || level !== "All levels" ? " matching your filters" : ""}</span><span>Choose a certification to customize your session.</span></div>

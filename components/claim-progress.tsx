@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SkeletonLines } from "./loading-skeleton";
 import { AccountIcon } from "./account-icon";
 export function ClaimProgress({ returnTo }: { returnTo: string }) {
   const [error, setError] = useState("");
@@ -18,6 +19,6 @@ export function ClaimProgress({ returnTo }: { returnTo: string }) {
   }, [returnTo]);
   useEffect(() => { if (!started.current) { started.current = true; void claim(); } }, [claim]);
   useEffect(() => { if (error) alert.current?.focus(); }, [error]);
-  return <section className="auth-card auth-transition"><div className="auth-transition-symbol">{busy ? <span className="auth-spinner" /> : <AccountIcon name="shield" />}</div><span className="auth-kicker">RIGHT WHERE YOU LEFT OFF</span><h1>{error ? "Let's try that again." : "Getting your next step ready."}</h1><p role="status">{busy ? "Just a moment. Your practice history is coming with you." : "Finish saving your progress to continue."}</p>{error && <><div ref={alert} tabIndex={-1} role="alert" className="auth-error">{error}</div><button className="primary-button auth-submit" onClick={claim}>Try again<AccountIcon name="arrow" /></button></>}</section>;
+  return <section className="auth-card auth-transition"><div className="auth-transition-symbol">{busy ? <span className="auth-spinner" /> : <AccountIcon name="shield" />}</div><span className="auth-kicker">RIGHT WHERE YOU LEFT OFF</span><h1>{error ? "Let's try that again." : "Getting your next step ready."}</h1><p role="status">{busy ? "Just a moment. Your practice history is coming with you." : "Finish saving your progress to continue."}</p>{busy && <div aria-busy="true" aria-label="Preparing saved progress"><SkeletonLines /></div>}{error && <><div ref={alert} tabIndex={-1} role="alert" className="auth-error">{error}</div><button className="primary-button auth-submit" onClick={claim}>Try again<AccountIcon name="arrow" /></button></>}</section>;
 }
 
