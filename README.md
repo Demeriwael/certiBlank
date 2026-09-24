@@ -197,6 +197,12 @@ This test creates and removes its own attempts and expects the current seeded AW
 
 </details>
 
+## Hosting on AWS EC2
+
+See the [manual EC2 deployment guide](docs/aws-ec2.md) for Docker Compose,
+Nginx/HTTPS, runtime secrets, and rollback. GitHub Actions builds and smoke-tests
+the Linux Docker image; it does not deploy or modify the production database.
+
 ## 📚 Working with question banks
 
 Banks live under `prisma/Data/<Platform>/<Certification>/*.json`. The importer discovers the data directory case-insensitively; preserve the tracked path casing when contributing.

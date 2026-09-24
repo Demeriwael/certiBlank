@@ -1,5 +1,6 @@
 import type { BetterAuthOptions } from "better-auth";
 import { APIError, createAuthMiddleware } from "better-auth/api";
+import { clientIpOptions } from "./client-ip";
 
 export const authOptions = {
   appName: "CertiBlank",
@@ -12,8 +13,7 @@ export const authOptions = {
       throw new APIError("BAD_REQUEST", { message: "Name must contain 1–100 characters" });
     }
   }) },
-  // Netlify sets this at its ingress. Do not fall back to client-supplied forwarding headers.
-  advanced: { ipAddress: { ipAddressHeaders: ["x-nf-client-connection-ip"] } },
+  advanced: { ipAddress: clientIpOptions(process.env.DEPLOY_TARGET) },
   emailAndPassword: { enabled: true, minPasswordLength: 12, maxPasswordLength: 128 },
   // Do not merge an unverified password account with a Google identity.
   account: { accountLinking: { enabled: false } },

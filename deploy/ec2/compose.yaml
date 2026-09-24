@@ -1,0 +1,41 @@
+name: certiblank
+services:
+  app:
+    image: ${CERTIBLANK_IMAGE:?Set CERTIBLANK_IMAGE to the downloaded release tag}
+    platform: linux/amd64
+    pull_policy: never
+    restart: unless-stopped
+    init: true
+    user: "1000:1000"
+    ports:
+      # Nginx on the host is the only public ingress. Never change to 0.0.0.0.
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - path: ${CERTIBLANK_ENV_FILE:-/etc/certiblank/app.env}
+        format: raw
+    environment:
+      NODE_ENV: production
+      DEPLOY_TARGET: ec2
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      NEXT_TELEMETRY_DISABLED: "1"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,uid=1000,gid=1000,mode=1770
+    volumes:
+      - next_cache:/app/.next/cache
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1g
+    pids_limit: 256
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  next_cache:
