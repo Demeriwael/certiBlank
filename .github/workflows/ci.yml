@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      ec2_artifact:
+        description: Downloadable Docker image for manual EC2 deployment (no CD)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -16,7 +21,7 @@ concurrency:
 jobs:
   checks:
     name: CI checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       # Syntax-only placeholders. CI has no real database credentials or service.
@@ -64,3 +69,80 @@ jobs:
 
       - name: Verify production build
         run: npm run build
+
+  docker:
+    name: Docker build and smoke test
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CERTIBLANK_IMAGE: certiblank:${{ github.sha }}
+      CERTIBLANK_ENV_FILE: /tmp/certiblank-ci.env
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Build Linux image without production secrets
+        run: docker build --pull --platform linux/amd64 --label "org.opencontainers.image.revision=$GITHUB_SHA" -t "$CERTIBLANK_IMAGE" .
+
+      - name: Smoke-test the actual Compose deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$CERTIBLANK_ENV_FILE" <<'EOF'
+          DATABASE_URL=postgresql://test:test@127.0.0.1:5432/certi_test
+          BETTER_AUTH_URL=http://localhost:3000
+          BETTER_AUTH_SECRET=ci-only-placeholder-never-use-in-production-123456789
+          EOF
+          docker compose -f deploy/ec2/compose.yaml config --quiet
+          docker compose -f deploy/ec2/compose.yaml up -d --wait --wait-timeout 120
+          curl --fail --silent http://127.0.0.1:3000/ -o "$RUNNER_TEMP/home.html"
+          test "$(curl --silent -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/questions)" = 400
+          # Prove static assets survived standalone packaging.
+          asset=$(grep -oE '/_next/static/[^" ]+\.css' "$RUNNER_TEMP/home.html" | sed -n '1p')
+          test -n "$asset"
+          curl --fail --silent "http://127.0.0.1:3000$asset" -o /dev/null
+          # Prisma's engine must load on Linux; loopback DB is intentionally absent.
+          docker compose -f deploy/ec2/compose.yaml exec -T app node -e '
+            const {PrismaClient}=require("@prisma/client"); const p=new PrismaClient();
+            p.$connect().then(()=>{process.exitCode=1}).catch(e=>{
+              if(e.errorCode!=="P1001") {console.error("Unexpected Prisma engine result",e.errorCode); process.exitCode=1;}
+            }).finally(()=>p.$disconnect());'
+          # Verify the non-root runtime can write cache but not application files.
+          docker compose -f deploy/ec2/compose.yaml exec -T app node -e '
+            const fs=require("node:fs"); if(process.getuid()===0) throw Error("Root runtime");
+            fs.writeFileSync(".next/cache/smoke","ok"); fs.unlinkSync(".next/cache/smoke");
+            try { fs.writeFileSync("unexpected-write","bad"); process.exitCode=1; }
+            catch(e) { if(!["EROFS","EACCES"].includes(e.code)) throw e; }'
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose -f deploy/ec2/compose.yaml logs --tail 80
+
+      - name: Stop CI containers
+        if: always()
+        run: docker compose -f deploy/ec2/compose.yaml down --volumes
+
+      - name: Export Docker image for manual deployment
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.ec2_artifact }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker save "$CERTIBLANK_IMAGE" | gzip > certiblank-image.tar.gz
+          sha256sum certiblank-image.tar.gz > certiblank-image.tar.gz.sha256
+          printf 'CERTIBLANK_IMAGE=%s\n' "$CERTIBLANK_IMAGE" > release.env
+
+      - name: Upload EC2 release for manual deployment
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.ec2_artifact }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: certiblank-ec2-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            certiblank-image.tar.gz
+            certiblank-image.tar.gz.sha256
+            release.env
+            deploy/ec2/

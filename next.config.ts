@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Opt in only for the Linux EC2 artifact; preserve managed-host builds.
+  ...(process.env.DEPLOY_TARGET === "ec2" ? { output: "standalone" as const } : {}),
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: [

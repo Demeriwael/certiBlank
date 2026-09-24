@@ -1,0 +1,24 @@
+# Allow only build inputs. Local secrets, keys, Git history and old build caches
+# never enter the Docker build context, including files added in future folders.
+**
+!package.json
+!package-lock.json
+!next.config.ts
+!tsconfig.json
+!postcss.config.mjs
+!prisma.config.ts
+!app/
+!app/**
+!components/
+!components/**
+!lib/
+!lib/**
+!public/
+!public/**
+!prisma/
+!prisma/schema.prisma
+prisma/Data/
+prisma/data/
+**/.env*
+**/*.pem
+**/*.key
