@@ -42,7 +42,7 @@ A focused dark interface, touch-friendly controls, and explanations keep the att
 
 Multiple-response questions use exact matching, with no partial credit. Unanswered or incomplete answers count as incorrect. Mock exams require enough questions in each domain to satisfy the configured blueprint.
 
-> **A study aid, not an official exam.** Scores are practice estimates, not vendor-equivalent psychometric scores. Question banks are AI-generated and may contain errors; verify technical claims against official documentation and report corrections.
+> **A study aid, not an official exam.** Scores are practice estimates, not vendor-equivalent psychometric scores. Question banks may contain errors; verify technical claims against official documentation and report corrections.
 
 <details>
 <summary><strong>How scoring and saved progress work</strong></summary>
