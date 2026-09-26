@@ -17,16 +17,22 @@ Next.js · TypeScript · PostgreSQL · Docker · AWS EC2
 
 ---
 
+## ✨ What you can do
+
 CertiBlank is an IT certification practice platform built around one idea: **understand why an answer is right, not just which answer to pick.** Practice by domain, take a timed mock exam, and use your results to decide what to study next.
 
-A full-stack application that takes a learner from a first anonymous practice session to account-linked exam history. Light and dark themes, touch-friendly controls, and detailed explanations keep the attention where it belongs: on learning.
-
-[![CertiBlank landing page with an interactive AWS question](docs/media/landing.jpg)](https://certiblank.com)
-
-**Explore without an account:** open the live demo, choose AWS or Azure, and start domain practice. Cisco is listed as coming soon; availability depends on the imported question banks.
+| | Domain practice | Timed mock exam |
+| --- | --- | --- |
+| Best for | Learning and targeting weak areas | Rehearsing a complete exam session |
+| Questions | Selected domains and session length | Certification configuration and domain quotas |
+| Feedback | After explicitly checking an answer | After final submission |
+| Timing | Practice at your own pace | Server-enforced countdown |
+| Review | Explanations as you go | Flag, navigate, and review before submitting |
 
 <a id="product-tour"></a>
 ## 🎬 See it in action
+
+[![CertiBlank landing page with an interactive AWS question](docs/media/landing.jpg)](https://certiblank.com)
 
 **Select → submit → understand.** This short sequence captures the interactive question on the live landing page.
 
@@ -47,123 +53,10 @@ A full-stack application that takes a learner from a first anonymous practice se
 
 Screenshots show a demonstration session, not a real certification result. No personal account data is included.
 
-## 🔍 Engineering highlights
-
-| Challenge | Implementation |
-| --- | --- |
-| Keep practice responsive while saving | Local state updates immediately; a serialized queue batches writes, retries transient failures, and preserves newer edits when responses arrive. |
-| Make exam results trustworthy | Server-side deadlines and grading; mock answers stay hidden until submission. Each attempt retains a fixed question snapshot. |
-| Let visitors try before signing up | Anonymous ownership cookies protect guest attempts. Claiming an attempt links it to a user and removes access through the old guest identity. |
-| Reduce unnecessary data transfer | Incremental feedback returns explanations when needed; ordinary saves omit the immutable question snapshot. |
-| Protect the API boundary | Ownership checks, origin validation, request-size limits, persistent rate limiting, and private error details. |
-| Ship a repeatable runtime | A multi-stage Docker build, non-root container, read-only application filesystem, health check, and a dedicated writable cache. |
-| Validate changes before release | CI runs dependency auditing, bank validation, lint, type checks, unit/mocked API tests, a production build, and Docker smoke tests. Deployment remains manual. |
-
-The [performance write-up](docs/exam-performance.md) includes a reproducible fixture comparison: routine-save JSON fell from **86,578 to 3,371 bytes**. These are serialized fixture sizes, not measured production latency or a promise of zero delay.
-
-<a id="architecture"></a>
-## 🏗️ Architecture
-
-```mermaid
-flowchart LR
-    Browser["Browser · React UI"] -->|HTTPS| Nginx["Nginx · TLS termination"]
-    subgraph EC2["AWS EC2 · Ubuntu"]
-        Nginx -->|localhost:3000| App["Docker · Next.js App Router"]
-        App --> Auth["Better Auth · sessions"]
-        App --> Exam["Exam API · ownership and grading"]
-        Auth --> Prisma["Prisma ORM"]
-        Exam --> Prisma
-    end
-    Prisma --> DB[("Supabase · PostgreSQL")]
-    CI["GitHub Actions · checks and image build"] -. Manual release .-> App
-```
-
-The browser handles interaction and temporary drafts. Next.js route handlers authorize requests and own grading, deadlines, and persistence. PostgreSQL stores users, sessions, certification content, and attempt snapshots; the browser never connects directly to the database.
-
-Nginx terminates HTTPS and forwards requests to the container's loopback-only port. Production secrets are supplied at runtime rather than baked into the image. GitHub Actions can export a commit-tagged image for a deliberate, manual release with rollback instructions.
-
-<a id="code-tour"></a>
-## 💻 A guided code tour
-
-| Start here | What to look for |
-| --- | --- |
-| [Exam workspace](components/exam/ExamWorkspace.tsx) | Question flow, navigation, feedback, and review UI. |
-| [Background synchronization](lib/exam-sync.ts) · [tests](tests/exam-sync.test.ts) | Batching, response ordering, retry behavior, and draft preservation. |
-| [Exam logic](lib/exam-logic.ts) · [tests](tests/exam.test.ts) | Selection, scoring, and domain calculations. |
-| [Account ownership](lib/auth-logic.ts) · [tests](tests/auth.test.ts) | Guest-to-account claims and authorization boundaries. |
-| [Request protections](lib/request-security.ts) · [tests](tests/request-security.test.ts) | Origin checks and input boundaries. |
-| [Database security tests](tests/security-database.test.ts) | In-memory PostgreSQL checks for database protections. |
-| [Dockerfile](Dockerfile) · [Compose](deploy/ec2/compose.yaml) · [CI](.github/workflows/ci.yml) | Build isolation, constrained runtime, and release validation. |
-
-### Deliberate tradeoffs
-
-- **Responsive does not mean offline:** selection and navigation are local, but answer reveal and final submission require the server.
-- **Practice scores are estimates:** the configurable scale is useful for revision, not a replica of vendor psychometric scoring.
-- **One application, one deployment:** a single Next.js service keeps operations approachable; a single EC2 host is not a highly available cluster.
-- **Security work is ongoing:** email verification/password recovery and a full script CSP remain follow-up work. See [authentication](docs/authentication.md) and [security notes](docs/security-hardening.md); some hosting notes there describe the earlier Netlify deployment.
-
-## ✨ What you can do
-
-| Feature | What it brings to your study session |
-| --- | --- |
-| ⏱️ Timed mock exams | A countdown, domain-weighted question selection, flags, and a review step before submission. |
-| 🎯 Domain practice | Focus on selected topics and reveal feedback after checking each answer. |
-| 🧩 Single and multiple response | Radio and checkbox questions with explicit selection requirements. |
-| 💡 Detailed explanations | Reasoning for correct answers, individual distractor breakdowns, and documentation references. |
-| 📊 Results that guide revision | A practice score, question-by-question review, and accuracy by domain. |
-| 📱 A responsive exam workspace | Large answer cards, persistent navigation, and a question jump drawer. |
-| ⚡ Immediate interactions | Answer selection and navigation update locally while progress saves in the background. |
-| ♿ Keyboard-friendly controls | Visible focus, drawer focus management, status announcements, and reduced-motion support. |
-
-## 🧭 Choose your practice mode
-
-| | Domain practice | Timed mock exam |
-| --- | --- | --- |
-| Best for | Learning and targeting weak areas | Rehearsing a complete exam session |
-| Questions | Selected domains and session length | Certification configuration and domain quotas |
-| Feedback | After explicitly checking an answer | After final submission |
-| Timing | Practice at your own pace | Server-enforced countdown |
-| Review | Explanations as you go | Flag, navigate, and review before submitting |
-
-Multiple-response questions use exact matching, with no partial credit. Unanswered or incomplete answers count as incorrect. Mock exams require enough questions in each domain to satisfy the configured blueprint.
-
-> **A study aid, not an official exam.** Scores are practice estimates, not vendor-equivalent psychometric scores. Question banks may contain errors; verify technical claims against official documentation and report corrections.
-
-<details>
-<summary><strong>How scoring and saved progress work</strong></summary>
-
-The practice score uses each certification's configured scale:
-
-```text
-round(minimumScore + (correct / total) × (maximumScore - minimumScore))
-```
-
-Domain accuracy is a raw percentage. Domains not sampled do not receive an accuracy value.
-
-Attempts are stored in PostgreSQL with a fixed question snapshot. Anonymous practice uses an HttpOnly owner cookie, and session storage remembers the current attempt in that browser tab. Optional accounts provide cross-device history: signing up or logging in links that browser's anonymous attempts without changing answers or timers.
-
-Selections, flags, and navigation update immediately. A serialized save queue batches progress updates and retries connection failures. Pending drafts remain in session storage. Answer checking and final submission still require a server response. Correct answers are returned only for checked domain questions or submitted attempts.
-
-Closing the browser does not pause a mock exam. The server enforces its deadline and finalizes an expired attempt on the next request. Only answers saved before the deadline count.
-
-</details>
-
-## 🛠️ Built with
-
-| Layer | Technology |
-| --- | --- |
-| Application | Next.js 16 · App Router · React 19 |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4 |
-| Data | PostgreSQL · Prisma 6 |
-| Authentication | Better Auth · email/password · optional Google OAuth |
-| Validation | ESLint · TypeScript · Node.js test runner |
-| CI | GitHub Actions · Node.js 24 · Ubuntu |
-| Hosting | AWS EC2 · Docker Compose · Nginx · Let's Encrypt |
-| Managed database | Supabase PostgreSQL |
-
 <a id="local-installation"></a>
 ## 🚀 Local installation
+
+**Explore without an account:** open the live demo, choose AWS or Azure, and start domain practice. Cisco is listed as coming soon; availability depends on the imported question banks.
 
 ### 1. Get the prerequisites
 
@@ -252,6 +145,118 @@ For a local production run, stop the development server, then run:
 npm run build
 npm start
 ```
+
+## For reviewers and contributors
+
+## 🔍 Engineering highlights
+
+A full-stack application that takes a learner from a first anonymous practice session to account-linked exam history. Light and dark themes, touch-friendly controls, and detailed explanations keep the attention where it belongs: on learning.
+
+| Challenge | Implementation |
+| --- | --- |
+| Keep practice responsive while saving | Local state updates immediately; a serialized queue batches writes, retries transient failures, and preserves newer edits when responses arrive. |
+| Make exam results trustworthy | Server-side deadlines and grading; mock answers stay hidden until submission. Each attempt retains a fixed question snapshot. |
+| Let visitors try before signing up | Anonymous ownership cookies protect guest attempts. Claiming an attempt links it to a user and removes access through the old guest identity. |
+| Reduce unnecessary data transfer | Incremental feedback returns explanations when needed; ordinary saves omit the immutable question snapshot. |
+| Protect the API boundary | Ownership checks, origin validation, request-size limits, persistent rate limiting, and private error details. |
+| Ship a repeatable runtime | A multi-stage Docker build, non-root container, read-only application filesystem, health check, and a dedicated writable cache. |
+| Validate changes before release | CI runs dependency auditing, bank validation, lint, type checks, unit/mocked API tests, a production build, and Docker smoke tests. Deployment remains manual. |
+
+The [performance write-up](docs/exam-performance.md) includes a reproducible fixture comparison: routine-save JSON fell from **86,578 to 3,371 bytes**. These are serialized fixture sizes, not measured production latency or a promise of zero delay.
+
+<details>
+<summary><strong>Product capabilities</strong></summary>
+
+| Feature | What it brings to your study session |
+| --- | --- |
+| ⏱️ Timed mock exams | A countdown, domain-weighted question selection, flags, and a review step before submission. |
+| 🎯 Domain practice | Focus on selected topics and reveal feedback after checking each answer. |
+| 🧩 Single and multiple response | Radio and checkbox questions with explicit selection requirements. |
+| 💡 Detailed explanations | Reasoning for correct answers, individual distractor breakdowns, and documentation references. |
+| 📊 Results that guide revision | A practice score, question-by-question review, and accuracy by domain. |
+| 📱 A responsive exam workspace | Large answer cards, persistent navigation, and a question jump drawer. |
+| ⚡ Immediate interactions | Answer selection and navigation update locally while progress saves in the background. |
+| ♿ Keyboard-friendly controls | Visible focus, drawer focus management, status announcements, and reduced-motion support. |
+
+</details>
+
+<details>
+<summary><strong>How scoring and saved progress work</strong></summary>
+
+Multiple-response questions use exact matching, with no partial credit. Unanswered or incomplete answers count as incorrect. Mock exams require enough questions in each domain to satisfy the configured blueprint.
+
+> **A study aid, not an official exam.** Question banks may contain errors; verify technical claims against official documentation and report corrections.
+
+The practice score uses each certification's configured scale:
+
+```text
+round(minimumScore + (correct / total) × (maximumScore - minimumScore))
+```
+
+Domain accuracy is a raw percentage. Domains not sampled do not receive an accuracy value.
+
+Attempts are stored in PostgreSQL with a fixed question snapshot. Anonymous practice uses an HttpOnly owner cookie, and session storage remembers the current attempt in that browser tab. Optional accounts provide cross-device history: signing up or logging in links that browser's anonymous attempts without changing answers or timers.
+
+Selections, flags, and navigation update immediately. A serialized save queue batches progress updates and retries connection failures. Pending drafts remain in session storage. Answer checking and final submission still require a server response. Correct answers are returned only for checked domain questions or submitted attempts.
+
+Closing the browser does not pause a mock exam. The server enforces its deadline and finalizes an expired attempt on the next request. Only answers saved before the deadline count.
+
+</details>
+
+<a id="architecture"></a>
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    Browser["Browser · React UI"] -->|HTTPS| Nginx["Nginx · TLS termination"]
+    subgraph EC2["AWS EC2 · Ubuntu"]
+        Nginx -->|localhost:3000| App["Docker · Next.js App Router"]
+        App --> Auth["Better Auth · sessions"]
+        App --> Exam["Exam API · ownership and grading"]
+        Auth --> Prisma["Prisma ORM"]
+        Exam --> Prisma
+    end
+    Prisma --> DB[("Supabase · PostgreSQL")]
+    CI["GitHub Actions · checks and image build"] -. Manual release .-> App
+```
+
+The browser handles interaction and temporary drafts. Next.js route handlers authorize requests and own grading, deadlines, and persistence. PostgreSQL stores users, sessions, certification content, and attempt snapshots; the browser never connects directly to the database.
+
+Nginx terminates HTTPS and forwards requests to the container's loopback-only port. Production secrets are supplied at runtime rather than baked into the image. GitHub Actions can export a commit-tagged image for a deliberate, manual release with rollback instructions.
+
+<a id="code-tour"></a>
+## 💻 A guided code tour
+
+| Start here | What to look for |
+| --- | --- |
+| [Exam workspace](components/exam/ExamWorkspace.tsx) | Question flow, navigation, feedback, and review UI. |
+| [Background synchronization](lib/exam-sync.ts) · [tests](tests/exam-sync.test.ts) | Batching, response ordering, retry behavior, and draft preservation. |
+| [Exam logic](lib/exam-logic.ts) · [tests](tests/exam.test.ts) | Selection, scoring, and domain calculations. |
+| [Account ownership](lib/auth-logic.ts) · [tests](tests/auth.test.ts) | Guest-to-account claims and authorization boundaries. |
+| [Request protections](lib/request-security.ts) · [tests](tests/request-security.test.ts) | Origin checks and input boundaries. |
+| [Database security tests](tests/security-database.test.ts) | In-memory PostgreSQL checks for database protections. |
+| [Dockerfile](Dockerfile) · [Compose](deploy/ec2/compose.yaml) · [CI](.github/workflows/ci.yml) | Build isolation, constrained runtime, and release validation. |
+
+### Deliberate tradeoffs
+
+- **Responsive does not mean offline:** selection and navigation are local, but answer reveal and final submission require the server.
+- **Practice scores are estimates:** the configurable scale is useful for revision, not a replica of vendor psychometric scoring.
+- **One application, one deployment:** a single Next.js service keeps operations approachable; a single EC2 host is not a highly available cluster.
+- **Security work is ongoing:** email verification/password recovery and a full script CSP remain follow-up work. See [authentication](docs/authentication.md) and [security notes](docs/security-hardening.md); some hosting notes there describe the earlier Netlify deployment.
+
+## 🛠️ Built with
+
+| Layer | Technology |
+| --- | --- |
+| Application | Next.js 16 · App Router · React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS 4 |
+| Data | PostgreSQL · Prisma 6 |
+| Authentication | Better Auth · email/password · optional Google OAuth |
+| Validation | ESLint · TypeScript · Node.js test runner |
+| CI | GitHub Actions · Node.js 24 · Ubuntu |
+| Hosting | AWS EC2 · Docker Compose · Nginx · Let's Encrypt |
+| Managed database | Supabase PostgreSQL |
 
 ## 🧪 Checks and CI
 
