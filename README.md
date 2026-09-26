@@ -1,6 +1,10 @@
 <div align="center">
 
-# CertiBlank ✦
+<h1>
+  <a href="https://certiblank.com">
+    <img src="docs/media/certiblank-logo.png" alt="CertiBlank" width="360" />
+  </a>
+</h1>
 
 ### Your next certification starts with a blank.
 **Fill it with practice. Back it with understanding.**
