@@ -295,6 +295,8 @@ See the [manual EC2 deployment guide](docs/aws-ec2.md) for Docker Compose,
 Nginx/HTTPS, runtime secrets, and rollback. GitHub Actions builds and smoke-tests
 the Linux Docker image; it does not deploy or modify the production database.
 
+Visitors can suggest certifications through the catalog. See [certification requests](docs/certification-requests.md) for the form's protections, review query, and required database migration before deploying this feature.
+
 ## 📚 Working with question banks
 
 Banks live under `prisma/Data/<Platform>/<Certification>/*.json`. The importer discovers the data directory case-insensitively; preserve the tracked path casing when contributing.

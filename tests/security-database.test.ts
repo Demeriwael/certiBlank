@@ -6,7 +6,7 @@ import { PGlite } from "@electric-sql/pglite";
 // Real PostgreSQL in memory: never loads .env or connects to Supabase.
 const db = new PGlite();
 let limit: typeof import("../lib/exam-rate-limit").limitExam;
-const tables = ["Platform", "Certification", "Question", "ExamAttempt", "User", "Session", "Account", "Verification", "RateLimit"];
+const tables = ["Platform", "Certification", "Question", "ExamAttempt", "User", "Session", "Account", "Verification", "RateLimit", "CertificationRequest"];
 before(async () => {
   for (const name of ["20260912000000_baseline", "20260912010000_user_authentication"]) {
     await db.exec(await readFile(new URL(`../prisma/migrations/${name}/migration.sql`, import.meta.url), "utf8"));
@@ -17,6 +17,7 @@ before(async () => {
   await db.exec('GRANT SELECT ("id") ON "ExamAttempt" TO anon;');
   await db.exec(`INSERT INTO "ExamAttempt" ("id", "owner", "certSlug", "mode", "snapshot", "answers") VALUES ('private-attempt', 'private-owner', 'aws', 'domain', '{}', '{}')`);
   await db.exec(await readFile(new URL("../prisma/migrations/20260916000000_restrict_data_api/migration.sql", import.meta.url), "utf8"));
+  await db.exec(await readFile(new URL("../prisma/migrations/20260926000000_certification_requests/migration.sql", import.meta.url), "utf8"));
   Object.assign(globalThis, { prisma: { $queryRaw: async (strings: TemplateStringsArray, ...values: unknown[]) => {
     const sql = strings.reduce((result, part, index) => result + (index ? `$${index}` : "") + part, "");
     return (await db.query(sql, values.map(value => typeof value === "bigint" ? value.toString() : value))).rows;
@@ -65,7 +66,7 @@ test("concurrent creation budgets cannot exceed the limit and recover after expi
 test("security migration also works on vanilla PostgreSQL without Supabase roles", async () => {
   const plain = new PGlite();
   try {
-    for (const name of ["20260912000000_baseline", "20260912010000_user_authentication", "20260916000000_restrict_data_api"]) {
+    for (const name of ["20260912000000_baseline", "20260912010000_user_authentication", "20260916000000_restrict_data_api", "20260926000000_certification_requests"]) {
       await plain.exec(await readFile(new URL(`../prisma/migrations/${name}/migration.sql`, import.meta.url), "utf8"));
     }
   } finally { await plain.close(); }
