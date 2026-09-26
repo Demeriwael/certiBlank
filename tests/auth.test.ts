@@ -125,16 +125,18 @@ test("database auth rate limits isolate Netlify clients and cannot be bypassed w
   assert.equal(db.rateLimit.length, 2);
 });
 
-test("Google initiation uses state and rejects an external completion URL", async () => {
+test("social sign-in uses provider callbacks and rejects an external completion URL", async () => {
   const db: Record<string, Record<string, unknown>[]> = { user: [], session: [], account: [], verification: [] };
-  const auth = betterAuth({ ...authOptions, baseURL: "http://localhost:3000", secret: "test-only-secret-not-for-deployment-123456789", database: memoryAdapter(db), rateLimit: { enabled: false }, socialProviders: { google: { clientId: "test-client", clientSecret: "test-secret" } } });
-  const start = (callbackURL: string) => auth.handler(new Request("http://localhost:3000/api/auth/sign-in/social", { method: "POST", headers: { origin: "http://localhost:3000", "content-type": "application/json" }, body: JSON.stringify({ provider: "google", callbackURL }) }));
-  const valid = await start("/auth/complete");
-  assert.equal(valid.status, 200);
-  const target = new URL((await valid.json()).url);
-  assert.equal(target.hostname, "accounts.google.com");
-  assert.ok(target.searchParams.get("state"));
-  assert.equal(target.searchParams.get("redirect_uri"), "http://localhost:3000/api/auth/callback/google");
-  assert.equal((await start("https://evil.test/steal")).status, 403);
+  const auth = betterAuth({ ...authOptions, baseURL: "http://localhost:3000", secret: "test-only-secret-not-for-deployment-123456789", database: memoryAdapter(db), rateLimit: { enabled: false }, socialProviders: { google: { clientId: "test-client", clientSecret: "test-secret" }, github: { clientId: "test-client", clientSecret: "test-secret" } } });
+  const start = (provider: "google" | "github", callbackURL: string) => auth.handler(new Request("http://localhost:3000/api/auth/sign-in/social", { method: "POST", headers: { origin: "http://localhost:3000", "content-type": "application/json" }, body: JSON.stringify({ provider, callbackURL }) }));
+  for (const [provider, hostname] of [["google", "accounts.google.com"], ["github", "github.com"]] as const) {
+    const valid = await start(provider, "/auth/complete");
+    assert.equal(valid.status, 200);
+    const target = new URL((await valid.json()).url);
+    assert.equal(target.hostname, hostname);
+    assert.ok(target.searchParams.get("state"));
+    assert.equal(target.searchParams.get("redirect_uri"), `http://localhost:3000/api/auth/callback/${provider}`);
+    assert.equal((await start(provider, "https://evil.test/steal")).status, 403);
+  }
   assert.equal(db.session.length, 0);
 });

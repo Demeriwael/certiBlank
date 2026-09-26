@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { AccountIcon } from "./account-icon";
 
-export function AuthForm({ signup, returnTo, google, initialError = "" }: { signup: boolean; returnTo: string; google: boolean; initialError?: string }) {
+export function AuthForm({ signup, returnTo, google, github, initialError = "" }: { signup: boolean; returnTo: string; google: boolean; github: boolean; initialError?: string }) {
   const router = useRouter();
-  const [busy, setBusy] = useState<"email" | "google" | null>(null);
+  const [busy, setBusy] = useState<"email" | "google" | "github" | null>(null);
   const [error, setError] = useState(initialError);
   const [visible, setVisible] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -30,12 +30,12 @@ export function AuthForm({ signup, returnTo, google, initialError = "" }: { sign
       router.replace(finish); router.refresh();
     } catch { setError("Connection interrupted. Your progress is safe. Please try again."); setBusy(null); }
   }
-  async function social() {
-    setBusy("google"); setError("");
+  async function social(provider: "google" | "github") {
+    setBusy(provider); setError("");
     try {
-      const result = await authClient.signIn.social({ provider: "google", callbackURL: finish, errorCallbackURL: `/login?error=oauth&returnTo=${encodeURIComponent(returnTo)}` });
-      if (result.error) { setError("Google sign-in isn't available right now. Try again or use email."); setBusy(null); }
-    } catch { setError("Couldn't connect to Google. Please try again."); setBusy(null); }
+      const result = await authClient.signIn.social({ provider, callbackURL: finish, errorCallbackURL: `/login?error=oauth&returnTo=${encodeURIComponent(returnTo)}` });
+      if (result.error) { setError(`${provider === "google" ? "Google" : "GitHub"} sign-in isn't available right now. Try again or use another method.`); setBusy(null); }
+    } catch { setError(`Couldn't connect to ${provider === "google" ? "Google" : "GitHub"}. Please try again.`); setBusy(null); }
   }
   return <div className="auth-split">
     <aside className="auth-story" aria-label="Your learning journey">
@@ -59,7 +59,11 @@ export function AuthForm({ signup, returnTo, google, initialError = "" }: { sign
       <p className="auth-description">{signup ? "Create your free account. Keep every session within reach." : "Log in to your practice history and continue where you left off."}</p>
       {continuing && <div className="auth-context"><AccountIcon name="shield" /><span>You’ll return to your practice session.<small>Timed exams keep counting down while you’re here.</small></span></div>}
       {error && <div className="auth-error" role="alert" ref={alert} tabIndex={-1}>{error}</div>}
-      {google && <><button className="auth-google" disabled={Boolean(busy)} onClick={social}>{busy === "google" ? <span className="auth-spinner" /> : <span className="auth-google-mark" aria-hidden="true">G</span>}{busy === "google" ? "Connecting to Google…" : "Continue with Google"}</button><div className="auth-divider"><span>or with email</span></div></>}
+      {(google || github) && <div className="auth-social-options">
+        {google && <button type="button" className="auth-social" disabled={Boolean(busy)} onClick={() => social("google")}>{busy === "google" ? <span className="auth-spinner" /> : <span className="auth-google-mark" aria-hidden="true">G</span>}{busy === "google" ? "Connecting to Google…" : "Continue with Google"}</button>}
+        {github && <button type="button" className="auth-social" disabled={Boolean(busy)} onClick={() => social("github")}>{busy === "github" ? <span className="auth-spinner" /> : <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.18c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 .17 2.64.6 3.27-.95.1-.73.39-1.23.71-1.51-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.24 1.16-3.03-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.16a10.8 10.8 0 0 1 5.64 0c2.15-1.46 3.1-1.16 3.1-1.16.61 1.55.23 2.7.11 2.98.72.79 1.16 1.8 1.16 3.03 0 4.32-2.64 5.27-5.15 5.55.4.35.75 1.04.75 2.1v3.12c0 .3.2.65.77.54A11.25 11.25 0 0 0 12 .75Z" /></svg>}{busy === "github" ? "Connecting to GitHub…" : "Continue with GitHub"}</button>}
+        <div className="auth-divider"><span>or with email</span></div>
+      </div>}
       <form className="auth-form" onSubmit={submit} aria-busy={Boolean(busy)}>
         {signup && <label htmlFor="auth-name">Your name<input id="auth-name" name="name" autoComplete="name" placeholder="What should we call you?" required maxLength={100} readOnly={Boolean(busy)} /></label>}
         <label htmlFor="auth-email">Email address<input id="auth-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required maxLength={254} readOnly={Boolean(busy)} /></label>
