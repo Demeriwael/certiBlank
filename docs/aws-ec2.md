@@ -99,7 +99,10 @@ use `NAME=value` without wrapping quotes. Dollar signs are preserved literally.
 URL-encode database password characters as required by PostgreSQL connection URLs.
 Do not blindly copy a quoted dotenv file into this raw-format file.
 
-Google is optional; register `https://YOUR_DOMAIN/api/auth/callback/google` if used.
+Google and GitHub sign-in are optional. Register
+`https://YOUR_DOMAIN/api/auth/callback/google` and
+`https://YOUR_DOMAIN/api/auth/callback/github` respectively, then set both the
+client ID and secret for each enabled provider in the runtime environment file.
 The container does not need migration credentials (`DIRECT_URL`) at runtime.
 Docker administrators can read container environment values: do not share
 `docker inspect` or expanded `docker compose config` output. Validate with

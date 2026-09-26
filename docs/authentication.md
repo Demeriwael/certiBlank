@@ -64,7 +64,7 @@ Do not mark the auth migration applied without executing it. Do not run reset or
 `db push` as a substitute. If your database differs or has migration history,
 reconcile that history first. No live migration was run during implementation.
 
-## Google OAuth (optional)
+## Google and GitHub OAuth (optional)
 
 In Google Cloud Console, configure an OAuth consent screen and a Web application
 OAuth client. Add `http://localhost:3000/api/auth/callback/google` as an authorized
@@ -73,7 +73,15 @@ for production. Configure test users while the Google app is in testing mode.
 Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` on the server and restart/rebuild.
 The Google button is hidden until both are set. Do not request extra Google scopes.
 
-Automatic linking between Google and password accounts is disabled deliberately.
+In GitHub Developer Settings, create an OAuth app and set its authorization callback
+URL to `http://localhost:3000/api/auth/callback/github` for development or
+`https://YOUR_DOMAIN/api/auth/callback/github` for production. Set
+`GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` on the server and restart/rebuild.
+The GitHub button is hidden until both are set. GitHub Apps require read-only
+access to account email addresses. Both social options appear above email sign-in
+when configured.
+
+Automatic linking between social and password accounts is disabled deliberately.
 An existing email user should use their original login method; a future explicit,
 authenticated linking flow can add another method safely.
 
@@ -91,7 +99,7 @@ is applied before paint. Both preferences are optional when storage is blocked.
 - Logged-in attempts have a `userId`. A guest cookie cannot access a claimed attempt,
   even after logout or from a different account. Account deletion cascades attempts
   instead of restoring anonymous access.
-- After either email login/signup or Google return, `/auth/complete` sends a
+- After email login/signup or a Google/GitHub return, `/auth/complete` sends a
   same-origin POST to `/api/account/claim`. It verifies the session and atomically
   claims only unowned attempts matching that browser's owner cookie, including
   finished attempts. No attempt IDs or user IDs from a request body are trusted.
@@ -116,7 +124,7 @@ They never touch Supabase. Test Google end to end using your OAuth client.
 
 Email verification and password-reset delivery are **not configured**: no email
 provider was supplied. Password accounts can register without verification; the
-email is not treated as proof of identity. This is why automatic OAuth linking is
+  email is not treated as proof of identity. This is why automatic OAuth linking is
 disabled. Configure transactional email before advertising password recovery.
 
 Rate limits use the database so they persist across serverless instances. The

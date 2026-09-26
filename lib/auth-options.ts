@@ -15,7 +15,7 @@ export const authOptions = {
   }) },
   advanced: { ipAddress: clientIpOptions(process.env.DEPLOY_TARGET) },
   emailAndPassword: { enabled: true, minPasswordLength: 12, maxPasswordLength: 128 },
-  // Do not merge an unverified password account with a Google identity.
+  // Do not merge an unverified password account with a social identity.
   account: { accountLinking: { enabled: false } },
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   rateLimit: { enabled: true, storage: "database", window: 60, max: 60,
