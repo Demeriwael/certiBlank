@@ -138,3 +138,12 @@ model RateLimit {
   count       Int
   lastRequest BigInt
 }
+
+model CertificationRequest {
+  id            String   @id @default(cuid())
+  platform      String
+  certification String
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}

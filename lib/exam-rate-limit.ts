@@ -9,6 +9,7 @@ export const examBudgets = {
   createDaily: { max: 100, seconds: 86400 },
   read: { max: 120, seconds: 60 },
   save: { max: 120, seconds: 60 },
+  certificationRequest: { max: 5, seconds: 86400 },
 } as const;
 
 export function examRateKey(request: Request, operation: keyof typeof examBudgets) {
