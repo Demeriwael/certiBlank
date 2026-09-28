@@ -15,8 +15,8 @@ export const authOptions = {
   }) },
   advanced: { ipAddress: clientIpOptions(process.env.DEPLOY_TARGET) },
   emailAndPassword: { enabled: true, minPasswordLength: 12, maxPasswordLength: 128 },
-  // Do not merge an unverified password account with a social identity.
-  account: { accountLinking: { enabled: false } },
+  // Existing users must sign in before explicitly linking a social identity.
+  account: { accountLinking: { enabled: true, disableImplicitLinking: true } },
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   rateLimit: { enabled: true, storage: "database", window: 60, max: 60,
     customRules: { "/sign-in/email": { window: 60, max: 5 }, "/sign-up/email": { window: 60, max: 5 } } },

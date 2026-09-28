@@ -3,8 +3,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { AccountIcon } from "./account-icon";
 import { certificationLabel, practiceStatus, type AccountAttempt } from "@/lib/account-ui";
+import { AccountConnections } from "./account-connections";
 
-export function AccountDashboard({ name, email, attempts, now, returnTo }: { name: string; email: string; attempts: AccountAttempt[]; now: number; returnTo: string }) {
+export function AccountDashboard({ name, email, attempts, now, returnTo, google, github, connection }: { name: string; email: string; attempts: AccountAttempt[]; now: number; returnTo: string; google: boolean; github: boolean; connection?: string }) {
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
   const active = attempts.filter(item => practiceStatus(item, now) === "active");
   const completed = attempts.filter(item => practiceStatus(item, now) === "completed");
@@ -18,6 +19,7 @@ export function AccountDashboard({ name, email, attempts, now, returnTo }: { nam
       <section className="account-next"><span className="auth-kicker">{next ? "PICK UP WHERE YOU LEFT OFF" : "YOUR NEXT STEP"}</span><div className="account-next-icon"><AccountIcon name="book" /></div><h2>{nextLabel ? nextLabel.title : "Make room for a little practice."}</h2><p>{next ? `${nextLabel!.provider} · ${next.mode === "mock" ? "Timed mock exam — the timer keeps running" : "Domain practice — learn at your pace"}` : "Choose a certification, find your focus, and start building confidence."}</p><Link className="primary-button" href={next ? href(next) : returnTo !== "/account" ? returnTo : "/certifications"}>{next ? "Resume practice" : "Explore certifications"}<AccountIcon name="arrow" /></Link></section>
       <section className="account-profile" aria-label="Your account"><div className="account-identity"><span className="account-avatar" aria-hidden="true">{name.trim().slice(0, 1).toUpperCase() || "C"}</span><div><h2>{name}</h2><p>{email}</p></div></div><div className="account-stat-grid"><div><strong>{active.length}</strong><span>In progress</span></div><div><strong>{completed.length}</strong><span>Completed</span></div></div><p className="account-stat-note">From your latest {attempts.length} saved sessions.</p><div className="account-profile-foot"><AccountIcon name="shield" /><span>History saved to your account</span></div></section>
     </div>
+    <AccountConnections google={google} github={github} connection={connection} />
     <section className="account-history-section" aria-labelledby="history-title"><div className="account-history-heading"><div><h2 id="history-title">Your practice history</h2><p>Revisit your answers or get back into a session.</p></div><Link href="/certifications">New practice<AccountIcon name="arrow" /></Link></div>
       <div className="account-filters" role="group" aria-label="Filter practice history">{(["all", "active", "completed"] as const).map(value => <button key={value} aria-pressed={filter === value} onClick={() => setFilter(value)}>{value === "all" ? "All sessions" : value === "active" ? "In progress" : "Completed"}<span>{value === "all" ? attempts.length : value === "active" ? active.length : completed.length}</span></button>)}</div>
       <span className="sr-only" role="status">{shown.length} sessions shown</span>
