@@ -82,8 +82,11 @@ access to account email addresses. Both social options appear above email sign-i
 when configured.
 
 Automatic linking between social and password accounts is disabled deliberately.
-An existing email user should use their original login method; a future explicit,
-authenticated linking flow can add another method safely.
+An existing user signs in with their original method, then connects Google or
+GitHub from the account page. Explicit linking requires that user's active
+session and the provider's matching email. A new email can sign up with a
+social provider directly. If a social sign-in returns `account_not_linked`, use
+the original method and connect the provider from the account page.
 
 ## Anonymous progress and accounts
 

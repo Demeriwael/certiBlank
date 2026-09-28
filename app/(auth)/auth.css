@@ -69,6 +69,9 @@
 .account-stat-grid{display:grid;grid-template-columns:1fr 1fr;margin:24px 0 8px}.account-stat-grid>div+div{border-left:1px solid var(--border);padding-left:24px}
 .account-stat-grid strong{display:block;font-size:32px;font-weight:500;line-height:1.1;letter-spacing:-.04em}.account-stat-grid span{font-size:11px;color:var(--text-secondary)}
 .account-stat-note{font-size:10px!important;margin:10px 0 18px}.account-profile-foot{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:14px;font-size:10px;color:var(--muted)}.account-profile-foot svg{width:15px;color:var(--accent)}
+.account-connections{margin:0 0 42px;padding:24px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+.account-connections h2{font-size:20px;font-weight:500;letter-spacing:-.03em;margin:0 0 8px}.account-connections>p{font-size:12px;margin:0 0 18px}
+.account-connection-actions{display:flex;flex-wrap:wrap;gap:10px}.account-connection-actions button{min-height:44px;padding:10px 16px;border:1px solid var(--control-border);border-radius:8px;font-size:12px;cursor:pointer}.account-connection-actions button:hover:not(:disabled){background:var(--surface-raised)}.account-connection-actions button:disabled{opacity:.65;cursor:default}.account-connection-success{color:#a5e8be!important}
 .account-history-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
 .account-history-heading h2{font-size:21px;letter-spacing:-.03em;margin:0 0 6px;font-weight:500}.account-history-heading p{font-size:12px;margin:0}
 .account-history-heading>a{display:flex;align-items:center;gap:8px;font-size:12px;min-height:44px;white-space:nowrap}

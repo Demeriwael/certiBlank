@@ -86,8 +86,26 @@ test("password auth hashes credentials, authenticates, rejects bad credentials a
 test("production auth policy uses persistent rate limits and disables implicit account linking", () => {
   assert.equal(authOptions.rateLimit.storage, "database");
   assert.equal(authOptions.rateLimit.customRules["/sign-in/email"].max, 5);
-  assert.equal(authOptions.account.accountLinking.enabled, false);
+  assert.equal(authOptions.account.accountLinking.enabled, true);
+  assert.equal(authOptions.account.accountLinking.disableImplicitLinking, true);
   assert.equal(authOptions.session.expiresIn, 604800);
+});
+
+test("explicit social linking requires an authenticated session", async () => {
+  const db: Record<string, Record<string, unknown>[]> = { user: [], session: [], account: [], verification: [] };
+  const auth = betterAuth({ ...authOptions, baseURL: "http://localhost:3000", secret: "test-only-secret-not-for-deployment-123456789", database: memoryAdapter(db), rateLimit: { enabled: false }, socialProviders: { google: { clientId: "test-client", clientSecret: "test-secret" } } });
+  const link = (cookie?: string) => auth.handler(new Request("http://localhost:3000/api/auth/link-social", { method: "POST", headers: { origin: "http://localhost:3000", "content-type": "application/json", ...(cookie ? { cookie } : {}) }, body: JSON.stringify({ provider: "google", callbackURL: "/account" }) }));
+  const response = await link();
+  assert.equal(response.status, 401);
+  assert.equal(db.account.length, 0);
+  const signup = await auth.handler(new Request("http://localhost:3000/api/auth/sign-up/email", { method: "POST", headers: { origin: "http://localhost:3000", "content-type": "application/json" }, body: JSON.stringify({ name: "Tester", email: "link@example.com", password: "a-long-test-password" }) }));
+  assert.equal(signup.status, 200);
+  const cookie = signup.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
+  const authorized = await link(cookie);
+  assert.equal(authorized.status, 200);
+  const target = new URL((await authorized.json()).url);
+  assert.equal(target.hostname, "accounts.google.com");
+  assert.equal(target.searchParams.get("redirect_uri"), "http://localhost:3000/api/auth/callback/google");
 });
 
 test("auth resolves Netlify IPv4 and IPv6 without trusting alternate forwarding headers", () => {

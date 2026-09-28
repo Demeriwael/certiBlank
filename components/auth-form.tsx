@@ -33,7 +33,7 @@ export function AuthForm({ signup, returnTo, google, github, initialError = "" }
   async function social(provider: "google" | "github") {
     setBusy(provider); setError("");
     try {
-      const result = await authClient.signIn.social({ provider, callbackURL: finish, errorCallbackURL: `/login?error=oauth&returnTo=${encodeURIComponent(returnTo)}` });
+      const result = await authClient.signIn.social({ provider, callbackURL: finish, errorCallbackURL: `/login?returnTo=${encodeURIComponent(returnTo)}` });
       if (result.error) { setError(`${provider === "google" ? "Google" : "GitHub"} sign-in isn't available right now. Try again or use another method.`); setBusy(null); }
     } catch { setError(`Couldn't connect to ${provider === "google" ? "Google" : "GitHub"}. Please try again.`); setBusy(null); }
   }
