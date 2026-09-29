@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { CatalogIcon } from "./catalog-icon";
 
 export function CertificationRequestForm({ initialPlatform = "", initialCertification = "" }: { initialPlatform?: string; initialCertification?: string }) {
@@ -39,6 +40,7 @@ export function CertificationRequestForm({ initialPlatform = "", initialCertific
     <label htmlFor="request-certification">Certification name</label>
     <input id="request-certification" name="certification" required maxLength={120} autoComplete="off" value={certification} onChange={event => setCertification(event.target.value)} disabled={state === "success"} placeholder="e.g. Solutions Architect – Associate" />
     <p className="cert-request-help">No account or email is required. Requests help us decide which question banks to prepare next.</p>
+    <p className="legal-form-notice">Please include only the platform and certification name, not personal information. <Link href="/privacy">How we handle requests</Link>.</p>
     {state !== "idle" && state !== "sending" && <p ref={statusRef} tabIndex={-1} className={`cert-request-status ${state}`} role={state === "error" ? "alert" : "status"}>{message}</p>}
     <button className="primary-button" type="submit" disabled={state === "sending" || state === "success"}>{state === "sending" ? "Sending…" : state === "success" ? "Request sent" : "Send request"}<CatalogIcon name="arrow" /></button>
   </form>;
