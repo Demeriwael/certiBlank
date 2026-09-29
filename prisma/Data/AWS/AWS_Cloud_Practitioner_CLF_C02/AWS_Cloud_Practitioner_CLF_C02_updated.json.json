@@ -2563,56 +2563,56 @@
     {
       "id": "aws-clf-c02-bill-004",
       "type": "single",
-      "questionText": "Which AWS Support plan is the minimum tier that provides access to a Technical Account Manager (TAM)?",
+      "questionText": "Which current AWS Support plan is the minimum tier that includes a designated Technical Account Manager (TAM)?",
       "selectionCount": 1,
       "options": [
         {
           "id": "a",
-          "text": "Enterprise (or Enterprise On-Ramp)"
+          "text": "AWS Enterprise Support"
         },
         {
           "id": "b",
-          "text": "Basic"
+          "text": "AWS Basic Support"
         },
         {
           "id": "c",
-          "text": "Developer"
+          "text": "AWS Business Support+"
         },
         {
           "id": "d",
-          "text": "Business"
+          "text": "AWS Developer Support"
         }
       ],
       "correctOptionIds": [
         "a"
       ],
-      "correctExplanation": "A Technical Account Manager (TAM) is provided as part of the Enterprise and Enterprise On-Ramp Support plans, offering proactive guidance and advocacy.",
+      "correctExplanation": "AWS Enterprise Support is the minimum current plan with a designated Technical Account Manager, who provides proactive guidance for the customer.",
       "distractorExplanations": {
-        "b": "The Basic Support plan includes only customer service and access to documentation, forums, and basic checks — no TAM.",
-        "c": "The Developer Support plan provides business-hours email access to Cloud Support Associates, but no TAM.",
-        "d": "The Business Support plan provides 24/7 access to Cloud Support Engineers, but does not include a dedicated TAM."
+        "b": "Basic Support includes account and billing assistance but no designated TAM.",
+        "c": "Business Support+ provides round-the-clock technical support, but not a designated TAM.",
+        "d": "Developer Support is a legacy plan and does not include a designated TAM."
       },
-      "hint": "This is a dedicated advocate available only at the highest support tiers.",
+      "hint": "Look for the plan with a designated customer advocate.",
       "domain": "billing-pricing-and-support",
-      "referenceUrl": "https://aws.amazon.com/premiumsupport/plans/"
+      "referenceUrl": "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html"
     },
     {
       "id": "aws-clf-c02-bill-005",
       "type": "single",
-      "questionText": "Which AWS Support plan is designed for customers running production workloads and provides 24/7 access to Cloud Support Engineers via phone, chat, and email with a response time as fast as under 1 hour for urgent issues?",
+      "questionText": "Which current AWS Support plan is the minimum tier recommended for production workloads and provides 24/7 access to Cloud Support Engineers?",
       "selectionCount": 1,
       "options": [
         {
           "id": "a",
-          "text": "Business Support"
+          "text": "AWS Business Support+"
         },
         {
           "id": "b",
-          "text": "Basic Support"
+          "text": "AWS Basic Support"
         },
         {
           "id": "c",
-          "text": "Developer Support"
+          "text": "AWS Enterprise Support"
         },
         {
           "id": "d",
@@ -2622,15 +2622,15 @@
       "correctOptionIds": [
         "a"
       ],
-      "correctExplanation": "Business Support provides 24/7 access to Cloud Support Engineers via phone, chat, and email, with a response time as fast as under 1 hour for production-system-down cases, suitable for customers running production workloads.",
+      "correctExplanation": "AWS Business Support+ is the minimum current support tier recommended for production workloads and provides 24/7 access to Cloud Support Engineers.",
       "distractorExplanations": {
-        "b": "Basic Support only includes customer service, documentation, whitepapers, and support forums — no direct technical support via phone/chat.",
-        "c": "Developer Support offers business-hours email access with response times up to 24 hours, not 24/7 phone/chat with sub-1-hour urgent response.",
-        "d": "The AWS Free Tier is a pricing offer for limited free usage of services, not a technical support plan."
+        "b": "Basic Support does not include direct round-the-clock technical support from Cloud Support Engineers.",
+        "c": "Enterprise Support includes 24/7 engineering access, but Business Support+ is the lower current tier that meets the requirement.",
+        "d": "AWS Free Tier is a pricing and credit program, not a technical support plan."
       },
-      "hint": "This plan targets production workloads with fast response times.",
+      "hint": "Choose the lowest current paid tier designed for production.",
       "domain": "billing-pricing-and-support",
-      "referenceUrl": "https://aws.amazon.com/premiumsupport/plans/"
+      "referenceUrl": "https://docs.aws.amazon.com/awssupport/latest/user/aws-support-plans.html"
     },
     {
       "id": "aws-clf-c02-bill-006",
@@ -7340,6 +7340,42 @@
       "referenceUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/cost-dp.html"
     },
     {
+      "id": "aws-clf-c02-cc-067",
+      "type": "single",
+      "questionText": "A team compares its datacenter with AWS. Which set of often-overlooked on-premises infrastructure costs should it include in the comparison?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Only the price of application licenses"
+        },
+        {
+          "id": "b",
+          "text": "Power, cooling, floor space, and hardware maintenance"
+        },
+        {
+          "id": "c",
+          "text": "Only the salaries of application developers"
+        },
+        {
+          "id": "d",
+          "text": "Only outbound AWS data transfer"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "A meaningful total cost of ownership comparison includes indirect datacenter costs such as power, cooling, space, and hardware maintenance, not just server purchase prices.",
+      "distractorExplanations": {
+        "a": "Licenses may matter, but excluding facilities and hardware gives an incomplete comparison.",
+        "c": "Developer salaries alone omit the infrastructure costs being compared.",
+        "d": "AWS data transfer is a cloud cost, not an on-premises datacenter cost."
+      },
+      "hint": "Include the less visible costs of operating physical infrastructure.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02-domain1.html"
+    },
+    {
       "id": "aws-clf-c02-sec-053",
       "type": "single",
       "questionText": "Which practice best protects the AWS account root user during normal day-to-day administration?",
@@ -8435,6 +8471,150 @@
       "referenceUrl": "https://aws.amazon.com/compliance/services-in-scope/"
     },
     {
+      "id": "aws-clf-c02-sec-083",
+      "type": "single",
+      "questionText": "A security team wants to prevent accidental public access to Amazon S3 buckets across an AWS account. Which S3 feature is designed for this?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "S3 Lifecycle"
+        },
+        {
+          "id": "b",
+          "text": "S3 Block Public Access"
+        },
+        {
+          "id": "c",
+          "text": "S3 Versioning"
+        },
+        {
+          "id": "d",
+          "text": "Amazon EBS encryption"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "S3 Block Public Access provides account- and bucket-level controls that help prevent public access even when a policy or ACL would otherwise allow it.",
+      "distractorExplanations": {
+        "a": "Lifecycle manages object transitions and expiration, not public access.",
+        "c": "Versioning preserves object versions but does not block public access.",
+        "d": "EBS encryption concerns block volumes, not S3 bucket exposure."
+      },
+      "hint": "Choose the explicit guardrail against public S3 access.",
+      "domain": "security-and-compliance",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"
+    },
+    {
+      "id": "aws-clf-c02-sec-084",
+      "type": "single",
+      "questionText": "An AWS Organizations service control policy (SCP) allows an action. Does that alone grant an IAM user permission to perform it?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes, SCPs replace IAM policies"
+        },
+        {
+          "id": "b",
+          "text": "No, an IAM or resource policy must also grant the action"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only in the management account"
+        },
+        {
+          "id": "d",
+          "text": "No, SCPs are only billing reports"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "An SCP sets the maximum permissions available in member accounts. It does not grant permissions; an applicable IAM or resource-based policy must allow the action too.",
+      "distractorExplanations": {
+        "a": "SCPs limit rather than replace IAM permissions.",
+        "c": "SCPs do not apply to principals in the management account in that way.",
+        "d": "SCPs are access guardrails, not billing reports."
+      },
+      "hint": "A guardrail sets a ceiling; it is not the grant itself.",
+      "domain": "security-and-compliance",
+      "referenceUrl": "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+    },
+    {
+      "id": "aws-clf-c02-sec-085",
+      "type": "single",
+      "questionText": "An application on an EC2 instance needs AWS API access without storing long-term access keys on the instance. What should be attached to the instance?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "An IAM role through an instance profile"
+        },
+        {
+          "id": "b",
+          "text": "The root user access keys"
+        },
+        {
+          "id": "c",
+          "text": "An IAM user password in a file"
+        },
+        {
+          "id": "d",
+          "text": "A public S3 bucket policy"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An IAM role attached through an instance profile provides temporary credentials to applications on the EC2 instance without embedding long-term keys.",
+      "distractorExplanations": {
+        "b": "Root access keys are highly privileged long-term credentials and should not be placed on an instance.",
+        "c": "An IAM user password is not a safe programmatic credential.",
+        "d": "An S3 bucket policy does not provide the instance with general AWS API credentials."
+      },
+      "hint": "Use temporary credentials supplied to the workload.",
+      "domain": "security-and-compliance",
+      "referenceUrl": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"
+    },
+    {
+      "id": "aws-clf-c02-sec-086",
+      "type": "single",
+      "questionText": "A team needs to know who called an AWS API to delete a resource. Which record is most directly useful?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "AWS CloudTrail event"
+        },
+        {
+          "id": "b",
+          "text": "Amazon CloudWatch CPU metric"
+        },
+        {
+          "id": "c",
+          "text": "AWS Cost Explorer forecast"
+        },
+        {
+          "id": "d",
+          "text": "Amazon S3 storage class"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "AWS CloudTrail records AWS API activity, including the principal, action, and time, which helps investigate who performed a deletion.",
+      "distractorExplanations": {
+        "b": "A CPU metric measures performance rather than API callers.",
+        "c": "Cost Explorer forecasts spending rather than recording API identity.",
+        "d": "A storage class specifies S3 retrieval and pricing behavior."
+      },
+      "hint": "The investigation concerns the caller of an API action.",
+      "domain": "security-and-compliance",
+      "referenceUrl": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"
+    },
+    {
       "id": "aws-clf-c02-ct-060",
       "type": "single",
       "questionText": "A data engineering team needs a serverless data integration service to discover data, maintain a centralized Data Catalog, and run ETL jobs that prepare data for analytics. Which AWS service should it use?",
@@ -9052,7 +9232,7 @@
         "c": "Kinesis handles streaming data and does not generate speech.",
         "d": "Translate converts text between languages but does not synthesize speech."
       },
-      "hint": "Text in, speech out.",
+      "hint": "The input is written text and the output is spoken audio.",
       "domain": "cloud-technology-and-services",
       "referenceUrl": "https://docs.aws.amazon.com/polly/latest/dg/what-is.html"
     },
@@ -9124,7 +9304,7 @@
         "b": "Comprehend analyzes natural-language text rather than images and video.",
         "d": "Glue integrates and transforms data but is not a computer-vision service."
       },
-      "hint": "Think computer vision.",
+      "hint": "The application needs prebuilt computer vision for images and video.",
       "domain": "cloud-technology-and-services",
       "referenceUrl": "https://docs.aws.amazon.com/rekognition/latest/dg/what-is.html"
     },
@@ -9196,7 +9376,7 @@
         "c": "Polly converts text into speech rather than speech into text.",
         "d": "Athena runs SQL queries on data and does not perform speech recognition."
       },
-      "hint": "Speech in, text out.",
+      "hint": "The input is speech and the desired output is a text transcript.",
       "domain": "cloud-technology-and-services",
       "referenceUrl": "https://docs.aws.amazon.com/transcribe/latest/dg/what-is.html"
     },
@@ -9376,7 +9556,7 @@
         "b": "Budgets tracks cost and usage thresholds, not technical service limits.",
         "c": "Glacier provides archival storage and does not manage account service limits."
       },
-      "hint": "Think service limits.",
+      "hint": "Look for a central view of service quotas and increase requests.",
       "domain": "cloud-technology-and-services",
       "referenceUrl": "https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html"
     },
@@ -9672,6 +9852,582 @@
       "hint": "User device to network, not network to network.",
       "domain": "cloud-technology-and-services",
       "referenceUrl": "https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/what-is.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-094",
+      "type": "single",
+      "questionText": "An Amazon VPC subnet is created in an Availability Zone. Can that same subnet span a second Availability Zone?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes, every subnet spans all zones in a Region"
+        },
+        {
+          "id": "b",
+          "text": "No, each subnet is confined to one Availability Zone"
+        },
+        {
+          "id": "c",
+          "text": "Yes, if it is a public subnet"
+        },
+        {
+          "id": "d",
+          "text": "No, because VPCs cannot contain multiple subnets"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "A VPC subnet belongs to one Availability Zone. To place resources in another zone, create a subnet there.",
+      "distractorExplanations": {
+        "a": "A VPC can span zones, but a particular subnet cannot.",
+        "c": "Public routing does not change a subnet's zone scope.",
+        "d": "A VPC can contain many subnets across zones."
+      },
+      "hint": "Distinguish the scope of a VPC from the scope of one subnet.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-095",
+      "type": "single",
+      "questionText": "What makes a subnet public in an Amazon VPC?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A route to an internet gateway in its route table"
+        },
+        {
+          "id": "b",
+          "text": "An S3 bucket in the subnet"
+        },
+        {
+          "id": "c",
+          "text": "An IAM policy attached to the subnet"
+        },
+        {
+          "id": "d",
+          "text": "An EBS snapshot stored in the subnet"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A public subnet has a route to an internet gateway. Individual instances also need appropriate addressing and security settings for internet communication.",
+      "distractorExplanations": {
+        "b": "S3 buckets are not placed inside VPC subnets.",
+        "c": "IAM policies do not determine whether a subnet has an internet route.",
+        "d": "EBS snapshots do not define subnet routing."
+      },
+      "hint": "Inspect the route table, not only the instance.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-096",
+      "type": "single",
+      "questionText": "An EBS-backed EC2 instance is stopped and later started. What happens to data on an attached EBS volume?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "It normally persists"
+        },
+        {
+          "id": "b",
+          "text": "It is always erased on stop"
+        },
+        {
+          "id": "c",
+          "text": "It moves automatically to S3 Glacier"
+        },
+        {
+          "id": "d",
+          "text": "It becomes an instance store volume"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Amazon EBS provides persistent block storage, so its data normally remains when an EBS-backed instance is stopped and started.",
+      "distractorExplanations": {
+        "b": "Stopping an instance does not by itself erase attached EBS volumes.",
+        "c": "EBS data is not automatically archived to S3 Glacier.",
+        "d": "An EBS volume does not turn into ephemeral instance store."
+      },
+      "hint": "Compare persistent EBS storage with ephemeral instance store.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-097",
+      "type": "single",
+      "questionText": "An on-premises application needs familiar file access while storing data in AWS cloud storage through a hybrid connection. Which service is designed for this?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "AWS Storage Gateway"
+        },
+        {
+          "id": "b",
+          "text": "Amazon Route 53"
+        },
+        {
+          "id": "c",
+          "text": "AWS CloudTrail"
+        },
+        {
+          "id": "d",
+          "text": "Amazon GuardDuty"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "AWS Storage Gateway connects on-premises applications with AWS cloud storage through file, volume, or tape gateway options.",
+      "distractorExplanations": {
+        "b": "Route 53 provides DNS and routing services.",
+        "c": "CloudTrail records API activity.",
+        "d": "GuardDuty detects potential threats."
+      },
+      "hint": "Keep the on-premises application interface while using AWS storage.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/storagegateway/"
+    },
+    {
+      "id": "aws-clf-c02-ct-098",
+      "type": "single",
+      "questionText": "A company wants continuous replication of servers so it can launch recovery instances in AWS after a disaster. Which service fits?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "AWS Elastic Disaster Recovery"
+        },
+        {
+          "id": "b",
+          "text": "AWS Database Migration Service"
+        },
+        {
+          "id": "c",
+          "text": "Amazon CloudFront"
+        },
+        {
+          "id": "d",
+          "text": "AWS Cost Explorer"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "AWS Elastic Disaster Recovery continuously replicates source servers and helps launch recovery instances in AWS when a disaster occurs.",
+      "distractorExplanations": {
+        "b": "DMS migrates databases rather than providing whole-server disaster recovery.",
+        "c": "CloudFront caches and delivers content.",
+        "d": "Cost Explorer analyzes spending."
+      },
+      "hint": "The goal is recovery of complete servers after an outage.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/drs/latest/userguide/what-is-drs.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-099",
+      "type": "single",
+      "questionText": "An application overwrites an S3 object by mistake and needs the previous content. Which S3 feature can retain earlier object variants?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "S3 Versioning"
+        },
+        {
+          "id": "b",
+          "text": "S3 Transfer Acceleration"
+        },
+        {
+          "id": "c",
+          "text": "Amazon CloudWatch Logs"
+        },
+        {
+          "id": "d",
+          "text": "AWS Direct Connect"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "S3 Versioning preserves multiple variants of an object so earlier versions can be retrieved after an overwrite.",
+      "distractorExplanations": {
+        "b": "Transfer Acceleration speeds uploads but does not retain old content.",
+        "c": "CloudWatch Logs stores log events, not object versions.",
+        "d": "Direct Connect provides network connectivity."
+      },
+      "hint": "Keep older variants of the same object key.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-100",
+      "type": "single",
+      "questionText": "A company wants copies of S3 objects in a bucket in another AWS Region for a regional recovery design. Which S3 capability should it configure?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Cross-Region Replication"
+        },
+        {
+          "id": "b",
+          "text": "An EBS instance store"
+        },
+        {
+          "id": "c",
+          "text": "A VPC security group"
+        },
+        {
+          "id": "d",
+          "text": "Amazon SQS long polling"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "S3 Cross-Region Replication can automatically replicate eligible objects from a source bucket to a destination bucket in another Region.",
+      "distractorExplanations": {
+        "b": "Instance store is local temporary EC2 storage.",
+        "c": "Security groups filter network traffic and do not copy objects.",
+        "d": "SQS long polling waits for messages and does not replicate S3 data."
+      },
+      "hint": "The destination bucket is in another Region.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-101",
+      "type": "single",
+      "questionText": "An in-memory analytics workload needs a large amount of RAM relative to CPU. Which EC2 instance family category is the best starting point?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Memory optimized"
+        },
+        {
+          "id": "b",
+          "text": "Compute optimized"
+        },
+        {
+          "id": "c",
+          "text": "Storage optimized"
+        },
+        {
+          "id": "d",
+          "text": "Accelerated computing only"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Memory optimized EC2 instances are designed for workloads that process large datasets in memory.",
+      "distractorExplanations": {
+        "b": "Compute optimized emphasizes CPU performance.",
+        "c": "Storage optimized emphasizes local storage throughput or IOPS.",
+        "d": "Accelerated computing targets hardware accelerators such as GPUs rather than primarily RAM capacity."
+      },
+      "hint": "The limiting resource is memory.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-102",
+      "type": "single",
+      "questionText": "A workload performs frequent high-throughput reads and writes against large local datasets. Which EC2 instance family category should be considered?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Storage optimized"
+        },
+        {
+          "id": "b",
+          "text": "Memory optimized"
+        },
+        {
+          "id": "c",
+          "text": "General purpose only"
+        },
+        {
+          "id": "d",
+          "text": "Burstable performance only"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Storage optimized instances are built for workloads requiring high local storage throughput or I/O performance.",
+      "distractorExplanations": {
+        "b": "Memory optimized focuses on RAM-intensive processing.",
+        "c": "General purpose balances resources but is not specialized for intensive local I/O.",
+        "d": "Burstable instances suit variable baseline CPU use, not sustained storage-intensive workloads."
+      },
+      "hint": "The workload is constrained by local I/O.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-103",
+      "type": "single",
+      "questionText": "What is the primary purpose of an Amazon RDS Multi-AZ DB instance deployment with one standby?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Automatic failover and higher availability"
+        },
+        {
+          "id": "b",
+          "text": "Scaling application reads through the standby"
+        },
+        {
+          "id": "c",
+          "text": "Replacing all database backups"
+        },
+        {
+          "id": "d",
+          "text": "Providing a data warehouse"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A Multi-AZ DB instance deployment maintains a synchronous standby in another zone for failover; that standby does not serve read traffic.",
+      "distractorExplanations": {
+        "b": "The single standby in this deployment is for failover, not read scaling.",
+        "c": "Multi-AZ does not eliminate the need for backups.",
+        "d": "RDS Multi-AZ is not a data warehouse service."
+      },
+      "hint": "Think availability when the primary zone fails.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-104",
+      "type": "single",
+      "questionText": "An RDS database is overwhelmed by read-only queries. Which RDS feature can add read capacity?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Read replica"
+        },
+        {
+          "id": "b",
+          "text": "A single-standby Multi-AZ DB instance deployment"
+        },
+        {
+          "id": "c",
+          "text": "AWS Shield Standard"
+        },
+        {
+          "id": "d",
+          "text": "An S3 lifecycle rule"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Amazon RDS read replicas can serve read-only traffic and reduce read load on the primary database.",
+      "distractorExplanations": {
+        "b": "A single-standby Multi-AZ deployment primarily provides failover and its standby does not serve reads.",
+        "c": "Shield Standard protects against DDoS attacks.",
+        "d": "An S3 lifecycle rule manages object storage transitions."
+      },
+      "hint": "The extra copy must answer read queries.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-105",
+      "type": "single",
+      "questionText": "In AWS CloudFormation, what is a stack?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A collection of AWS resources managed as one unit"
+        },
+        {
+          "id": "b",
+          "text": "A queue of pending API calls"
+        },
+        {
+          "id": "c",
+          "text": "A physical rack in an Availability Zone"
+        },
+        {
+          "id": "d",
+          "text": "A billing discount commitment"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A CloudFormation stack is the collection of resources created from a template and managed together as a unit.",
+      "distractorExplanations": {
+        "b": "CloudFormation stacks are not message queues.",
+        "c": "A stack is logical infrastructure, not a physical rack.",
+        "d": "Pricing commitments are separate from infrastructure deployment."
+      },
+      "hint": "Think of the deployed unit created from a template.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-106",
+      "type": "single",
+      "questionText": "Which Route 53 capability can direct DNS traffic away from an unhealthy application endpoint?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Health-check-based failover routing"
+        },
+        {
+          "id": "b",
+          "text": "S3 object versioning"
+        },
+        {
+          "id": "c",
+          "text": "EBS volume snapshots"
+        },
+        {
+          "id": "d",
+          "text": "IAM password policy"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Route 53 can use health checks and failover routing to send DNS responses toward healthy endpoints.",
+      "distractorExplanations": {
+        "b": "Versioning retains S3 object variants.",
+        "c": "EBS snapshots back up block volumes.",
+        "d": "IAM password policy controls password requirements."
+      },
+      "hint": "DNS routing should respond to endpoint health.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-107",
+      "type": "single",
+      "questionText": "A company cannot predict which S3 objects will be accessed often. Which storage class can move objects among access tiers automatically?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "S3 Intelligent-Tiering"
+        },
+        {
+          "id": "b",
+          "text": "S3 One Zone-Infrequent Access"
+        },
+        {
+          "id": "c",
+          "text": "S3 Glacier Deep Archive"
+        },
+        {
+          "id": "d",
+          "text": "Amazon EBS gp3"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "S3 Intelligent-Tiering monitors access patterns and automatically moves eligible objects between access tiers to optimize storage cost.",
+      "distractorExplanations": {
+        "b": "One Zone-IA does not automatically shift objects among access tiers.",
+        "c": "Deep Archive is an archival class that requires retrieval time.",
+        "d": "EBS gp3 is block storage, not an S3 storage class."
+      },
+      "hint": "Look for automated tier selection based on access patterns.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-108",
+      "type": "single",
+      "questionText": "A team needs a point-in-time backup of an Amazon EBS volume that can later be used to create another volume. Which feature should it use?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "EBS snapshot"
+        },
+        {
+          "id": "b",
+          "text": "EC2 instance store"
+        },
+        {
+          "id": "c",
+          "text": "Amazon Route 53 health check"
+        },
+        {
+          "id": "d",
+          "text": "AWS Shield Advanced"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An EBS snapshot is a point-in-time backup of an EBS volume that can be used to create a new volume.",
+      "distractorExplanations": {
+        "b": "Instance store is temporary local storage, not a backup of EBS.",
+        "c": "A Route 53 health check monitors endpoint health.",
+        "d": "Shield Advanced provides DDoS protection."
+      },
+      "hint": "Back up a block volume, then restore it as a new volume.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html"
+    },
+    {
+      "id": "aws-clf-c02-ct-109",
+      "type": "single",
+      "questionText": "Which service is designed to cache static website content close to global viewers, rather than route requests to regional endpoints without caching?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Amazon CloudFront"
+        },
+        {
+          "id": "b",
+          "text": "AWS Global Accelerator"
+        },
+        {
+          "id": "c",
+          "text": "AWS Direct Connect"
+        },
+        {
+          "id": "d",
+          "text": "AWS Transit Gateway"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Amazon CloudFront is a CDN that caches content at edge locations near viewers; Global Accelerator improves routing to endpoints but is not a content cache.",
+      "distractorExplanations": {
+        "b": "Global Accelerator routes traffic over the AWS network but does not cache website content.",
+        "c": "Direct Connect is a private connection from a customer network to AWS.",
+        "d": "Transit Gateway connects VPCs and on-premises networks."
+      },
+      "hint": "The key requirement is caching content at the edge.",
+      "domain": "cloud-technology-and-services",
+      "referenceUrl": "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html"
     },
     {
       "id": "aws-clf-c02-bill-022",
@@ -10124,6 +10880,78 @@
       "hint": "Separate the universally available dashboard from programmatic API access.",
       "domain": "billing-pricing-and-support",
       "referenceUrl": "https://docs.aws.amazon.com/health/latest/ug/what-is-aws-health.html"
+    },
+    {
+      "id": "aws-clf-c02-bill-034",
+      "type": "single",
+      "questionText": "An AWS Budget sends an alert because actual spending crossed its threshold. What happens to running AWS resources by default?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "They continue running unless separate automation acts"
+        },
+        {
+          "id": "b",
+          "text": "All EC2 instances stop immediately"
+        },
+        {
+          "id": "c",
+          "text": "The AWS account closes automatically"
+        },
+        {
+          "id": "d",
+          "text": "Every service changes to a free tier"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "AWS Budgets can notify users or trigger configured actions, but an alert alone does not automatically stop running resources.",
+      "distractorExplanations": {
+        "b": "An alert by itself does not stop EC2 instances.",
+        "c": "Budget thresholds do not automatically close an AWS account.",
+        "d": "A budget does not convert resources to free usage."
+      },
+      "hint": "Distinguish a cost warning from an automated shutdown action.",
+      "domain": "billing-pricing-and-support",
+      "referenceUrl": "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+    },
+    {
+      "id": "aws-clf-c02-bill-035",
+      "type": "single",
+      "questionText": "An EBS-backed EC2 instance is stopped for a month. Which charge can still continue?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Storage for its EBS volumes"
+        },
+        {
+          "id": "b",
+          "text": "Compute hours for the stopped instance"
+        },
+        {
+          "id": "c",
+          "text": "Data transfer caused by its running application"
+        },
+        {
+          "id": "d",
+          "text": "CPU burst usage while it is stopped"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Stopping an EBS-backed EC2 instance stops instance compute billing, but attached EBS volumes can continue to incur storage charges.",
+      "distractorExplanations": {
+        "b": "Stopped-instance compute usage is not billed as running instance hours.",
+        "c": "A stopped application cannot generate its usual runtime traffic.",
+        "d": "A stopped instance does not consume CPU burst credits."
+      },
+      "hint": "The instance stops, but its persistent disks still exist.",
+      "domain": "billing-pricing-and-support",
+      "referenceUrl": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html"
     }
   ]
 }

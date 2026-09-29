@@ -289,7 +289,7 @@
         "b": "CapEx is upfront spending to acquire long-lived assets; it does not satisfy the requirement to adjust resource capacity.",
         "d": "High availability is designing services to remain accessible despite failures; it does not satisfy the requirement to adjust resource capacity."
       },
-      "hint": "Think capacity.",
+      "hint": "Can the workload increase or decrease capacity as demand changes?",
       "domain": "cloud-concepts",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
     },
@@ -402,7 +402,7 @@
         "b": "Tags is name-value metadata used to organize resources and support reporting; it does not satisfy the requirement to keep a service available during component failures.",
         "c": "Public cloud is provider-operated cloud resources offered to multiple customers; it does not satisfy the requirement to keep a service available during component failures."
       },
-      "hint": "Think uptime.",
+      "hint": "The service should stay reachable even if a component fails.",
       "domain": "cloud-concepts",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
     },
@@ -551,7 +551,7 @@
         "b": "SaaS is a finished application delivered as a service; it does not satisfy the requirement to provide customer control of the guest operating system.",
         "c": "Hybrid cloud is an architecture combining on-premises/private resources with public cloud; it does not satisfy the requirement to provide customer control of the guest operating system."
       },
-      "hint": "Think virtual machines.",
+      "hint": "Which model gives you control of the guest operating system?",
       "domain": "cloud-concepts",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
     },
@@ -695,7 +695,7 @@
         "b": "SaaS is a finished application delivered as a service; it does not satisfy the requirement to host custom code without server administration.",
         "c": "Private cloud is cloud infrastructure dedicated to one organization; it does not satisfy the requirement to host custom code without server administration."
       },
-      "hint": "Think managed runtime.",
+      "hint": "The provider manages the platform while developers deploy code.",
       "domain": "cloud-concepts",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
     },
@@ -1080,6 +1080,438 @@
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
     },
     {
+      "id": "az-900-cc-029",
+      "type": "single",
+      "questionText": "A team runs code only when an event occurs and does not manage the underlying servers. Which cloud computing approach does this describe?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Serverless computing"
+        },
+        {
+          "id": "b",
+          "text": "Private cloud"
+        },
+        {
+          "id": "c",
+          "text": "Infrastructure as a service"
+        },
+        {
+          "id": "d",
+          "text": "Capital expenditure"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Serverless computing lets developers run event-triggered code while the cloud provider handles the underlying infrastructure and scaling.",
+      "distractorExplanations": {
+        "b": "A private cloud describes who uses the infrastructure, not how event-driven code executes.",
+        "c": "IaaS exposes infrastructure such as virtual machines that the customer manages.",
+        "d": "Capital expenditure is an upfront spending model, not a compute approach."
+      },
+      "hint": "Focus on who manages the servers.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/"
+    },
+    {
+      "id": "az-900-cc-030",
+      "type": "single",
+      "questionText": "Under the shared responsibility model, who is responsible for protecting the physical datacenter that hosts an Azure virtual machine?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The virtual machine administrator"
+        },
+        {
+          "id": "b",
+          "text": "The cloud provider"
+        },
+        {
+          "id": "c",
+          "text": "The application developer"
+        },
+        {
+          "id": "d",
+          "text": "The subscription owner"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Microsoft, as the cloud provider, secures the physical facilities and hardware that host Azure services, including virtual machines.",
+      "distractorExplanations": {
+        "a": "The VM administrator manages the guest operating system and its configuration, not the physical facility.",
+        "c": "The developer manages application code and related controls, not datacenter security.",
+        "d": "A subscription owner controls Azure access and resources, not the physical datacenter."
+      },
+      "hint": "Physical infrastructure belongs to one side of the shared responsibility model.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/"
+    },
+    {
+      "id": "az-900-cc-031",
+      "type": "single",
+      "questionText": "A company uses a software as a service (SaaS) application. Which responsibility normally remains with the customer?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Maintaining the provider's physical datacenter"
+        },
+        {
+          "id": "b",
+          "text": "Patching the provider's host operating system"
+        },
+        {
+          "id": "c",
+          "text": "Managing its users and their access to company data"
+        },
+        {
+          "id": "d",
+          "text": "Replacing failed storage hardware in the provider's facility"
+        }
+      ],
+      "correctOptionIds": [
+        "c"
+      ],
+      "correctExplanation": "Even when the provider operates a complete SaaS application, the customer remains responsible for its users, access decisions, and data.",
+      "distractorExplanations": {
+        "a": "The cloud provider protects and maintains its physical facilities.",
+        "b": "The SaaS provider maintains the operating system running its application.",
+        "d": "The cloud provider maintains its own storage hardware."
+      },
+      "hint": "The provider runs the application, but the customer still controls who may use its data.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/"
+    },
+    {
+      "id": "az-900-cc-032",
+      "type": "single",
+      "questionText": "Your team deploys an IaaS virtual machine. Who normally patches its guest operating system?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The cloud provider"
+        },
+        {
+          "id": "b",
+          "text": "The customer"
+        },
+        {
+          "id": "c",
+          "text": "The physical datacenter operator only"
+        },
+        {
+          "id": "d",
+          "text": "The network carrier"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "In IaaS, the provider manages physical infrastructure while the customer manages and patches the guest operating system.",
+      "distractorExplanations": {
+        "a": "The provider patches host infrastructure, not the customer guest OS.",
+        "c": "The datacenter operator has no responsibility for the guest OS.",
+        "d": "A network carrier does not administer Azure VMs."
+      },
+      "hint": "Separate host from guest responsibilities.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
+    },
+    {
+      "id": "az-900-cc-033",
+      "type": "single",
+      "questionText": "A developer deploys code to a platform as a service (PaaS) offering. Who normally maintains the underlying operating system?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The application developer"
+        },
+        {
+          "id": "b",
+          "text": "The cloud provider"
+        },
+        {
+          "id": "c",
+          "text": "The end user of the app"
+        },
+        {
+          "id": "d",
+          "text": "The subscription billing administrator"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "For PaaS, the cloud provider operates and patches the underlying platform and operating system.",
+      "distractorExplanations": {
+        "a": "The developer manages application code and data, not the platform OS.",
+        "c": "App users do not patch the hosting OS.",
+        "d": "Billing administration does not imply OS maintenance."
+      },
+      "hint": "PaaS abstracts server administration.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
+    },
+    {
+      "id": "az-900-cc-034",
+      "type": "single",
+      "questionText": "In a software as a service (SaaS) offering, who normally operates and updates the application itself?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The cloud provider"
+        },
+        {
+          "id": "b",
+          "text": "Each customer end user"
+        },
+        {
+          "id": "c",
+          "text": "The customer network team"
+        },
+        {
+          "id": "d",
+          "text": "The customer hardware vendor"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "The SaaS provider delivers and operates the complete application, including application updates.",
+      "distractorExplanations": {
+        "b": "End users consume the application rather than maintaining it.",
+        "c": "The customer network team manages its connectivity, not the SaaS code.",
+        "d": "A customer hardware vendor does not operate the SaaS application."
+      },
+      "hint": "Think of a finished application delivered as a service.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-service-types/"
+    },
+    {
+      "id": "az-900-cc-035",
+      "type": "single",
+      "questionText": "A serverless function runs only a few times per day. Which characteristic can reduce compute charges during long idle periods?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Billing based on execution and resource use"
+        },
+        {
+          "id": "b",
+          "text": "A required 24-hour VM reservation"
+        },
+        {
+          "id": "c",
+          "text": "Owning dedicated physical servers"
+        },
+        {
+          "id": "d",
+          "text": "Paying for a permanently running guest OS"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Consumption-based serverless plans can charge for executions and consumed resources rather than continuously allocated server capacity.",
+      "distractorExplanations": {
+        "b": "A reservation commits spending even when a workload is idle.",
+        "c": "Owned hardware carries cost while idle.",
+        "d": "A continuously running guest OS is unlike event-driven serverless billing."
+      },
+      "hint": "Focus on when the code actually runs.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/"
+    },
+    {
+      "id": "az-900-cc-036",
+      "type": "single",
+      "questionText": "An application adds more VM instances to handle traffic without increasing the size of any one VM. What is this called?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Scaling up"
+        },
+        {
+          "id": "b",
+          "text": "Scaling out"
+        },
+        {
+          "id": "c",
+          "text": "Archiving"
+        },
+        {
+          "id": "d",
+          "text": "Replicating a storage account"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Scaling out increases capacity by adding more instances of a resource.",
+      "distractorExplanations": {
+        "a": "Scaling up increases the capacity of an existing instance.",
+        "c": "Archiving moves data to long-term storage; it does not add compute instances.",
+        "d": "Storage replication protects data and is not VM scaling."
+      },
+      "hint": "Count instances rather than CPU per instance.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
+    },
+    {
+      "id": "az-900-cc-037",
+      "type": "single",
+      "questionText": "What cloud benefit allows an organization to apply security and configuration rules consistently across many resources?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Centralized governance"
+        },
+        {
+          "id": "b",
+          "text": "Longer hardware procurement cycles"
+        },
+        {
+          "id": "c",
+          "text": "Manual configuration of each server"
+        },
+        {
+          "id": "d",
+          "text": "Removal of all customer security duties"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Cloud governance tools can define and apply consistent organizational standards at scale.",
+      "distractorExplanations": {
+        "b": "Long procurement cycles hinder rather than improve cloud governance.",
+        "c": "Manual one-by-one changes are less consistent than centrally applied rules.",
+        "d": "Shared responsibility still leaves security duties with the customer."
+      },
+      "hint": "Think of centrally enforced standards.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
+    },
+    {
+      "id": "az-900-cc-038",
+      "type": "single",
+      "questionText": "A company runs a cloud-hosted database. Under shared responsibility, who decides how sensitive customer records are classified?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The organization that owns the data"
+        },
+        {
+          "id": "b",
+          "text": "The datacenter power supplier"
+        },
+        {
+          "id": "c",
+          "text": "The internet service provider"
+        },
+        {
+          "id": "d",
+          "text": "The manufacturer of the storage drives"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "The customer owns its data and determines its classification and access requirements regardless of who operates the hardware.",
+      "distractorExplanations": {
+        "b": "Power suppliers do not classify customer data.",
+        "c": "Internet providers transport traffic and do not own data classification decisions.",
+        "d": "Drive manufacturers do not classify customer records."
+      },
+      "hint": "Data ownership remains with the customer.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cloud-compute/"
+    },
+    {
+      "id": "az-900-cc-041",
+      "type": "single",
+      "questionText": "An operations team creates and manages cloud resources through scripts and APIs. Which cloud benefit does this illustrate?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Manageability"
+        },
+        {
+          "id": "b",
+          "text": "Data residency"
+        },
+        {
+          "id": "c",
+          "text": "Capital expenditure"
+        },
+        {
+          "id": "d",
+          "text": "Physical server ownership"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Cloud manageability includes automating resource provisioning and administration through APIs and scripts.",
+      "distractorExplanations": {
+        "b": "Data residency concerns where data is stored.",
+        "c": "Capital expenditure is upfront asset spending, not API-based management.",
+        "d": "Physical ownership is not required to automate cloud resources."
+      },
+      "hint": "The team is automating administration.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
+    },
+    {
+      "id": "az-900-cc-042",
+      "type": "single",
+      "questionText": "Which approach best supports rapid testing of a new application without buying hardware first?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Provision cloud resources on demand"
+        },
+        {
+          "id": "b",
+          "text": "Order and install a fixed server fleet"
+        },
+        {
+          "id": "c",
+          "text": "Wait for the next hardware refresh"
+        },
+        {
+          "id": "d",
+          "text": "Build a private datacenter before testing"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "On-demand cloud provisioning lets teams create and release test resources quickly without a hardware procurement cycle.",
+      "distractorExplanations": {
+        "b": "Buying servers delays a short experiment.",
+        "c": "Waiting for hardware refresh does not support rapid testing.",
+        "d": "Building a datacenter adds substantial setup time."
+      },
+      "hint": "Focus on immediate provisioning.",
+      "domain": "cloud-concepts",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-benefits-use-cloud-services/"
+    },
+    {
       "id": "az-900-arch-001",
       "type": "single",
       "questionText": "What is an Azure region?",
@@ -1255,7 +1687,7 @@
         "c": "Availability Zone is a physically separate datacenter location within an Azure region; it does not satisfy the requirement to provide a billing and access boundary.",
         "d": "Subnet is a segmented IP range inside an Azure virtual network; it does not satisfy the requirement to provide a billing and access boundary."
       },
-      "hint": "Think billing boundary.",
+      "hint": "Which scope is used for billing and access to Azure resources?",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
     },
@@ -1291,7 +1723,7 @@
         "b": "Availability Zone is a physically separate datacenter location within an Azure region; it does not satisfy the requirement to govern multiple subscriptions.",
         "c": "Subnet is a segmented IP range inside an Azure virtual network; it does not satisfy the requirement to govern multiple subscriptions."
       },
-      "hint": "Above subscriptions.",
+      "hint": "Choose the governance level above several subscriptions.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
     },
@@ -1368,7 +1800,7 @@
         "c": "Azure Functions is serverless event-driven compute; it does not satisfy the requirement to provide guest OS control.",
         "d": "Azure App Service is a managed PaaS platform for web apps and APIs; it does not satisfy the requirement to provide guest OS control."
       },
-      "hint": "Think IaaS.",
+      "hint": "Which compute choice exposes the guest operating system?",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
     },
@@ -1476,7 +1908,7 @@
         "b": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to deliver virtualized desktops and apps.",
         "d": "Azure Functions is serverless event-driven compute; it does not satisfy the requirement to deliver virtualized desktops and apps."
       },
-      "hint": "Think hosted desktops.",
+      "hint": "Users need Windows desktops delivered remotely from Azure.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
     },
@@ -1548,7 +1980,7 @@
         "c": "Azure Functions is serverless event-driven compute; it does not satisfy the requirement to orchestrate containers with Kubernetes.",
         "d": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to orchestrate containers with Kubernetes."
       },
-      "hint": "Think Kubernetes.",
+      "hint": "Look for managed orchestration of Kubernetes containers.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
     },
@@ -1769,7 +2201,7 @@
         "b": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to connect virtual networks privately.",
         "d": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to connect virtual networks privately."
       },
-      "hint": "Think VNet-to-VNet.",
+      "hint": "The connection links two virtual networks privately.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
     },
@@ -1841,7 +2273,7 @@
         "c": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to provide dedicated private connectivity.",
         "d": "Azure Queue Storage is message queue storage for asynchronous processing; it does not satisfy the requirement to provide dedicated private connectivity."
       },
-      "hint": "Think private circuit.",
+      "hint": "The requirement is a private circuit rather than an internet VPN.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
     },
@@ -1877,7 +2309,7 @@
         "b": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to host DNS zones and records.",
         "c": "Azure Monitor is Azure's observability platform for metrics, logs, traces, and alerts; it does not satisfy the requirement to host DNS zones and records."
       },
-      "hint": "Think name resolution.",
+      "hint": "The service should host DNS zones and records.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
     },
@@ -1954,7 +2386,7 @@
         "c": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to store unstructured objects.",
         "d": "Azure Queue Storage is message queue storage for asynchronous processing; it does not satisfy the requirement to store unstructured objects."
       },
-      "hint": "Think objects.",
+      "hint": "Images and videos are unstructured objects.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -1990,7 +2422,7 @@
         "c": "Azure Queue Storage is message queue storage for asynchronous processing; it does not satisfy the requirement to provide managed file shares.",
         "d": "Azure Table Storage is a NoSQL key/attribute data store; it does not satisfy the requirement to provide managed file shares."
       },
-      "hint": "Think shared filesystem.",
+      "hint": "Applications need a shared SMB or NFS file system.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2026,7 +2458,7 @@
         "b": "Azure Blob Storage is object storage for unstructured data; it does not satisfy the requirement to store asynchronous messages.",
         "c": "Azure Disk Storage is block storage for Azure virtual machines; it does not satisfy the requirement to store asynchronous messages."
       },
-      "hint": "Think queue messages.",
+      "hint": "A queue holds messages until a worker processes them.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2062,7 +2494,7 @@
         "b": "Azure Table Storage is a NoSQL key/attribute data store; it does not satisfy the requirement to provide block storage for VMs.",
         "d": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to provide block storage for VMs."
       },
-      "hint": "Think VM disks.",
+      "hint": "A VM needs persistent block storage for its disks.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2098,7 +2530,7 @@
         "c": "ZRS is storage redundancy across Availability Zones in the primary region; it does not satisfy the requirement to replicate storage locally.",
         "d": "GRS is storage redundancy with replication to a secondary region; it does not satisfy the requirement to replicate storage locally."
       },
-      "hint": "L means local.",
+      "hint": "All copies remain in one physical location in the primary region.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2134,7 +2566,7 @@
         "c": "GRS is storage redundancy with replication to a secondary region; it does not satisfy the requirement to replicate across zones.",
         "d": "GZRS is zone redundancy in the primary region plus geo-replication; it does not satisfy the requirement to replicate across zones."
       },
-      "hint": "Z means zones.",
+      "hint": "Copies are spread across zones within the primary region.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2175,7 +2607,7 @@
         "d": "LRS is storage redundancy within a single physical location in the primary region; it does not satisfy the requirement to replicate storage to a secondary region.",
         "e": "ZRS is storage redundancy across Availability Zones in the primary region; it does not satisfy the requirement to replicate storage to a secondary region."
       },
-      "hint": "Look for geo.",
+      "hint": "Both choices must replicate to a second geographic region.",
       "domain": "azure-architecture-services",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
     },
@@ -2473,6 +2905,1086 @@
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
     },
     {
+      "id": "az-900-arch-039",
+      "type": "single",
+      "questionText": "What is an Azure region pair?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Two resource groups in one subscription"
+        },
+        {
+          "id": "b",
+          "text": "Two availability zones in one datacenter"
+        },
+        {
+          "id": "c",
+          "text": "Two Azure regions paired by Microsoft for certain resilience capabilities"
+        },
+        {
+          "id": "d",
+          "text": "Two virtual networks linked by peering"
+        }
+      ],
+      "correctOptionIds": [
+        "c"
+      ],
+      "correctExplanation": "A region pair is an association between two Azure regions that some Azure services use for geo-replication and recovery planning.",
+      "distractorExplanations": {
+        "a": "Resource groups are logical containers, not paired regions.",
+        "b": "Availability zones are separate datacenter groups within a region.",
+        "d": "Virtual network peering connects networks, not regions as a platform pairing."
+      },
+      "hint": "The pair operates at the regional level.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-040",
+      "type": "single",
+      "questionText": "How does an Azure datacenter relate to an Azure region?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A datacenter is a physical facility within a region"
+        },
+        {
+          "id": "b",
+          "text": "A region is a virtual machine within a datacenter"
+        },
+        {
+          "id": "c",
+          "text": "A datacenter is a billing container above subscriptions"
+        },
+        {
+          "id": "d",
+          "text": "A region is always a single server rack"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An Azure region contains physical infrastructure, including one or more datacenters.",
+      "distractorExplanations": {
+        "b": "A region is a geographic area with physical facilities, not a virtual machine.",
+        "c": "Management groups and subscriptions form management and billing scopes; datacenters do not.",
+        "d": "A region is broader than a single rack."
+      },
+      "hint": "Separate physical facilities from Azure management scopes.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-041",
+      "type": "single",
+      "questionText": "A new Azure virtual machine needs to communicate with other resources in a virtual network. Which resource provides its network connection?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Storage account"
+        },
+        {
+          "id": "b",
+          "text": "Network interface"
+        },
+        {
+          "id": "c",
+          "text": "Management group"
+        },
+        {
+          "id": "d",
+          "text": "Azure Policy assignment"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "An Azure network interface connects a virtual machine to a virtual network and carries its network configuration.",
+      "distractorExplanations": {
+        "a": "A storage account stores data and does not provide a VM network connection.",
+        "c": "A management group organizes subscriptions for governance.",
+        "d": "A policy assignment evaluates or enforces rules; it is not a network adapter."
+      },
+      "hint": "Think of the VM component that attaches to a subnet.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
+    },
+    {
+      "id": "az-900-arch-042",
+      "type": "single",
+      "questionText": "A company stores infrequently accessed blobs but needs to retrieve them immediately when requested. Which Azure Blob Storage access tier is the best fit?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Hot"
+        },
+        {
+          "id": "b",
+          "text": "Cool"
+        },
+        {
+          "id": "c",
+          "text": "Archive"
+        },
+        {
+          "id": "d",
+          "text": "Premium block blob only"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "The cool tier is designed for infrequently accessed data that must remain available online for immediate access.",
+      "distractorExplanations": {
+        "a": "Hot is optimized for frequently accessed data and generally has higher storage cost.",
+        "c": "Archive data is offline and must be rehydrated before it can be read.",
+        "d": "Premium block blob storage targets high transaction performance rather than low-cost infrequent access."
+      },
+      "hint": "The archive tier requires rehydration.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-043",
+      "type": "single",
+      "questionText": "Which tool gives an administrator a graphical interface to browse and manage Azure Storage data from a desktop?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Azure Storage Explorer"
+        },
+        {
+          "id": "b",
+          "text": "AzCopy"
+        },
+        {
+          "id": "c",
+          "text": "Azure File Sync"
+        },
+        {
+          "id": "d",
+          "text": "Azure Data Box"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure Storage Explorer is a graphical desktop tool for working with data in Azure Storage accounts.",
+      "distractorExplanations": {
+        "b": "AzCopy is a command-line data transfer tool.",
+        "c": "Azure File Sync synchronizes Windows file servers with Azure file shares.",
+        "d": "Azure Data Box transfers large datasets using physical devices."
+      },
+      "hint": "Look for the desktop graphical tool.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-044",
+      "type": "single",
+      "questionText": "A company wants its Windows file server shares synchronized with Azure file shares while retaining local access. Which service should it use?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Azure File Sync"
+        },
+        {
+          "id": "b",
+          "text": "Azure DNS"
+        },
+        {
+          "id": "c",
+          "text": "Azure Queue Storage"
+        },
+        {
+          "id": "d",
+          "text": "Azure Migrate"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure File Sync synchronizes Windows Server file shares with Azure Files so users can continue using local file servers.",
+      "distractorExplanations": {
+        "b": "Azure DNS hosts DNS records, not file synchronization.",
+        "c": "Queue Storage holds messages for applications.",
+        "d": "Azure Migrate helps assess and migrate workloads, not continuously synchronize file shares."
+      },
+      "hint": "The on-premises file server remains in use.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-045",
+      "type": "single",
+      "questionText": "An organization needs to assess its on-premises servers and plan their move to Azure. Which service is designed for this?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Azure Monitor"
+        },
+        {
+          "id": "b",
+          "text": "Azure Data Box"
+        },
+        {
+          "id": "c",
+          "text": "Azure Migrate"
+        },
+        {
+          "id": "d",
+          "text": "Azure Advisor"
+        }
+      ],
+      "correctOptionIds": [
+        "c"
+      ],
+      "correctExplanation": "Azure Migrate provides discovery, assessment, and migration tools for moving on-premises workloads to Azure.",
+      "distractorExplanations": {
+        "a": "Azure Monitor collects and analyzes operational telemetry.",
+        "b": "Azure Data Box moves large data volumes by shipping physical devices; it is not the general assessment hub.",
+        "d": "Azure Advisor recommends improvements for Azure resources already in use."
+      },
+      "hint": "Choose the migration assessment hub.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-046",
+      "type": "single",
+      "questionText": "A sign-in requires a password and a separate approval in an authenticator app. What authentication method is being used?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Single sign-on"
+        },
+        {
+          "id": "b",
+          "text": "Multifactor authentication"
+        },
+        {
+          "id": "c",
+          "text": "Role-based access control"
+        },
+        {
+          "id": "d",
+          "text": "Federation only"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Multifactor authentication requires two or more distinct factors, such as a password and an approval tied to a registered device.",
+      "distractorExplanations": {
+        "a": "Single sign-on reduces repeated sign-ins across applications; it does not by itself require a second factor.",
+        "c": "RBAC determines permissions after identity is established.",
+        "d": "Federation establishes trust between identity systems but does not define the two-factor challenge."
+      },
+      "hint": "Two different factors are required.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-047",
+      "type": "single",
+      "questionText": "Which sign-in method is a passwordless option in Microsoft Entra ID?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Entering a password twice"
+        },
+        {
+          "id": "b",
+          "text": "Using a FIDO2 security key"
+        },
+        {
+          "id": "c",
+          "text": "Sharing an administrator password"
+        },
+        {
+          "id": "d",
+          "text": "Using an Azure resource lock"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "A FIDO2 security key is a supported passwordless authentication method in Microsoft Entra ID.",
+      "distractorExplanations": {
+        "a": "Repeating a password still relies on a password.",
+        "c": "Shared passwords weaken accountability and are not passwordless authentication.",
+        "d": "A resource lock controls resource changes, not user sign-in."
+      },
+      "hint": "Choose a method that does not require a password.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-048",
+      "type": "single",
+      "questionText": "A company needs to let a partner employee collaborate in its tenant using the partner's own identity. Which Microsoft Entra capability supports this?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "External identities"
+        },
+        {
+          "id": "b",
+          "text": "Availability sets"
+        },
+        {
+          "id": "c",
+          "text": "Azure Disk Storage"
+        },
+        {
+          "id": "d",
+          "text": "Azure Resource Manager templates"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Microsoft Entra External ID supports collaboration with guest users who can use identities from outside the organization.",
+      "distractorExplanations": {
+        "b": "Availability sets improve VM availability, not guest identity access.",
+        "c": "Disk Storage provides persistent VM disks.",
+        "d": "ARM templates define resource deployments, not partner sign-in."
+      },
+      "hint": "Look for guest access using an outside identity.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-049",
+      "type": "single",
+      "questionText": "Why does the defense-in-depth model use multiple security layers?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "To ensure one control is the only barrier against an attack"
+        },
+        {
+          "id": "b",
+          "text": "To remove the need for identity controls"
+        },
+        {
+          "id": "c",
+          "text": "To provide overlapping protections if one control fails"
+        },
+        {
+          "id": "d",
+          "text": "To place every workload in one network segment"
+        }
+      ],
+      "correctOptionIds": [
+        "c"
+      ],
+      "correctExplanation": "Defense in depth combines multiple layers of controls so that a failure or bypass of one layer does not leave a workload unprotected.",
+      "distractorExplanations": {
+        "a": "A single barrier is the opposite of layered defense.",
+        "b": "Identity is one of the layers of protection.",
+        "d": "Segmentation can help security, but placing everything in one segment does not provide layered protection."
+      },
+      "hint": "Think about what happens when a control is bypassed.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-050",
+      "type": "single",
+      "questionText": "A company must keep a workload in a particular geographic area. Which Azure choice is most relevant when deploying it?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The Azure region"
+        },
+        {
+          "id": "b",
+          "text": "The resource group name"
+        },
+        {
+          "id": "c",
+          "text": "The VM administrator username"
+        },
+        {
+          "id": "d",
+          "text": "The tag key spelling"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Choosing an Azure region determines the geographic location in which regional resources are deployed.",
+      "distractorExplanations": {
+        "b": "A resource group name does not set physical location.",
+        "c": "A username does not select datacenter geography.",
+        "d": "Tag spelling does not place the workload."
+      },
+      "hint": "Choose the deployment location.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-051",
+      "type": "single",
+      "questionText": "A service runs in one Azure region that has a paired region. Does the pairing alone make the service available in both regions?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes; all resources are copied automatically"
+        },
+        {
+          "id": "b",
+          "text": "No; the application must be designed and deployed for cross-region recovery"
+        },
+        {
+          "id": "c",
+          "text": "Yes; every VM is mirrored by default"
+        },
+        {
+          "id": "d",
+          "text": "No; Azure regions cannot be paired"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Region pairing supports certain platform capabilities, but application resources are not automatically deployed or replicated to the paired region.",
+      "distractorExplanations": {
+        "a": "Pairing does not copy every application resource.",
+        "c": "Azure VMs are not mirrored to a paired region by default.",
+        "d": "Microsoft does pair some Azure regions."
+      },
+      "hint": "Pairing is not an automatic application deployment.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-052",
+      "type": "single",
+      "questionText": "A team wants VM replicas protected from the failure of one availability zone. How should it place them?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "In separate availability zones in the region"
+        },
+        {
+          "id": "b",
+          "text": "On one VM in one zone"
+        },
+        {
+          "id": "c",
+          "text": "In separate resource groups but the same zone"
+        },
+        {
+          "id": "d",
+          "text": "Under different tags in one zone"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Placing instances in separate availability zones helps isolate them from a failure affecting one zone.",
+      "distractorExplanations": {
+        "b": "A single VM cannot provide zone-level redundancy.",
+        "c": "Resource group separation does not change physical placement.",
+        "d": "Tags do not change where VMs run."
+      },
+      "hint": "Use physically isolated zones.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-053",
+      "type": "single",
+      "questionText": "Can one Azure resource belong to two resource groups at the same time?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes, if both groups are in one subscription"
+        },
+        {
+          "id": "b",
+          "text": "Yes, if it has two tags"
+        },
+        {
+          "id": "c",
+          "text": "No, a resource belongs to one resource group at a time"
+        },
+        {
+          "id": "d",
+          "text": "No, resources cannot belong to resource groups"
+        }
+      ],
+      "correctOptionIds": [
+        "c"
+      ],
+      "correctExplanation": "Each Azure resource is associated with one resource group at a time, although it can be moved between groups when supported.",
+      "distractorExplanations": {
+        "a": "A common subscription does not permit simultaneous membership in two groups.",
+        "b": "Tags do not create extra resource-group membership.",
+        "d": "Azure resources normally belong to resource groups."
+      },
+      "hint": "Think about the resource hierarchy.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-054",
+      "type": "single",
+      "questionText": "An Azure resource group is created in one region. Can it contain supported resources deployed in different Azure regions?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes; the group location stores its metadata, while resources can have their own locations"
+        },
+        {
+          "id": "b",
+          "text": "No; every resource must match the group location"
+        },
+        {
+          "id": "c",
+          "text": "Only when the resources are virtual machines"
+        },
+        {
+          "id": "d",
+          "text": "Only when the group is under a management group"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A resource group has a location for its metadata, but resources in it can be deployed to different regions when the resource types support those locations.",
+      "distractorExplanations": {
+        "b": "A resource group location does not force every resource into the same region.",
+        "c": "The rule is not limited to virtual machines.",
+        "d": "Management-group placement does not determine whether resource locations may differ."
+      },
+      "hint": "Distinguish group metadata location from resource location.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
+    },
+    {
+      "id": "az-900-arch-055",
+      "type": "single",
+      "questionText": "Which Azure VM setting selects the amount of virtual CPU and memory available to the VM?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "VM size"
+        },
+        {
+          "id": "b",
+          "text": "Resource group name"
+        },
+        {
+          "id": "c",
+          "text": "Availability set name"
+        },
+        {
+          "id": "d",
+          "text": "Subscription display name"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "The VM size determines compute characteristics such as vCPU count and memory.",
+      "distractorExplanations": {
+        "b": "A resource group organizes resources; its name does not set compute capacity.",
+        "c": "An availability set spreads VMs across fault and update domains.",
+        "d": "A subscription name does not specify VM hardware size."
+      },
+      "hint": "Choose the compute shape.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
+    },
+    {
+      "id": "az-900-arch-056",
+      "type": "single",
+      "questionText": "Which disk contains the guest operating system of an Azure virtual machine?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "OS disk"
+        },
+        {
+          "id": "b",
+          "text": "Data disk"
+        },
+        {
+          "id": "c",
+          "text": "Azure file share"
+        },
+        {
+          "id": "d",
+          "text": "Queue storage"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "The OS disk is the Azure VM boot volume that stores its guest operating system; data disks are separate volumes for application data.",
+      "distractorExplanations": {
+        "b": "A data disk is additional persistent storage for application data.",
+        "c": "An Azure file share is shared file storage, not the VM boot disk.",
+        "d": "Queue storage holds application messages."
+      },
+      "hint": "Think of the boot volume.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-compute-networking-services/"
+    },
+    {
+      "id": "az-900-arch-057",
+      "type": "single",
+      "questionText": "A VM must be reachable directly from the public internet. Which Azure networking resource can provide its internet-facing address?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Public IP address"
+        },
+        {
+          "id": "b",
+          "text": "Private DNS zone only"
+        },
+        {
+          "id": "c",
+          "text": "Managed disk"
+        },
+        {
+          "id": "d",
+          "text": "Storage queue"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An Azure public IP address can provide an internet-routable address for a VM network interface or associated network service.",
+      "distractorExplanations": {
+        "b": "A private DNS zone resolves private names but does not supply a public address.",
+        "c": "A managed disk provides VM storage.",
+        "d": "A queue stores messages, not network addresses."
+      },
+      "hint": "Look for an internet-routable address.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
+    },
+    {
+      "id": "az-900-arch-058",
+      "type": "single",
+      "questionText": "A company wants to reach an Azure storage service through a private IP address in its virtual network. Which feature should it use?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Private endpoint"
+        },
+        {
+          "id": "b",
+          "text": "Public endpoint"
+        },
+        {
+          "id": "c",
+          "text": "Azure Data Box"
+        },
+        {
+          "id": "d",
+          "text": "Availability set"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A private endpoint gives a supported Azure service a private IP in the virtual network through Azure Private Link.",
+      "distractorExplanations": {
+        "b": "A public endpoint uses public connectivity rather than a private IP in the VNet.",
+        "c": "Data Box transfers data with a physical device.",
+        "d": "An availability set spreads VMs across infrastructure domains."
+      },
+      "hint": "The service should appear on the VNet through a private IP.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
+    },
+    {
+      "id": "az-900-arch-059",
+      "type": "single",
+      "questionText": "A storage account exposes a public endpoint. What does public describe in this context?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A service address reachable through the public network, subject to access controls"
+        },
+        {
+          "id": "b",
+          "text": "Anonymous access to every stored file"
+        },
+        {
+          "id": "c",
+          "text": "A private IP address in a subnet"
+        },
+        {
+          "id": "d",
+          "text": "A requirement to use ExpressRoute"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A public endpoint is network-accessible through a public address, but authentication and firewall rules can still restrict access.",
+      "distractorExplanations": {
+        "b": "Public network reachability does not mean anonymous data access.",
+        "c": "A private IP in a subnet describes a private endpoint.",
+        "d": "ExpressRoute is not required for a public endpoint."
+      },
+      "hint": "Network reachability and data permissions are separate.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-networking-services/"
+    },
+    {
+      "id": "az-900-arch-060",
+      "type": "single",
+      "questionText": "A blob is moved to the archive access tier. What must happen before an application can read its contents?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "It must be rehydrated to an online tier"
+        },
+        {
+          "id": "b",
+          "text": "It becomes instantly readable at hot-tier speed"
+        },
+        {
+          "id": "c",
+          "text": "It must be converted to an Azure file share"
+        },
+        {
+          "id": "d",
+          "text": "It must be copied to Queue Storage"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Archive blobs are offline and require rehydration to an online tier before their contents can be read.",
+      "distractorExplanations": {
+        "b": "Archive is not immediately readable like an online tier.",
+        "c": "A blob does not need conversion to Azure Files.",
+        "d": "Queue Storage is for messages, not archive rehydration."
+      },
+      "hint": "Archive is an offline tier.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-061",
+      "type": "single",
+      "questionText": "A blob is read many times each day. Which access tier is generally intended for frequent access?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Hot"
+        },
+        {
+          "id": "b",
+          "text": "Cool"
+        },
+        {
+          "id": "c",
+          "text": "Archive"
+        },
+        {
+          "id": "d",
+          "text": "Offline tape"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "The hot tier is designed for frequently accessed blob data, with lower access costs than tiers intended for infrequent retrieval.",
+      "distractorExplanations": {
+        "b": "Cool is intended for infrequent access.",
+        "c": "Archive is offline and requires rehydration.",
+        "d": "Offline tape is not an Azure Blob access tier."
+      },
+      "hint": "Choose the online tier for frequent reads.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-062",
+      "type": "single",
+      "questionText": "Which storage redundancy option adds read access to a secondary region when geo-replicated storage is used?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "RA-GRS"
+        },
+        {
+          "id": "b",
+          "text": "LRS"
+        },
+        {
+          "id": "c",
+          "text": "ZRS"
+        },
+        {
+          "id": "d",
+          "text": "Locally cached VM disks"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Read-access geo-redundant storage (RA-GRS) permits reads from the secondary region in addition to geo-replication.",
+      "distractorExplanations": {
+        "b": "LRS keeps copies within one physical location in the primary region.",
+        "c": "ZRS replicates across zones in one primary region.",
+        "d": "A VM disk cache is not a storage account geo-redundancy option."
+      },
+      "hint": "Look for the read-access prefix.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-063",
+      "type": "single",
+      "questionText": "A team needs blobs, Azure Files shares, queues, and tables under one storage account type. Which account kind is the standard choice?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "General-purpose v2"
+        },
+        {
+          "id": "b",
+          "text": "Premium block blobs only"
+        },
+        {
+          "id": "c",
+          "text": "Premium file shares only"
+        },
+        {
+          "id": "d",
+          "text": "Azure managed disk only"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A general-purpose v2 storage account supports blob, file, queue, and table services.",
+      "distractorExplanations": {
+        "b": "Premium block blob accounts target block blobs rather than all four services.",
+        "c": "Premium file share accounts are specialized for Azure Files.",
+        "d": "Managed disks are VM block storage, not a four-service storage account."
+      },
+      "hint": "Choose the general account type.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-storage-services/"
+    },
+    {
+      "id": "az-900-arch-064",
+      "type": "single",
+      "questionText": "What does single sign-on (SSO) let a user do?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Use one sign-in to access multiple connected applications"
+        },
+        {
+          "id": "b",
+          "text": "Sign in without any identity verification"
+        },
+        {
+          "id": "c",
+          "text": "Automatically receive owner rights on every Azure subscription"
+        },
+        {
+          "id": "d",
+          "text": "Disable multifactor authentication for all applications"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "SSO lets an authenticated user access multiple connected applications without separate sign-ins to each one.",
+      "distractorExplanations": {
+        "b": "SSO still authenticates the user.",
+        "c": "SSO does not grant Azure RBAC permissions.",
+        "d": "SSO does not inherently disable MFA."
+      },
+      "hint": "One authentication session can serve multiple apps.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-065",
+      "type": "single",
+      "questionText": "A user receives an Azure RBAC role assignment at the resource-group scope. Which resources can inherit that access?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Resources within that resource group"
+        },
+        {
+          "id": "b",
+          "text": "All resources in every tenant"
+        },
+        {
+          "id": "c",
+          "text": "Only the management group above the subscription"
+        },
+        {
+          "id": "d",
+          "text": "Resources in unrelated subscriptions"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure RBAC assignments at a resource group can apply to resources within that group through scope inheritance.",
+      "distractorExplanations": {
+        "b": "A resource-group assignment does not span every tenant.",
+        "c": "Role permissions flow down to child scopes, not up to a management group.",
+        "d": "Unrelated subscriptions are outside the assigned scope."
+      },
+      "hint": "Permissions flow down the scope hierarchy.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-066",
+      "type": "single",
+      "questionText": "A Conditional Access policy requires a compliant device before allowing a user into an application. What is the policy evaluating?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A sign-in condition before granting access"
+        },
+        {
+          "id": "b",
+          "text": "The Azure region pair"
+        },
+        {
+          "id": "c",
+          "text": "The storage account redundancy option"
+        },
+        {
+          "id": "d",
+          "text": "The VM disk type"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Conditional Access can evaluate signals such as device compliance and require controls before access is granted.",
+      "distractorExplanations": {
+        "b": "Region pairing concerns resilience, not sign-in conditions.",
+        "c": "Storage redundancy does not determine user sign-in policy.",
+        "d": "Disk type is unrelated to Conditional Access."
+      },
+      "hint": "Access depends on a device signal.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-067",
+      "type": "single",
+      "questionText": "Which statement best describes least-privilege access in Azure?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Grant only the permissions needed for the task"
+        },
+        {
+          "id": "b",
+          "text": "Assign Owner to every user for convenience"
+        },
+        {
+          "id": "c",
+          "text": "Share one administrator account with the whole team"
+        },
+        {
+          "id": "d",
+          "text": "Disable role assignments after sign-in"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Least privilege limits identities to the permissions needed to perform their work.",
+      "distractorExplanations": {
+        "b": "Owner grants broad rights beyond most users' needs.",
+        "c": "Shared accounts weaken accountability and do not limit permissions.",
+        "d": "Authentication alone does not replace authorization."
+      },
+      "hint": "Give the minimum necessary permissions.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
+      "id": "az-900-arch-068",
+      "type": "single",
+      "questionText": "A user must authenticate before receiving an Azure RBAC permission. What is the difference between authentication and authorization?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Authentication verifies identity; authorization determines permitted actions"
+        },
+        {
+          "id": "b",
+          "text": "Authentication sets prices; authorization selects regions"
+        },
+        {
+          "id": "c",
+          "text": "Authentication deploys VMs; authorization patches them"
+        },
+        {
+          "id": "d",
+          "text": "They are two names for storage replication"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Authentication establishes who the user is; authorization determines what that identity may do.",
+      "distractorExplanations": {
+        "b": "Neither process sets Azure prices or deployment regions.",
+        "c": "VM deployment and patching are management tasks, not definitions of the two concepts.",
+        "d": "Storage replication is unrelated to identity checks."
+      },
+      "hint": "First establish identity, then check permissions.",
+      "domain": "azure-architecture-services",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-azure-identity-access-security/"
+    },
+    {
       "id": "az-900-mgmt-001",
       "type": "single",
       "questionText": "Which tool should you use to estimate the cost of an Azure solution before deployment?",
@@ -2576,7 +4088,7 @@
         "b": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to label resources with metadata.",
         "d": "Resource locks is controls that prevent accidental deletion or modification; it does not satisfy the requirement to label resources with metadata."
       },
-      "hint": "Think metadata.",
+      "hint": "Use name-value metadata to group resources for reporting.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
     },
@@ -2761,7 +4273,7 @@
         "c": "Azure Monitor is Azure's observability platform for metrics, logs, traces, and alerts; it does not satisfy the requirement to audit or enforce resource standards.",
         "d": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to audit or enforce resource standards."
       },
-      "hint": "Think governance rules.",
+      "hint": "Choose the service that audits or enforces resource rules.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
     },
@@ -2797,7 +4309,7 @@
         "c": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to prevent accidental deletion.",
         "d": "Azure Monitor is Azure's observability platform for metrics, logs, traces, and alerts; it does not satisfy the requirement to prevent accidental deletion."
       },
-      "hint": "Think CanNotDelete.",
+      "hint": "The requirement is to block deletion by authorized users.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
     },
@@ -2869,7 +4381,7 @@
         "b": "Azure Functions is serverless event-driven compute; it does not satisfy the requirement to govern and classify data.",
         "d": "Azure Advisor is personalized best-practice recommendations for Azure resources; it does not satisfy the requirement to govern and classify data."
       },
-      "hint": "Think data governance.",
+      "hint": "Find a service for discovering and governing organizational data.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
     },
@@ -2982,7 +4494,7 @@
         "b": "AzCopy is a command-line data transfer utility for Azure Storage; it does not satisfy the requirement to manage Azure through a browser GUI.",
         "c": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to manage Azure through a browser GUI."
       },
-      "hint": "Think web GUI.",
+      "hint": "The administrator wants a browser-based graphical interface.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/"
     },
@@ -3054,7 +4566,7 @@
         "c": "Azure PowerShell is PowerShell cmdlets for Azure management; it does not satisfy the requirement to manage Azure with az commands.",
         "d": "AzCopy is a command-line data transfer utility for Azure Storage; it does not satisfy the requirement to manage Azure with az commands."
       },
-      "hint": "Look for az commands.",
+      "hint": "Look for the command-line tool whose commands begin with az.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/"
     },
@@ -3090,7 +4602,7 @@
         "c": "AzCopy is a command-line data transfer utility for Azure Storage; it does not satisfy the requirement to manage Azure with PowerShell cmdlets.",
         "d": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to manage Azure with PowerShell cmdlets."
       },
-      "hint": "Think Az cmdlets.",
+      "hint": "Look for the Az module and PowerShell cmdlets.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/"
     },
@@ -3203,7 +4715,7 @@
         "c": "Azure Monitor alerts is rules that notify or trigger actions when monitoring conditions are met; it does not satisfy the requirement to deploy Azure resources declaratively.",
         "d": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to deploy Azure resources declaratively."
       },
-      "hint": "Think declarative JSON.",
+      "hint": "The deployment is declared in a repeatable JSON template.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/"
     },
@@ -3311,7 +4823,7 @@
         "b": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to recommend improvements to Azure resources.",
         "d": "Azure Service Health is personalized information about Azure incidents, maintenance, and advisories; it does not satisfy the requirement to recommend improvements to Azure resources."
       },
-      "hint": "Think recommendations.",
+      "hint": "Look for personalized best-practice recommendations.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     },
@@ -3347,7 +4859,7 @@
         "c": "Azure Advisor is personalized best-practice recommendations for Azure resources; it does not satisfy the requirement to report service incidents and maintenance.",
         "d": "Azure Monitor is Azure's observability platform for metrics, logs, traces, and alerts; it does not satisfy the requirement to report service incidents and maintenance."
       },
-      "hint": "Think platform health.",
+      "hint": "The question concerns platform incidents and planned maintenance.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     },
@@ -3383,7 +4895,7 @@
         "c": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to collect and analyze telemetry.",
         "d": "Azure Data Box is a physical appliance-based service for large offline data transfers; it does not satisfy the requirement to collect and analyze telemetry."
       },
-      "hint": "Think observability.",
+      "hint": "One platform collects metrics, logs, traces, and alerts.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     },
@@ -3419,7 +4931,7 @@
         "b": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to query monitoring logs.",
         "c": "Azure Files is managed SMB/NFS file shares; it does not satisfy the requirement to query monitoring logs."
       },
-      "hint": "Think log queries.",
+      "hint": "The team needs to query collected log data.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     },
@@ -3491,7 +5003,7 @@
         "c": "Azure Advisor is personalized best-practice recommendations for Azure resources; it does not satisfy the requirement to monitor application performance.",
         "d": "Azure DNS is managed DNS zone and record hosting; it does not satisfy the requirement to monitor application performance."
       },
-      "hint": "Think APM.",
+      "hint": "Focus on requests, dependencies, and application failures.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     },
@@ -3604,7 +5116,7 @@
         "b": "Availability Zone is a physically separate datacenter location within an Azure region; it does not satisfy the requirement to apply governance across subscriptions.",
         "d": "Resource group is a logical container for related Azure resources; it does not satisfy the requirement to apply governance across subscriptions."
       },
-      "hint": "Above subscriptions.",
+      "hint": "Assign governance at the parent of multiple subscriptions.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-core-architectural-components-of-azure/"
     },
@@ -3681,7 +5193,7 @@
         "b": "Azure Pricing Calculator is a tool for estimating Azure solution cost before deployment; it does not satisfy the requirement to automate deployments.",
         "c": "Resource locks is controls that prevent accidental deletion or modification; it does not satisfy the requirement to automate deployments."
       },
-      "hint": "Template plus script.",
+      "hint": "One answer declares resources; the other scripts deployment commands.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/paths/describe-azure-management-governance/"
     },
@@ -3718,6 +5230,654 @@
         "c": "Microsoft Purview is data governance, discovery, protection, and compliance capabilities; it does not satisfy the requirement to centralize monitoring telemetry."
       },
       "hint": "Think centralized observability.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
+    },
+    {
+      "id": "az-900-mgmt-035",
+      "type": "single",
+      "questionText": "Two identical Azure virtual machines run for the same duration in different regions. What can cause their prices to differ?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The Azure region selected"
+        },
+        {
+          "id": "b",
+          "text": "The resource group name"
+        },
+        {
+          "id": "c",
+          "text": "The number of tags on each VM"
+        },
+        {
+          "id": "d",
+          "text": "The subscription display name"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure service prices can vary by region because costs and pricing differ across locations.",
+      "distractorExplanations": {
+        "b": "A resource group name is organizational metadata and does not set a VM price.",
+        "c": "Tags add metadata for organization and cost reporting but do not set the VM unit price.",
+        "d": "Changing the subscription display name does not change the regional unit price."
+      },
+      "hint": "Location is a pricing factor.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-036",
+      "type": "single",
+      "questionText": "An Azure Policy assignment must report resources that violate a rule while still allowing their creation. Which effect fits?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Deny"
+        },
+        {
+          "id": "b",
+          "text": "Audit"
+        },
+        {
+          "id": "c",
+          "text": "Delete"
+        },
+        {
+          "id": "d",
+          "text": "ReadOnly lock"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "The Audit effect marks noncompliant resources for reporting without blocking the request to create or update them.",
+      "distractorExplanations": {
+        "a": "Deny blocks requests that violate the policy.",
+        "c": "Delete is not the Azure Policy effect for reporting noncompliance.",
+        "d": "A ReadOnly lock restricts control-plane changes rather than auditing policy compliance."
+      },
+      "hint": "The resource must still be deployable.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-037",
+      "type": "single",
+      "questionText": "Which usage pattern can increase Azure network data-transfer charges?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Renaming a resource group"
+        },
+        {
+          "id": "b",
+          "text": "Sending data from Azure to users on the internet"
+        },
+        {
+          "id": "c",
+          "text": "Adding a cost-center tag"
+        },
+        {
+          "id": "d",
+          "text": "Changing a subscription display name"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Outbound data transfer from Azure to the internet can incur bandwidth charges, so traffic volume affects cost.",
+      "distractorExplanations": {
+        "a": "A resource group name is metadata and does not create network transfer usage.",
+        "c": "A tag labels a resource for management and cost reporting; it does not transfer data.",
+        "d": "The subscription display name does not generate outbound network traffic."
+      },
+      "hint": "Consider the direction and amount of network traffic.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-038",
+      "type": "single",
+      "questionText": "An Azure budget reaches its alert threshold. What does the budget do by default?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Notifies configured recipients"
+        },
+        {
+          "id": "b",
+          "text": "Automatically stops all VMs"
+        },
+        {
+          "id": "c",
+          "text": "Deletes the subscription"
+        },
+        {
+          "id": "d",
+          "text": "Changes every resource to a cheaper SKU"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure budgets can alert when actual or forecasted spending crosses a threshold; the budget does not automatically stop resources.",
+      "distractorExplanations": {
+        "b": "Stopping VMs requires separate automation.",
+        "c": "A budget alert does not delete a subscription.",
+        "d": "The budget does not resize resources automatically."
+      },
+      "hint": "An alert is a notification.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-039",
+      "type": "single",
+      "questionText": "A finance analyst wants to see which Azure services account for the largest share of the current bill. Which capability should they use?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Cost analysis grouped by service"
+        },
+        {
+          "id": "b",
+          "text": "Azure DNS records"
+        },
+        {
+          "id": "c",
+          "text": "Availability sets"
+        },
+        {
+          "id": "d",
+          "text": "Azure File Sync"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Microsoft Cost Management cost analysis can group costs by service to show major spending categories.",
+      "distractorExplanations": {
+        "b": "DNS records resolve names, not analyze billing.",
+        "c": "Availability sets support VM availability.",
+        "d": "File Sync synchronizes file shares."
+      },
+      "hint": "Group actual cost data by service.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-040",
+      "type": "single",
+      "questionText": "Does adding a resource tag grant a user permission to manage that resource?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes; every tag is an RBAC role"
+        },
+        {
+          "id": "b",
+          "text": "No; Azure RBAC assignments control permissions"
+        },
+        {
+          "id": "c",
+          "text": "Yes; a cost-center tag grants Reader"
+        },
+        {
+          "id": "d",
+          "text": "No; permissions are set only by resource locks"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Tags provide metadata for organization and reporting; Azure RBAC controls access to resources.",
+      "distractorExplanations": {
+        "a": "A tag is not a role assignment.",
+        "c": "A cost-center label does not confer Reader access.",
+        "d": "Locks restrict changes but do not replace RBAC authorization."
+      },
+      "hint": "Separate metadata from access control.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-041",
+      "type": "single",
+      "questionText": "A team tags a resource group with Environment=Test. What should it expect for resources inside the group by default?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Every resource automatically receives the tag"
+        },
+        {
+          "id": "b",
+          "text": "The resources do not automatically inherit that tag"
+        },
+        {
+          "id": "c",
+          "text": "All resources are deleted when the tag changes"
+        },
+        {
+          "id": "d",
+          "text": "The tag makes all resources public"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "Resource group tags are not automatically inherited by contained resources unless additional configuration applies them.",
+      "distractorExplanations": {
+        "a": "Azure does not automatically copy resource-group tags to each resource by default.",
+        "c": "Changing a tag does not delete resources.",
+        "d": "Tags do not alter network exposure."
+      },
+      "hint": "Metadata inheritance is not automatic.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-cost-management-azure/"
+    },
+    {
+      "id": "az-900-mgmt-042",
+      "type": "single",
+      "questionText": "An organization must reject deployments that violate an Azure Policy rule. Which policy effect should it use?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Audit"
+        },
+        {
+          "id": "b",
+          "text": "Deny"
+        },
+        {
+          "id": "c",
+          "text": "Append a cost tag only"
+        },
+        {
+          "id": "d",
+          "text": "Disabled"
+        }
+      ],
+      "correctOptionIds": [
+        "b"
+      ],
+      "correctExplanation": "The Deny effect prevents noncompliant create or update requests from succeeding.",
+      "distractorExplanations": {
+        "a": "Audit records noncompliance without blocking the request.",
+        "c": "Adding a tag does not necessarily reject the deployment.",
+        "d": "Disabled prevents the policy from evaluating."
+      },
+      "hint": "The deployment must be blocked.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-043",
+      "type": "single",
+      "questionText": "What is an Azure Policy initiative?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "A collection of related policy definitions assigned together"
+        },
+        {
+          "id": "b",
+          "text": "A replacement for every Azure subscription"
+        },
+        {
+          "id": "c",
+          "text": "A virtual network routing table"
+        },
+        {
+          "id": "d",
+          "text": "A single VM backup file"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An initiative groups related Azure Policy definitions so they can be assigned and tracked together.",
+      "distractorExplanations": {
+        "b": "Initiatives do not replace subscriptions.",
+        "c": "Routing tables control network paths, not governance policies.",
+        "d": "A VM backup is unrelated to policy grouping."
+      },
+      "hint": "Group several rules into one assignment.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-044",
+      "type": "single",
+      "questionText": "A resource has a CanNotDelete lock. Which action is still generally allowed?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Modify the resource"
+        },
+        {
+          "id": "b",
+          "text": "Delete the resource"
+        },
+        {
+          "id": "c",
+          "text": "Delete the resource group containing it"
+        },
+        {
+          "id": "d",
+          "text": "Remove the resource without removing the lock"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "A CanNotDelete lock blocks deletion while allowing authorized modifications to the resource.",
+      "distractorExplanations": {
+        "b": "Deletion is the action the lock prevents.",
+        "c": "Deleting the containing group would delete the locked resource and is blocked.",
+        "d": "The lock must be removed by an authorized user before deleting the resource."
+      },
+      "hint": "This lock protects against deletion, not all edits.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-045",
+      "type": "single",
+      "questionText": "A CanNotDelete lock is applied to a resource group. What is its effect on resources in that group?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "The lock is inherited by contained resources"
+        },
+        {
+          "id": "b",
+          "text": "The lock applies only to the group name"
+        },
+        {
+          "id": "c",
+          "text": "All resources become read-only"
+        },
+        {
+          "id": "d",
+          "text": "RBAC roles are removed"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Resource locks applied at a parent scope are inherited by child resources, so deletion of contained resources is restricted.",
+      "distractorExplanations": {
+        "b": "The lock protects child resources as well as the group.",
+        "c": "CanNotDelete does not make every property read-only.",
+        "d": "A lock does not remove RBAC assignments."
+      },
+      "hint": "Locks flow from parent scope to children.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-046",
+      "type": "single",
+      "questionText": "What is the main purpose of Microsoft Purview data catalog capabilities?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Discover and describe organizational data assets"
+        },
+        {
+          "id": "b",
+          "text": "Scale VM instances"
+        },
+        {
+          "id": "c",
+          "text": "Provide site-to-site VPN connectivity"
+        },
+        {
+          "id": "d",
+          "text": "Replace Azure Monitor alerts"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Microsoft Purview helps organizations discover, catalog, and govern data assets.",
+      "distractorExplanations": {
+        "b": "VM scaling is a compute capability.",
+        "c": "VPN Gateway provides site-to-site connectivity.",
+        "d": "Azure Monitor handles operational alerts."
+      },
+      "hint": "Think of finding and understanding data.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-azure-for-governance-compliance/"
+    },
+    {
+      "id": "az-900-mgmt-047",
+      "type": "single",
+      "questionText": "A team deploys the same ARM template twice with the same parameters. What is the intended outcome of a declarative deployment?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Resources converge on the defined state"
+        },
+        {
+          "id": "b",
+          "text": "A second identical set of resources is always created"
+        },
+        {
+          "id": "c",
+          "text": "The subscription is deleted"
+        },
+        {
+          "id": "d",
+          "text": "The template is converted to a VM image"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Declarative ARM deployments describe the desired resource state; rerunning a template aims to make resources match that state.",
+      "distractorExplanations": {
+        "b": "A repeated deployment does not inherently duplicate every resource.",
+        "c": "ARM templates do not delete the subscription.",
+        "d": "An ARM template is not a VM image."
+      },
+      "hint": "The template states what should exist.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-manage-deploy-azure-resources/"
+    },
+    {
+      "id": "az-900-mgmt-048",
+      "type": "single",
+      "questionText": "Which file format is used by traditional Azure Resource Manager templates to declare Azure resources?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "JSON"
+        },
+        {
+          "id": "b",
+          "text": "JPEG"
+        },
+        {
+          "id": "c",
+          "text": "CSV only"
+        },
+        {
+          "id": "d",
+          "text": "Executable EXE"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Traditional ARM templates are JSON documents that declare resources and configuration.",
+      "distractorExplanations": {
+        "b": "JPEG is an image format.",
+        "c": "CSV is tabular data, not the ARM template format.",
+        "d": "An executable is not a declarative ARM template."
+      },
+      "hint": "Think structured data, not a program binary.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-features-tools-manage-deploy-azure-resources/"
+    },
+    {
+      "id": "az-900-mgmt-050",
+      "type": "single",
+      "questionText": "Azure Advisor identifies an underutilized virtual machine. Which recommendation category is most likely involved?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Cost"
+        },
+        {
+          "id": "b",
+          "text": "DNS"
+        },
+        {
+          "id": "c",
+          "text": "Identity federation"
+        },
+        {
+          "id": "d",
+          "text": "Storage queue messaging"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure Advisor cost recommendations can identify underutilized resources that may be resized or removed to reduce spending.",
+      "distractorExplanations": {
+        "b": "DNS is not an Advisor recommendation category.",
+        "c": "Identity federation is not the category for underused compute.",
+        "d": "Queue messaging is unrelated to VM utilization cost."
+      },
+      "hint": "Underutilization wastes money.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
+    },
+    {
+      "id": "az-900-mgmt-052",
+      "type": "single",
+      "questionText": "An operator needs to know whether one specific Azure VM is currently healthy. Which view is most directly suited?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Azure Resource Health"
+        },
+        {
+          "id": "b",
+          "text": "Azure Pricing Calculator"
+        },
+        {
+          "id": "c",
+          "text": "Azure Data Box"
+        },
+        {
+          "id": "d",
+          "text": "Azure Policy initiative"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure Resource Health reports the health of individual Azure resources such as a specific VM.",
+      "distractorExplanations": {
+        "b": "Pricing Calculator estimates costs.",
+        "c": "Data Box moves data through physical devices.",
+        "d": "A policy initiative groups governance rules."
+      },
+      "hint": "Focus on one resource rather than all platform incidents.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
+    },
+    {
+      "id": "az-900-mgmt-053",
+      "type": "single",
+      "questionText": "Which Azure Monitor data type is best for plotting CPU percentage over time?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Metric"
+        },
+        {
+          "id": "b",
+          "text": "Resource tag"
+        },
+        {
+          "id": "c",
+          "text": "ARM template"
+        },
+        {
+          "id": "d",
+          "text": "Policy initiative"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "Azure Monitor metrics are numerical time-series measurements such as CPU utilization.",
+      "distractorExplanations": {
+        "b": "Tags are metadata labels, not sampled measurements.",
+        "c": "ARM templates define deployments.",
+        "d": "Policy initiatives group governance definitions."
+      },
+      "hint": "A regularly sampled number is a metric.",
+      "domain": "azure-management-governance",
+      "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
+    },
+    {
+      "id": "az-900-mgmt-055",
+      "type": "single",
+      "questionText": "Several Azure Monitor alert rules should notify the same email group. What reusable component defines those notifications?",
+      "selectionCount": 1,
+      "options": [
+        {
+          "id": "a",
+          "text": "Action group"
+        },
+        {
+          "id": "b",
+          "text": "Resource group"
+        },
+        {
+          "id": "c",
+          "text": "Availability zone"
+        },
+        {
+          "id": "d",
+          "text": "Storage account access tier"
+        }
+      ],
+      "correctOptionIds": [
+        "a"
+      ],
+      "correctExplanation": "An Azure Monitor action group defines reusable notification and response actions for alert rules.",
+      "distractorExplanations": {
+        "b": "Resource groups organize resources but do not define alert recipients.",
+        "c": "Availability zones isolate infrastructure failures.",
+        "d": "Storage tiers affect blob access and pricing."
+      },
+      "hint": "Share one notification configuration across alerts.",
       "domain": "azure-management-governance",
       "referenceUrl": "https://learn.microsoft.com/en-us/training/modules/describe-monitoring-tools-azure/"
     }
