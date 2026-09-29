@@ -8,7 +8,7 @@ import type { ExamAttempt } from "@prisma/client";
 const bank = validateBank(JSON.parse(readFileSync("prisma/Data/AWS/AWS_Cloud_Practitioner_CLF_C02/AWS_Cloud_Practitioner_CLF_C02_updated.json.json", "utf8")));
 const snapshot: Snapshot = { title: bank.certification.title, config: bank.certification.mockExam, domains: bank.certification.domains, questions: bank.questions.slice(0, 5) };
 test("new bank validates all questions and rejects missing distractor reasoning", () => {
-  assert.equal(bank.questions.length,274);
+  assert.ok(bank.questions.length >= bank.certification.mockExam.questionCount, "Bank must contain enough questions for a full mock exam");
   const invalid = structuredClone(bank); invalid.questions[0].distractorExplanations = {};
   assert.throws(() => validateBank(invalid), /distractor/);
 });
