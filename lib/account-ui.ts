@@ -14,3 +14,14 @@ export function certificationLabel(slug: string) {
   return { title: slug.replaceAll("-", " ").replace(/\b\w/g, letter => letter.toUpperCase()), provider: "Certification", code: "PRACTICE" };
 }
 
+export type HistoryFilter = "all" | PracticeStatus;
+export function filterAccountAttempts(attempts: AccountAttempt[], filter: HistoryFilter, search: string, now: number) {
+  const terms = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  return attempts.filter(attempt => {
+    if (filter !== "all" && practiceStatus(attempt, now) !== filter) return false;
+    const label = certificationLabel(attempt.certSlug);
+    const text = `${label.title} ${label.provider} ${label.code} ${attempt.mode === "mock" ? "Mock exam" : "Domain practice"}`.toLocaleLowerCase();
+    return terms.every(term => text.includes(term));
+  });
+}
+

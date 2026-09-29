@@ -1,5 +1,5 @@
+import { SiteHeader } from "@/components/site-header";
 import Link from "next/link";
-import { Brand } from "@/components/brand";
 
 export function SetupSkeleton({ fullPage = false }: { fullPage?: boolean }) {
   const content = <section className="practice-skeleton" aria-busy="true" aria-label="Exam setup">
@@ -23,7 +23,7 @@ export function SetupSkeleton({ fullPage = false }: { fullPage?: boolean }) {
 
   if (!fullPage) return content;
   return <div className="site-shell exam-setup-shell">
-    <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications</Link></header>
+    <SiteHeader />
     <main className="exam-main">
       <Link className="back-link" href="/certifications">Certification catalog</Link>
       <div className="exam-heading"><div><div className="eyebrow section-kicker">CERTI / YOUR NEXT MILESTONE</div><h1>Prepare with purpose.</h1></div></div>
