@@ -1,12 +1,11 @@
 "use client";
+import { SiteHeader } from "@/components/site-header";
 
 import { CatalogIcon } from "@/components/catalog-icon";
-import { AccountLink } from "@/components/account-link";
 import CertificationCatalog from "@/components/certification-catalog";
 import { useEffect, useState } from "react";
 
 import { Brand } from "@/components/brand";
-import { GitHubButton } from "@/components/github-button";
 import { LandingQuiz } from "@/components/landing-quiz";
 import "./landing.css";
 
@@ -40,7 +39,7 @@ function TypedBrand() {
 
 export default function Home() {
   return <div className="site-shell landing-page">
-    <header className="site-header"><Brand /><nav aria-label="Main navigation"><a className="nav-link" href="#certifications">Certifications</a><a className="nav-link" href="#how-it-works">How it works</a></nav><AccountLink /><GitHubButton /></header>
+    <SiteHeader />
     <main>
       <section className="hero">
         <div className="hero-grid" aria-hidden="true" />

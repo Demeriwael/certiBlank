@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { AccountIcon } from "./account-icon";
 
 type Provider = "google" | "github";
 
@@ -39,10 +40,14 @@ export function AccountConnections({ google, github, connection }: { google: boo
     {connection === "linked" && <p className="account-connection-success" role="status">Sign-in method connected.</p>}
     {connection === "failed" && <p className="auth-error" role="alert">Could not connect that sign-in method. Make sure the provider uses this account’s email, then try again.</p>}
     {error && <p className="auth-error" role="alert">{error}</p>}
-    <div className="account-connection-actions">
-      {([google && "google", github && "github"].filter(Boolean) as Provider[]).map(provider => <button key={provider} type="button" disabled={Boolean(busy) || linked === null || linked.includes(provider)} onClick={() => connect(provider)}>
-        {linked?.includes(provider) ? `${provider === "google" ? "Google" : "GitHub"} connected` : busy === provider ? "Connecting…" : `Connect ${provider === "google" ? "Google" : "GitHub"}`}
-      </button>)}
+    <div className="account-connection-actions" aria-busy={linked === null && !error}>
+      {([google && "google", github && "github"].filter(Boolean) as Provider[]).map(provider => <div className="account-provider-connection" key={provider}>
+        <span className="account-connection-symbol" aria-hidden="true"><AccountIcon name={linked?.includes(provider) ? "check" : "shield"} /></span>
+        <div><strong>{provider === "google" ? "Google" : "GitHub"}</strong><span>{linked?.includes(provider) ? "Connected to your account" : linked === null ? error ? "Status unavailable" : "Checking connection…" : "Not connected"}</span></div>
+        <button type="button" aria-label={`${provider === "google" ? "Google" : "GitHub"}: ${linked?.includes(provider) ? "Connected" : busy === provider ? "Connecting" : "Connect"}`} disabled={Boolean(busy) || linked === null || linked.includes(provider)} onClick={() => connect(provider)}>
+          {linked?.includes(provider) ? "Connected" : busy === provider ? "Connecting…" : "Connect"}
+        </button>
+      </div>)}
     </div>
   </section>;
 }

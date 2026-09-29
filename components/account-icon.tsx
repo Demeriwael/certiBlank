@@ -1,5 +1,11 @@
-export function AccountIcon({ name, className = "" }: { name: "arrow" | "check" | "shield" | "eye" | "close" | "user" | "book"; className?: string }) {
+export function AccountIcon({ name, className = "" }: { name: "arrow" | "check" | "shield" | "eye" | "close" | "user" | "book" | "chevron" | "menu" | "history" | "plus" | "logout" | "search"; className?: string }) {
   const paths = {
+    chevron: <path d="m8 10 4 4 4-4" />,
+    menu: <><path d="M4 7h16M4 12h16M4 17h16" /></>,
+    history: <><path d="M3 11a9 9 0 1 1 2 7M3 4v7h7M12 7v5l3 2" /></>,
+    plus: <path d="M12 5v14M5 12h14" />,
+    logout: <><path d="M10 4H4v16h6M9 12h12m-4-4 4 4-4 4" /></>,
+    search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></>,
     arrow: <><path d="M5 12h14m-6-6 6 6-6 6" /></>,
     check: <path d="m5 12 4 4L19 6" />,
     shield: <><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z" /><path d="m8 12 3 3 5-6" /></>,

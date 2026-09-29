@@ -1,9 +1,8 @@
 "use client";
+import { SiteHeader } from "@/components/site-header";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Brand } from "@/components/brand";
-import { AccountLink } from "@/components/account-link";
 import { SetupSkeleton } from "@/components/exam/SetupSkeleton";
 import { ExamWorkspace } from "@/components/exam/ExamWorkspace";
 import { ExamIcon } from "@/components/exam/ExamIcon";
@@ -131,7 +130,7 @@ export default function ExamSetup({ certSlug }: { certSlug: string }) {
   const available = setup?.domains.filter(d => domains.includes(d.id)).reduce((sum, d) => sum + d.available, 0) ?? 0;
   if (attempt) return <ExamWorkspace key={attempt.id} attempt={attempt} expired={expired} busy={busy} checking={checking} error={error} onChange={change} onRestart={restart} onAccount={async () => { await sync.current?.flush(); router.push(`/account?returnTo=${encodeURIComponent(`/platform/${certSlug}?attempt=${attempt.id}`)}`); }} />;
   return <div className="site-shell exam-setup-shell">
-    <header className="site-header"><Brand /><Link className="nav-link" href="/certifications">All certifications <ExamIcon name="external" /></Link><AccountLink /></header>
+    <SiteHeader />
     <main className="exam-main">
       <Link href="/certifications" className="back-link"><ExamIcon name="previous" />Certification catalog</Link>
       <div className="exam-heading"><div><div className="eyebrow section-kicker">CERTI / YOUR NEXT MILESTONE</div><h1>{setup?.title ?? "Prepare with purpose."}</h1></div></div>

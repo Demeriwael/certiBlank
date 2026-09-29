@@ -1,4 +1,4 @@
-import { Brand } from "./brand";
+import { SiteHeader } from "@/components/site-header";
 
 export function SkeletonLines() {
   return <div className="loading-lines" aria-hidden="true"><span className="loading-shape loading-heading" /><span className="loading-shape" /><span className="loading-shape loading-short" /></div>;
@@ -13,7 +13,7 @@ export function AccountSkeleton({ form = false }: { form?: boolean }) {
 }
 
 export function PageSkeleton() {
-  return <div className="site-shell"><header className="site-header"><Brand /></header><main className="section-wrap loading-page"><SkeletonLines /><CatalogSkeleton /></main></div>;
+  return <div className="site-shell"><SiteHeader /><main className="section-wrap loading-page"><SkeletonLines /><CatalogSkeleton /></main></div>;
 }
 
 export function ResultsLoading() {

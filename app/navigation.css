@@ -1,0 +1,65 @@
+/* Shared navigation: opaque surfaces remain legible in either appearance. */
+.site-shell .polished-header{position:relative;z-index:40;height:80px;min-height:80px;flex-wrap:nowrap;padding:0;gap:24px}
+.site-shell .polished-header .desktop-navigation{display:flex;align-items:center;gap:4px;margin:0 auto}
+.polished-header .desktop-navigation .nav-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 12px;border-radius:10px;font-size:13px;color:var(--text-secondary);white-space:nowrap}
+.polished-header .desktop-navigation .nav-link:hover,.polished-header .desktop-navigation .nav-link[aria-current=page]{background:var(--surface-raised);color:var(--foreground)}
+.polished-header .desktop-navigation .nav-link[aria-current=page]{box-shadow:inset 0 -2px var(--accent)}
+.header-actions{display:flex;align-items:center;gap:12px;margin-left:auto;min-width:0}
+.header-github .github-button{min-height:44px;width:44px;padding:10px;border-radius:12px}
+.header-github .github-button>span{display:none}
+.polished-header .brand-controls{gap:14px}
+.polished-header .theme-toggle{border-color:var(--border);border-radius:12px}
+.polished-header .account-nav{min-width:0}
+.polished-header .account-guest{gap:12px}
+.polished-header .account-link{min-height:44px;border-radius:12px;padding:10px 15px;font-weight:600}
+.polished-header .account-login{border-radius:10px;padding:0 8px}
+.polished-header .account-login:hover{background:var(--surface-raised)}
+.nav-disclosure{position:relative}
+.nav-disclosure-trigger{display:flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:5px 12px 5px 5px;border:1px solid var(--border);border-radius:14px;background:var(--surface);color:var(--foreground);font-size:13px;font-weight:550;white-space:nowrap;cursor:pointer;transition:background .16s,border-color .16s}
+.nav-disclosure-trigger:hover,.nav-disclosure-trigger[aria-expanded=true]{background:var(--surface-raised);border-color:var(--control-border)}
+.nav-account-avatar{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:var(--surface-selected);color:var(--accent)}
+.nav-disclosure-trigger>svg:last-child{width:16px;transition:transform .16s}
+.account-disclosure .nav-disclosure-trigger[aria-expanded=true]>svg:last-child{transform:rotate(180deg)}
+.nav-popover{position:absolute;right:0;top:calc(100% + 8px);width:300px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 100px);overflow-y:auto;overscroll-behavior:contain;padding:8px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--foreground);box-shadow:0 16px 48px #0003,0 3px 10px #0001;animation:nav-reveal .14s ease-out;transform-origin:top right}
+.nav-popover[hidden]{display:none}
+.nav-popover-heading{display:grid;gap:5px;padding:12px 12px 16px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.nav-popover-heading strong{font-size:14px;font-weight:600;letter-spacing:-.02em}
+.nav-popover-heading>span{font-size:12px;color:var(--text-secondary);line-height:1.5}
+.site-header .nav-popover .nav-popover-links{display:grid;gap:2px;margin:0}
+.nav-popover-links>a,.nav-signout{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px;border-radius:10px;font-size:13px;line-height:1.4;color:var(--foreground)}
+.nav-popover svg{width:18px;height:18px;flex-shrink:0}
+.nav-popover-links>a>svg{color:var(--text-secondary)}
+.nav-popover-links>a:hover,.nav-popover-links>a[aria-current=page],.nav-signout:hover{background:var(--surface-raised);color:var(--accent)}
+.nav-popover-appearance{display:grid;gap:5px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;margin:6px 0}
+.nav-popover-appearance>span{padding:0 12px;font-size:11px;letter-spacing:.04em;color:var(--text-secondary)}
+.theme-toggle.theme-toggle-labeled{width:100%;height:auto;min-height:48px;justify-items:stretch;padding:10px 12px;border:0;border-radius:10px;background:transparent;font-size:13px}
+.theme-toggle.theme-toggle-labeled>span{display:flex;align-items:center;gap:12px}
+html[data-theme=dark] .theme-toggle-labeled .theme-to-dark,html:not([data-theme=dark]) .theme-toggle-labeled .theme-to-light{display:none}
+.theme-toggle.theme-toggle-labeled:hover{background:var(--surface-raised)}
+.nav-popover-footer{border-top:1px solid var(--border);padding:10px 4px 4px;margin-top:8px}
+.nav-popover-footer .github-button{width:100%;font-size:13px}
+.nav-popover :is(a,button):focus-visible{outline:2px solid var(--accent);outline-offset:-2px;box-shadow:none}
+.mobile-navigation{display:none}
+@keyframes nav-reveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1050px){.site-shell .polished-header{gap:12px}.polished-header .desktop-navigation .nav-link{padding:0 8px;font-size:12px}.header-github{display:none}}
+@media(max-width:800px){
+ .site-shell .polished-header{height:72px;min-height:72px;gap:8px!important}
+ .site-shell .polished-header .desktop-navigation{display:none}
+ .mobile-navigation{display:block;position:static}
+ .mobile-navigation .nav-disclosure-trigger{width:44px;padding:10px;border-radius:12px}
+ .mobile-navigation .nav-disclosure-trigger>svg{width:20px;height:20px}
+ .mobile-navigation .nav-popover{top:calc(100% - 2px);right:0;width:300px;max-width:100%}
+ .header-actions{gap:8px}.polished-header .brand-controls{gap:8px}
+ .polished-header .account-guest{gap:4px}
+ .polished-header .account-link{font-size:12px;padding:8px 12px}
+ .polished-header .account-login{font-size:12px;padding:0 6px}
+ .polished-header .account-nav{margin-left:0}
+ .account-disclosure .nav-disclosure-trigger{padding:5px 8px 5px 5px;font-size:12px;gap:6px}
+}
+@media(max-width:420px){
+ .polished-header .brand{font-size:27px}
+ .polished-header>.brand-controls>.theme-toggle{display:none}
+ .account-disclosure .nav-disclosure-trigger>svg:last-child{display:none}
+}
+@media(prefers-reduced-motion:reduce){.nav-popover,.polished-header *{animation:none!important;transition:none!important;scroll-behavior:auto}}
+@media(forced-colors:active){.nav-popover{border:1px solid CanvasText}.nav-disclosure-trigger[aria-expanded=true]{outline:2px solid Highlight}}
