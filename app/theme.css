@@ -1,4 +1,5 @@
 /* Shared application palette. Components consume these tokens rather than owning a theme. */
+.legal-footer{width:min(100% - 40px,1200px);margin: auto auto 0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;border-top:1px solid var(--border);color:var(--text-secondary);font-size:12px}.legal-footer nav{display:flex;flex-wrap:wrap;gap:4px 20px}.legal-footer a{display:inline-flex;align-items:center;min-height:44px}.legal-footer a:hover{color:var(--accent)}.legal-footer a:focus-visible,.legal-form-notice a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}.legal-form-notice{font-size:12px;line-height:1.8;color:var(--text-secondary);margin:12px 0 20px}.legal-form-notice a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}body:has(.qx-workspace)>.legal-footer{display:none}body:has(.setup-actionbar):not(:has(.qx-workspace))>.legal-footer{padding-bottom:160px}
 :root{
   --background:#090c10;--foreground:#f4f4f5;--muted:#a1a1aa;--accent:#67e8f9;
   --surface:#111720;--surface-raised:#19232f;--surface-hover:#223240;--surface-selected:#123746;

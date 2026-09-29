@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthNotice } from "@/components/auth-notice";
+import { LegalFooter } from "@/components/legal-footer";
 import { AccountNavigationState } from "@/components/account-navigation-state";
 import { displayBootstrap } from "@/lib/display-preferences";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -34,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head><script dangerouslySetInnerHTML={{ __html: displayBootstrap }} /></head>
-      <body className="min-h-full flex flex-col"><AccountNavigationState />{children}<AuthNotice /></body>
+      <body className="min-h-full flex flex-col"><AccountNavigationState />{children}<LegalFooter /><AuthNotice /></body>
     </html>
   );
 }

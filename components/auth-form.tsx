@@ -57,6 +57,7 @@ export function AuthForm({ signup, returnTo, google, github, initialError = "" }
       </nav>
       <h1 ref={heading} tabIndex={-1}>{signup ? "Make progress yours." : "Back for your next step."}</h1>
       <p className="auth-description">{signup ? "Create your free account. Keep every session within reach." : "Log in to your practice history and continue where you left off."}</p>
+      <p className="legal-form-notice">By creating an account, including through Google or GitHub, you agree to the <Link href="/terms">Terms of Service</Link>. Read our <Link href="/privacy">Privacy Policy</Link> for how your information is used. Ages 13+; parent or guardian permission may be required where you live.</p>
       {continuing && <div className="auth-context"><AccountIcon name="shield" /><span>You’ll return to your practice session.<small>Timed exams keep counting down while you’re here.</small></span></div>}
       {error && <div className="auth-error" role="alert" ref={alert} tabIndex={-1}>{error}</div>}
       {(google || github) && <div className="auth-social-options">
