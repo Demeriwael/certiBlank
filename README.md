@@ -21,17 +21,9 @@ Next.js · TypeScript · PostgreSQL · Docker · AWS EC2
 
 ---
 
-## ✨ What you can do
+CertiBlank helps you prepare for **AWS Cloud Practitioner and Microsoft Azure Fundamentals** with timed mock exams, focused domain practice, detailed answer explanations, and saved progress.
 
-CertiBlank is an IT certification practice platform built around one idea: **understand why an answer is right, not just which answer to pick.** Practice by domain, take a timed mock exam, and use your results to decide what to study next.
-
-| | Domain practice | Timed mock exam |
-| --- | --- | --- |
-| Best for | Learning and targeting weak areas | Rehearsing a complete exam session |
-| Questions | Selected domains and session length | Certification configuration and domain quotas |
-| Feedback | After explicitly checking an answer | After final submission |
-| Timing | Practice at your own pace | Server-enforced countdown |
-| Review | Explanations as you go | Flag, navigate, and review before submitting |
+Start on [certiblank.com](https://certiblank.com) without an account, or [run it locally](#local-installation). For the implementation, jump to the [architecture](#architecture) and [code tour](#code-tour).
 
 <a id="product-tour"></a>
 ## 🎬 See it in action
@@ -57,10 +49,52 @@ CertiBlank is an IT certification practice platform built around one idea: **und
 
 Screenshots show a demonstration session, not a real certification result. No personal account data is included.
 
+## ✨ Features
+
+Built around one idea: **understand why an answer is right, not just which answer to pick.**
+
+**Free to use. Guest practice available. Application code open source under MIT.** Create an account with email/password, Google, or GitHub to keep your practice history across devices. Guest progress can carry over when you sign in.
+
+| Feature | What it brings to your study session |
+| --- | --- |
+| ⏱️ Timed mock exams | A countdown, domain-weighted question selection, flags, and a review step before submission. |
+| 🎯 Domain practice | Focus on selected topics and reveal feedback after checking each answer. |
+| 🧩 Single and multiple response | Radio and checkbox questions with explicit selection requirements. |
+| 💡 Detailed explanations | Reasoning for correct answers, individual distractor breakdowns, and documentation references. |
+| 📊 Results that guide revision | A practice score, question-by-question review, and accuracy by domain. |
+| 📱 A responsive exam workspace | Large answer cards, persistent navigation, and a question jump drawer. |
+| ⚡ Immediate interactions | Answer selection and navigation update locally while progress saves in the background. |
+| ♿ Keyboard-friendly controls | Visible focus, drawer focus management, status announcements, and reduced-motion support. |
+
+
+Light and dark themes, a responsive account menu, and saved exam history support practice on desktop and mobile.
+
+### Two ways to practice
+
+| | Domain practice | Timed mock exam |
+| --- | --- | --- |
+| Best for | Learning and targeting weak areas | Rehearsing a complete exam session |
+| Questions | Selected domains and session length | Certification configuration and domain quotas |
+| Feedback | After explicitly checking an answer | After final submission |
+| Timing | Practice at your own pace | Server-enforced countdown |
+| Review | Explanations as you go | Flag, navigate, and review before submitting |
+
+## 📚 Available certifications
+
+| Certification | Status | Bank size | Mock configuration | Passing practice score |
+| --- | --- | ---: | --- | ---: |
+| AWS — Cloud Practitioner (CLF-C02) | Available | 297 | 65 questions · 90 minutes | 700 |
+| Microsoft Azure Fundamentals (AZ-900) | Available | 160 | 50 questions · 45 minutes | 700 |
+| Cisco | Coming soon | — | — | — |
+
+**457 questions in the included banks.** Counts reflect the repository data; the live catalog reflects the banks imported into its database. Mock settings are practice configurations, not a guarantee of the vendor's current exam format.
+
+Missing your certification? [Request an exam](https://certiblank.com/request-certification). Found a question that needs work? See [working with question banks](#question-banks) and [contributing](CONTRIBUTING.md).
+
 <a id="local-installation"></a>
 ## 🚀 Local installation
 
-**Explore without an account:** open the live demo, choose AWS or Azure, and start domain practice. Cisco is listed as coming soon; availability depends on the imported question banks.
+Run your own development instance with the steps below. Guest practice also needs the application server and a seeded database.
 
 ### 1. Get the prerequisites
 
@@ -107,7 +141,7 @@ BETTER_AUTH_SECRET="YOUR_RANDOM_SECRET_AT_LEAST_32_CHARACTERS"
 | `BETTER_AUTH_SECRET` | A private random secret, at least 32 characters. |
 
 Generate the secret with `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`.
-See [authentication setup](docs/authentication.md) for optional Google credentials, cookie/session behavior, and current limitations (email verification and password recovery are not configured).
+See [authentication setup](docs/authentication.md) for optional Google and GitHub credentials, cookie/session behavior, and current limitations (email verification and password recovery are not configured).
 
 For local PostgreSQL, both URLs can match. Create the database and user first; the template does not provision them. Keep `.env` untracked and use a development database, never the hosted application's production database.
 
@@ -150,11 +184,9 @@ npm run build
 npm start
 ```
 
-## For reviewers and contributors
-
 ## 🔍 Engineering highlights
 
-A full-stack application that takes a learner from a first anonymous practice session to account-linked exam history. Light and dark themes, touch-friendly controls, and detailed explanations keep the attention where it belongs: on learning.
+The main implementation decisions behind the practice experience:
 
 | Challenge | Implementation |
 | --- | --- |
@@ -167,22 +199,6 @@ A full-stack application that takes a learner from a first anonymous practice se
 | Validate changes before release | CI runs dependency auditing, bank validation, lint, type checks, unit/mocked API tests, a production build, and Docker smoke tests. Deployment remains manual. |
 
 The [performance write-up](docs/exam-performance.md) includes a reproducible fixture comparison: routine-save JSON fell from **86,578 to 3,371 bytes**. These are serialized fixture sizes, not measured production latency or a promise of zero delay.
-
-<details>
-<summary><strong>Product capabilities</strong></summary>
-
-| Feature | What it brings to your study session |
-| --- | --- |
-| ⏱️ Timed mock exams | A countdown, domain-weighted question selection, flags, and a review step before submission. |
-| 🎯 Domain practice | Focus on selected topics and reveal feedback after checking each answer. |
-| 🧩 Single and multiple response | Radio and checkbox questions with explicit selection requirements. |
-| 💡 Detailed explanations | Reasoning for correct answers, individual distractor breakdowns, and documentation references. |
-| 📊 Results that guide revision | A practice score, question-by-question review, and accuracy by domain. |
-| 📱 A responsive exam workspace | Large answer cards, persistent navigation, and a question jump drawer. |
-| ⚡ Immediate interactions | Answer selection and navigation update locally while progress saves in the background. |
-| ♿ Keyboard-friendly controls | Visible focus, drawer focus management, status announcements, and reduced-motion support. |
-
-</details>
 
 <details>
 <summary><strong>How scoring and saved progress work</strong></summary>
@@ -256,7 +272,7 @@ Nginx terminates HTTPS and forwards requests to the container's loopback-only po
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 |
 | Data | PostgreSQL · Prisma 6 |
-| Authentication | Better Auth · email/password · optional Google OAuth |
+| Authentication | Better Auth · email/password · optional Google and GitHub OAuth |
 | Validation | ESLint · TypeScript · Node.js test runner |
 | CI | GitHub Actions · Node.js 24 · Ubuntu |
 | Hosting | AWS EC2 · Docker Compose · Nginx · Let's Encrypt |
@@ -289,7 +305,7 @@ With the development server running at `127.0.0.1:3000` and both processes point
 node --import tsx tests/exam-live.ts
 ```
 
-This test creates and removes its own attempts and expects the current seeded AWS bank, including 274 available questions. It is excluded from CI and must not run against production. See [CONTRIBUTING.md](CONTRIBUTING.md) for additional manual checks.
+This optional script creates and removes its own attempts. It currently contains a legacy assertion for 274 AWS questions and needs that assertion updated before use with the included 297-question bank. It is excluded from CI and must not run against production. See [CONTRIBUTING.md](CONTRIBUTING.md) for additional manual checks.
 
 </details>
 
@@ -299,8 +315,9 @@ See the [manual EC2 deployment guide](docs/aws-ec2.md) for Docker Compose,
 Nginx/HTTPS, runtime secrets, and rollback. GitHub Actions builds and smoke-tests
 the Linux Docker image; it does not deploy or modify the production database.
 
-Visitors can suggest certifications through the catalog. See [certification requests](docs/certification-requests.md) for the form's protections, review query, and required database migration before deploying this feature.
+See [certification requests](docs/certification-requests.md) for request storage, protections, and the private review query. The hosted service also publishes its [Privacy Policy](https://certiblank.com/privacy) and [Terms of Service](https://certiblank.com/terms); deployment owners should review [policy implementation notes](docs/legal-policies.md).
 
+<a id="question-banks"></a>
 ## 📚 Working with question banks
 
 Banks live under `prisma/Data/<Platform>/<Certification>/*.json`. The importer discovers the data directory case-insensitively; preserve the tracked path casing when contributing.
