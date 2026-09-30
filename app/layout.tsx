@@ -21,8 +21,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Certi — Your next certification starts here",
-  description: "Customized exam prep questions, flashcards, and practice tests for top IT certifications.",
+  metadataBase: new URL("https://certiblank.com"),
+  title: "CertiBlank — Free AWS & Azure Certification Practice",
+  description: "Prepare for AWS and Azure certifications with free timed mock exams, focused domain practice, detailed explanations, and saved progress. Start without an account.",
+  applicationName: "CertiBlank",
+  authors: [{ name: "Wael Demeri" }],
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "CertiBlank",
+    locale: "en_US",
+    title: "CertiBlank — Free AWS & Azure Certification Practice",
+    description: "Prepare for AWS and Azure certifications with free timed mock exams, focused domain practice, detailed explanations, and saved progress. Start without an account.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CertiBlank — Free AWS & Azure Certification Practice",
+    description: "Prepare for AWS and Azure certifications with free timed mock exams, focused domain practice, detailed explanations, and saved progress. Start without an account.",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
